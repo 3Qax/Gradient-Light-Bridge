@@ -1,0 +1,15 @@
+# ESP32-C6 with Zigbee router role
+CONFIG_IDF_TARGET="esp32c6"
+CONFIG_ZB_ENABLED=y
+CONFIG_ZB_ZCZR=y
+
+# Use USB_SERIAL_JTAG for console / CDC output
+CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG=y
+
+# Required by esp-zigbee-sdk
+CONFIG_FREERTOS_UNICORE=n
+
+# Zigbee stack needs dedicated FAT partitions for NVRAM/binding tables
+CONFIG_PARTITION_TABLE_CUSTOM=y
+CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions.csv"
+CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y

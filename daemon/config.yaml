@@ -1,0 +1,39 @@
+# argb-to-hue daemon configuration
+# Developed on macOS, deployed on Linux.
+
+openrgb:
+  host: 127.0.0.1
+  port: 6742
+
+serial:
+  # Set to a specific port (e.g. /dev/ttyACM0 on Linux, /dev/tty.usbmodem* on macOS)
+  # or leave empty/null to auto-detect an argb-to-hue device.
+  port: null
+  baud: 115200
+  # Prefix used by the firmware on every data line.
+  prefix: "DATA: "
+
+endpoints:
+  # endpoint number -> OpenRGB mapping
+  1:
+    name: "PC Case"
+    # Match by substring against OpenRGB device names.
+    device: "Fractal"
+    # Zone index, or null to set the whole device color.
+    zone: null
+  2:
+    name: "PC Fans"
+    device: "Mystic Light"
+    zone: 0
+  3:
+    name: "PC RAM"
+    device: "GOODRAM"
+    zone: null
+  4:
+    name: "PC Motherboard"
+    device: "Mystic Light"
+    zone: 1
+
+# If true, attempt to switch matched devices into Direct/Custom mode before
+# setting colors.
+set_direct_mode: true

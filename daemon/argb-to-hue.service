@@ -1,0 +1,15 @@
+[Unit]
+Description=argb-to-hue OpenRGB bridge
+After=network.target
+
+[Service]
+Type=simple
+User=%I
+WorkingDirectory=/opt/argb-to-hue/daemon
+Environment=PATH=/opt/argb-to-hue/venv/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=/opt/argb-to-hue/venv/bin/python argb_to_hue.py -c /opt/argb-to-hue/daemon/config.yaml
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

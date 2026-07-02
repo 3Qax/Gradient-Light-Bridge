@@ -1,0 +1,28 @@
+#!/bin/bash
+# Build the ESP32-C6 firmware inside the official ESP-IDF Docker image.
+# Based on https://wejn.org/2025/01/zigbee-hue-llo-world/
+set -euo pipefail
+
+IDFVER="${IDFVER:-v5.3.2}"
+
+# Ensure the host user can write build artifacts.
+chmod a+w,g+s,o+t "$(dirname "$0")"
+
+DOCKER_ARGS=(
+    --rm
+    -v "$PWD:/project"
+    -w /project
+    -u "${UID}"
+    -e HOME=/tmp
+)
+
+if [[ -n "${PORT:-}" ]]; then
+    DOCKER_ARGS+=(--device "$PORT")
+fi
+
+# Only allocate a TTY when stdin is a terminal (interactive use).
+if [[ -t 0 ]]; then
+    DOCKER_ARGS+=(-it)
+fi
+
+exec docker run "${DOCKER_ARGS[@]}" "docker.io/espressif/idf:${IDFVER}" "$@"

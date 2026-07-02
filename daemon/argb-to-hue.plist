@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.argb-to-hue.daemon</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/path/to/venv/bin/python</string>
+        <string>/path/to/argb-to-hue/daemon/argb_to_hue.py</string>
+        <string>-c</string>
+        <string>/path/to/argb-to-hue/daemon/config.yaml</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>/tmp/argb-to-hue.out.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/argb-to-hue.err.log</string>
+</dict>
+</plist>
