@@ -35,6 +35,7 @@ typedef struct {
     uint8_t bri;
     uint16_t x;
     uint16_t y;
+    uint8_t last_bri;  /* last non-zero brightness, used when On restores level */
 } light_state_t;
 
 extern light_state_t g_light_state[ARGB_ENDPOINT_COUNT];

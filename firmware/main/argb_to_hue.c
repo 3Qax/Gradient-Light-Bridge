@@ -48,9 +48,12 @@ void emit_state_json(uint8_t endpoint)
 
     float xf = st->x / 65535.0f;
     float yf = st->y / 65535.0f;
-    uint8_t bri = st->on ? st->bri : 0;
+    /* When Hue sends "On" before a level command, bri can be 0 for one
+     * update. Use the last known non-zero brightness so the daemon doesn't
+     * flicker the LEDs off. */
+    uint8_t effective_bri = st->on ? (st->bri ? st->bri : st->last_bri) : 0;
 
-    rgb_t rgb = xy_to_rgb(xf, yf, bri);
+    rgb_t rgb = xy_to_rgb(xf, yf, effective_bri);
 
     // Prefix with DATA: so the PC daemon can ignore regular log lines.
     printf("DATA: {\"endpoint\":%u,\"on\":%s,\"bri\":%u,\"x\":%.4f,\"y\":%.4f,\"r\":%u,\"g\":%u,\"b\":%u}\n",
@@ -172,6 +175,9 @@ static void refresh_state_from_cluster(uint8_t endpoint)
         ESP_ZB_ZCL_ATTR_LEVEL_CONTROL_CURRENT_LEVEL_ID);
     if (level_attr && level_attr->data_p) {
         st->bri = *(uint8_t *)level_attr->data_p;
+        if (st->bri) {
+            st->last_bri = st->bri;
+        }
     }
 
     const esp_zb_zcl_attr_t *x_attr = esp_zb_zcl_get_attribute(
@@ -255,17 +261,45 @@ static void add_color_dimmable_light_endpoint(esp_zb_ep_list_t *ep_list, uint8_t
     };
     esp_zcl_utility_add_ep_basic_manufacturer_info(ep_list, endpoint, &info);
 
+    /* Add extra Basic cluster attributes so Hue shows a more complete device
+     * record (date code, software build). */
+    esp_zb_cluster_list_t *basic_cluster_list = esp_zb_ep_list_get_ep(ep_list, endpoint);
+    esp_zb_attribute_list_t *basic_attr_list = esp_zb_cluster_list_get_cluster(
+        basic_cluster_list, ESP_ZB_ZCL_CLUSTER_ID_BASIC, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
+    char date_code[] = "\x08" "20260702";
+    char sw_build_id[] = "\x05" "1.0.0";
+    esp_zb_basic_cluster_add_attr(basic_attr_list, ESP_ZB_ZCL_ATTR_BASIC_DATE_CODE_ID, date_code);
+    esp_zb_basic_cluster_add_attr(basic_attr_list, ESP_ZB_ZCL_ATTR_BASIC_SW_BUILD_ID, sw_build_id);
+
     // Fix "Off with effect" command from Hue bridge.
     // https://github.com/espressif/esp-zigbee-sdk/issues/457#issuecomment-2426128314
     uint16_t on_off_on_time = 0;
+    uint16_t on_off_off_wait_time = 0;
     bool on_off_global_scene_control = false;
     esp_zb_cluster_list_t *cluster_list = esp_zb_ep_list_get_ep(ep_list, endpoint);
     esp_zb_attribute_list_t *onoff_attr_list = esp_zb_cluster_list_get_cluster(
         cluster_list, ESP_ZB_ZCL_CLUSTER_ID_ON_OFF, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
     esp_zb_on_off_cluster_add_attr(onoff_attr_list, ESP_ZB_ZCL_ATTR_ON_OFF_ON_TIME,
                                    &on_off_on_time);
+    esp_zb_on_off_cluster_add_attr(onoff_attr_list, ESP_ZB_ZCL_ATTR_ON_OFF_OFF_WAIT_TIME,
+                                   &on_off_off_wait_time);
     esp_zb_on_off_cluster_add_attr(onoff_attr_list, ESP_ZB_ZCL_ATTR_ON_OFF_GLOBAL_SCENE_CONTROL,
                                    &on_off_global_scene_control);
+
+    // Restore previous brightness when Hue sends "On" without a level command.
+    uint8_t level_on_level = 0xFF; /* 0xFF == use previous level */
+    uint16_t level_on_transition_time = 0;
+    uint16_t level_off_transition_time = 0;
+    esp_zb_attribute_list_t *level_attr_list = esp_zb_cluster_list_get_cluster(
+        cluster_list, ESP_ZB_ZCL_CLUSTER_ID_LEVEL_CONTROL, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
+    esp_zb_level_cluster_add_attr(level_attr_list, ESP_ZB_ZCL_ATTR_LEVEL_CONTROL_ON_LEVEL_ID,
+                                  &level_on_level);
+    esp_zb_level_cluster_add_attr(level_attr_list,
+                                  ESP_ZB_ZCL_ATTR_LEVEL_CONTROL_ON_TRANSITION_TIME_ID,
+                                  &level_on_transition_time);
+    esp_zb_level_cluster_add_attr(level_attr_list,
+                                  ESP_ZB_ZCL_ATTR_LEVEL_CONTROL_OFF_TRANSITION_TIME_ID,
+                                  &level_off_transition_time);
 }
 
 static void esp_zb_task(void *pvParameters)
