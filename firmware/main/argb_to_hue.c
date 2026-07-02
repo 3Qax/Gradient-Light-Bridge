@@ -154,7 +154,8 @@ void esp_zb_app_signal_handler(esp_zb_app_signal_t *signal_struct)
     }
 }
 
-static void refresh_state_from_cluster(uint8_t endpoint)
+static void refresh_state_from_cluster(uint8_t endpoint,
+                                       const esp_zb_zcl_set_attr_value_message_t *skip_message)
 {
     uint8_t idx = endpoint - HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE;
     if (idx >= ARGB_ENDPOINT_COUNT) {
@@ -163,35 +164,90 @@ static void refresh_state_from_cluster(uint8_t endpoint)
 
     light_state_t *st = &g_light_state[idx];
 
-    const esp_zb_zcl_attr_t *on_off_attr = esp_zb_zcl_get_attribute(
-        endpoint, ESP_ZB_ZCL_CLUSTER_ID_ON_OFF, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE,
-        ESP_ZB_ZCL_ATTR_ON_OFF_ON_OFF_ID);
-    if (on_off_attr && on_off_attr->data_p) {
-        st->on = *(bool *)on_off_attr->data_p;
-    }
+    /* If the caller just gave us a fresh value for an attribute, don't let the
+     * cluster read (which can be stale or, in some cases, inverted) overwrite it. */
+    bool skip_onoff = skip_message &&
+                      skip_message->info.cluster == ESP_ZB_ZCL_CLUSTER_ID_ON_OFF &&
+                      skip_message->attribute.id == ESP_ZB_ZCL_ATTR_ON_OFF_ON_OFF_ID;
+    bool skip_level = skip_message &&
+                      skip_message->info.cluster == ESP_ZB_ZCL_CLUSTER_ID_LEVEL_CONTROL &&
+                      skip_message->attribute.id == ESP_ZB_ZCL_ATTR_LEVEL_CONTROL_CURRENT_LEVEL_ID;
+    bool skip_x = skip_message &&
+                  skip_message->info.cluster == ESP_ZB_ZCL_CLUSTER_ID_COLOR_CONTROL &&
+                  skip_message->attribute.id == ESP_ZB_ZCL_ATTR_COLOR_CONTROL_CURRENT_X_ID;
+    bool skip_y = skip_message &&
+                  skip_message->info.cluster == ESP_ZB_ZCL_CLUSTER_ID_COLOR_CONTROL &&
+                  skip_message->attribute.id == ESP_ZB_ZCL_ATTR_COLOR_CONTROL_CURRENT_Y_ID;
 
-    const esp_zb_zcl_attr_t *level_attr = esp_zb_zcl_get_attribute(
-        endpoint, ESP_ZB_ZCL_CLUSTER_ID_LEVEL_CONTROL, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE,
-        ESP_ZB_ZCL_ATTR_LEVEL_CONTROL_CURRENT_LEVEL_ID);
-    if (level_attr && level_attr->data_p) {
-        st->bri = *(uint8_t *)level_attr->data_p;
-        if (st->bri) {
-            st->last_bri = st->bri;
+    if (!skip_onoff) {
+        const esp_zb_zcl_attr_t *on_off_attr = esp_zb_zcl_get_attribute(
+            endpoint, ESP_ZB_ZCL_CLUSTER_ID_ON_OFF, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE,
+            ESP_ZB_ZCL_ATTR_ON_OFF_ON_OFF_ID);
+        if (on_off_attr && on_off_attr->data_p) {
+            st->on = *(bool *)on_off_attr->data_p;
         }
     }
 
-    const esp_zb_zcl_attr_t *x_attr = esp_zb_zcl_get_attribute(
-        endpoint, ESP_ZB_ZCL_CLUSTER_ID_COLOR_CONTROL, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE,
-        ESP_ZB_ZCL_ATTR_COLOR_CONTROL_CURRENT_X_ID);
-    if (x_attr && x_attr->data_p) {
-        st->x = *(uint16_t *)x_attr->data_p;
+    if (!skip_level) {
+        const esp_zb_zcl_attr_t *level_attr = esp_zb_zcl_get_attribute(
+            endpoint, ESP_ZB_ZCL_CLUSTER_ID_LEVEL_CONTROL, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE,
+            ESP_ZB_ZCL_ATTR_LEVEL_CONTROL_CURRENT_LEVEL_ID);
+        if (level_attr && level_attr->data_p) {
+            st->bri = *(uint8_t *)level_attr->data_p;
+            if (st->bri) {
+                st->last_bri = st->bri;
+            }
+        }
     }
 
-    const esp_zb_zcl_attr_t *y_attr = esp_zb_zcl_get_attribute(
-        endpoint, ESP_ZB_ZCL_CLUSTER_ID_COLOR_CONTROL, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE,
-        ESP_ZB_ZCL_ATTR_COLOR_CONTROL_CURRENT_Y_ID);
-    if (y_attr && y_attr->data_p) {
-        st->y = *(uint16_t *)y_attr->data_p;
+    if (!skip_x) {
+        const esp_zb_zcl_attr_t *x_attr = esp_zb_zcl_get_attribute(
+            endpoint, ESP_ZB_ZCL_CLUSTER_ID_COLOR_CONTROL, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE,
+            ESP_ZB_ZCL_ATTR_COLOR_CONTROL_CURRENT_X_ID);
+        if (x_attr && x_attr->data_p) {
+            st->x = *(uint16_t *)x_attr->data_p;
+        }
+    }
+
+    if (!skip_y) {
+        const esp_zb_zcl_attr_t *y_attr = esp_zb_zcl_get_attribute(
+            endpoint, ESP_ZB_ZCL_CLUSTER_ID_COLOR_CONTROL, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE,
+            ESP_ZB_ZCL_ATTR_COLOR_CONTROL_CURRENT_Y_ID);
+        if (y_attr && y_attr->data_p) {
+            st->y = *(uint16_t *)y_attr->data_p;
+        }
+    }
+}
+
+static void update_state_from_message(light_state_t *st, const esp_zb_zcl_set_attr_value_message_t *message)
+{
+    if (message->attribute.data.value == NULL || message->attribute.data.size == 0) {
+        return;
+    }
+
+    switch (message->info.cluster) {
+    case ESP_ZB_ZCL_CLUSTER_ID_ON_OFF:
+        if (message->attribute.id == ESP_ZB_ZCL_ATTR_ON_OFF_ON_OFF_ID) {
+            st->on = *(bool *)message->attribute.data.value;
+        }
+        break;
+    case ESP_ZB_ZCL_CLUSTER_ID_LEVEL_CONTROL:
+        if (message->attribute.id == ESP_ZB_ZCL_ATTR_LEVEL_CONTROL_CURRENT_LEVEL_ID) {
+            st->bri = *(uint8_t *)message->attribute.data.value;
+            if (st->bri) {
+                st->last_bri = st->bri;
+            }
+        }
+        break;
+    case ESP_ZB_ZCL_CLUSTER_ID_COLOR_CONTROL:
+        if (message->attribute.id == ESP_ZB_ZCL_ATTR_COLOR_CONTROL_CURRENT_X_ID) {
+            st->x = *(uint16_t *)message->attribute.data.value;
+        } else if (message->attribute.id == ESP_ZB_ZCL_ATTR_COLOR_CONTROL_CURRENT_Y_ID) {
+            st->y = *(uint16_t *)message->attribute.data.value;
+        }
+        break;
+    default:
+        break;
     }
 }
 
@@ -211,7 +267,13 @@ static esp_err_t zb_attribute_handler(const esp_zb_zcl_set_attr_value_message_t 
     ESP_LOGI(TAG, "Received message: endpoint(%d), cluster(0x%x), attribute(0x%x), data size(%d)",
              endpoint, message->info.cluster, message->attribute.id, message->attribute.data.size);
 
-    refresh_state_from_cluster(endpoint);
+    uint8_t idx = endpoint - HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE;
+    light_state_t *st = &g_light_state[idx];
+
+    /* Prefer the value carried in the callback message; fall back to reading
+     * the cluster for attributes that were not part of this notification. */
+    update_state_from_message(st, message);
+    refresh_state_from_cluster(endpoint, message);
 
     switch (message->info.cluster) {
     case ESP_ZB_ZCL_CLUSTER_ID_ON_OFF:
