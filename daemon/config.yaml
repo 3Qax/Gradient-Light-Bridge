@@ -1,8 +1,11 @@
 # argb-to-hue daemon configuration
-# Developed on macOS, deployed on Linux.
+# Developed on macOS, intended to run on modern Linux.
 
 openrgb:
-  host: 127.0.0.1
+  # If the daemon runs on the same machine as OpenRGB, use 127.0.0.1.
+  # If the ESP32 is plugged into a different host, point this at the
+  # machine running OpenRGB (e.g. 192.168.1.23).
+  host: 192.168.1.23
   port: 6742
 
 serial:
@@ -15,24 +18,28 @@ serial:
 
 endpoints:
   # endpoint number -> OpenRGB mapping
+  # The MSI MYSTIC LIGHT controller exposes four zones:
+  #   0: JAF
+  #   1: JARGB 1
+  #   2: JARGB 2
+  #   3: JARGB 3
+  # Adjust these to match your physical wiring.
   1:
     name: "PC Case"
-    # Match by substring against OpenRGB device names.
-    device: "Fractal"
-    # Zone index, or null to set the whole device color.
-    zone: null
+    device: "MSI MYSTIC LIGHT"
+    zone: 0
   2:
     name: "PC Fans"
-    device: "Mystic Light"
-    zone: 0
+    device: "MSI MYSTIC LIGHT"
+    zone: 1
   3:
     name: "PC RAM"
-    device: "GOODRAM"
-    zone: null
+    device: "MSI MYSTIC LIGHT"
+    zone: 2
   4:
     name: "PC Motherboard"
-    device: "Mystic Light"
-    zone: 1
+    device: "MSI MYSTIC LIGHT"
+    zone: 3
 
 # If true, attempt to switch matched devices into Direct/Custom mode before
 # setting colors.

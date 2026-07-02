@@ -153,7 +153,15 @@ def run(config: dict[str, Any]) -> None:
             logger.info("Endpoint %d -> %s", ep, targets[ep].name)
 
     logger.info("Opening serial port %s at %d baud", port_name, baud)
-    ser = serial.Serial(port_name, baud, timeout=1)
+    # Open the port without asserting DTR/RTS so the ESP32-C6 doesn't get
+    # kicked into firmware download mode on connect.
+    ser = serial.Serial()
+    ser.port = port_name
+    ser.baudrate = baud
+    ser.timeout = 1
+    ser.dtr = False
+    ser.rts = False
+    ser.open()
 
     try:
         while True:
