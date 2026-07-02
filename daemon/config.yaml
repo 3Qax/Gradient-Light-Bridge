@@ -20,26 +20,30 @@ endpoints:
   # endpoint number -> OpenRGB mapping
   # The MSI MYSTIC LIGHT controller exposes four zones:
   #   0: JAF
-  #   1: JARGB 1
-  #   2: JARGB 2
-  #   3: JARGB 3
+  #   1: JARGB 1  -> bottom intake fans (2x ARCTIC P12 PWM PST A-RGB)
+  #   2: JARGB 2  -> radiator + VRM fans (3x radiator + 1x VRM)
+  #   3: JARGB 3  -> side intake fans (2x ARCTIC P12 PWM PST A-RGB)
   # Adjust these to match your physical wiring.
   1:
     name: "PC Case"
     device: "MSI MYSTIC LIGHT"
-    zone: 0
+    zone: 1
+    leds: 16
   2:
     name: "PC Fans"
     device: "MSI MYSTIC LIGHT"
-    zone: 1
+    zone: 2
+    leds: 32
   3:
     name: "PC RAM"
     device: "MSI MYSTIC LIGHT"
-    zone: 2
+    zone: 3
+    leds: 16
   4:
     name: "PC Motherboard"
     device: "MSI MYSTIC LIGHT"
-    zone: 3
+    zone: 0
+    leds: 0
 
 # If true, attempt to switch matched devices into Direct/Custom mode before
 # setting colors.

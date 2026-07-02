@@ -88,6 +88,17 @@ def ensure_direct_mode(device: Device) -> None:
         logger.warning("Could not set Direct/Custom mode on %s: %s", device.name, exc)
 
 
+def resize_zone(zone: Zone, led_count: int | None) -> None:
+    if led_count is None or led_count <= 0:
+        return
+    try:
+        if len(zone.leds) != led_count:
+            zone.resize(led_count)
+            logger.info("Resized zone %s to %d LEDs", zone.name, led_count)
+    except Exception as exc:
+        logger.warning("Could not resize zone %s to %d LEDs: %s", zone.name, led_count, exc)
+
+
 def apply_color(target: Target, color: RGBColor, set_direct_mode: bool) -> None:
     if target is None:
         return
@@ -103,6 +114,7 @@ def apply_color(target: Target, color: RGBColor, set_direct_mode: bool) -> None:
 def resolve_target(client: OpenRGBClient, mapping: dict[str, Any]) -> Target:
     pattern = mapping.get("device")
     zone_idx = mapping.get("zone")
+    led_count = mapping.get("leds")
     if not pattern:
         return None
 
@@ -117,7 +129,9 @@ def resolve_target(client: OpenRGBClient, mapping: dict[str, Any]) -> Target:
     try:
         zone_idx = int(zone_idx)
         if 0 <= zone_idx < len(dev.zones):
-            return (dev, dev.zones[zone_idx])
+            zone = dev.zones[zone_idx]
+            resize_zone(zone, led_count)
+            return (dev, zone)
         logger.warning("Zone index %d out of range for %s (zones=%d)", zone_idx, dev.name, len(dev.zones))
         return (dev, None)
     except (ValueError, TypeError):
