@@ -71,8 +71,12 @@ def find_device(client: OpenRGBClient, pattern: str) -> Device | None:
     return None
 
 
-def ensure_direct_mode(target: Device | Zone) -> None:
-    device = target if isinstance(target, Device) else target.device
+# For zone-level mappings we need to remember the parent Device so we can
+# switch it into Direct/Custom mode before setting the zone color.
+Target = tuple[Device, Zone | None] | None
+
+
+def ensure_direct_mode(device: Device) -> None:
     try:
         # OpenRGB mode names vary; try the most common Direct/Custom names.
         for mode_name in ("Direct", "Custom", "direct", "custom"):
@@ -84,15 +88,19 @@ def ensure_direct_mode(target: Device | Zone) -> None:
         logger.warning("Could not set Direct/Custom mode on %s: %s", device.name, exc)
 
 
-def apply_color(target: Device | Zone | None, color: RGBColor, set_direct_mode: bool) -> None:
+def apply_color(target: Target, color: RGBColor, set_direct_mode: bool) -> None:
     if target is None:
         return
+    device, zone = target
     if set_direct_mode:
-        ensure_direct_mode(target)
-    target.set_color(color)
+        ensure_direct_mode(device)
+    if zone is None:
+        device.set_color(color)
+    else:
+        zone.set_color(color)
 
 
-def resolve_target(client: OpenRGBClient, mapping: dict[str, Any]) -> Device | Zone | None:
+def resolve_target(client: OpenRGBClient, mapping: dict[str, Any]) -> Target:
     pattern = mapping.get("device")
     zone_idx = mapping.get("zone")
     if not pattern:
@@ -104,16 +112,16 @@ def resolve_target(client: OpenRGBClient, mapping: dict[str, Any]) -> Device | Z
         return None
 
     if zone_idx is None:
-        return dev
+        return (dev, None)
 
     try:
         zone_idx = int(zone_idx)
         if 0 <= zone_idx < len(dev.zones):
-            return dev.zones[zone_idx]
+            return (dev, dev.zones[zone_idx])
         logger.warning("Zone index %d out of range for %s (zones=%d)", zone_idx, dev.name, len(dev.zones))
-        return dev
+        return (dev, None)
     except (ValueError, TypeError):
-        return dev
+        return (dev, None)
 
 
 def parse_data_line(line: str, prefix: str) -> dict[str, Any] | None:
@@ -142,7 +150,7 @@ def run(config: dict[str, Any]) -> None:
     prefix = serial_cfg.get("prefix", "DATA: ")
 
     # Resolve OpenRGB targets once at startup; refresh on each reconnect if needed.
-    targets: dict[int, Device | Zone | None] = {}
+    targets: dict[int, Target] = {}
     for ep_str, mapping in endpoints_cfg.items():
         try:
             ep = int(ep_str)
@@ -151,7 +159,7 @@ def run(config: dict[str, Any]) -> None:
             continue
         targets[ep] = resolve_target(client, mapping)
         if targets[ep]:
-            logger.info("Endpoint %d -> %s", ep, targets[ep].name)
+            logger.info("Endpoint %d -> %s", ep, targets[ep][1].name if targets[ep][1] else targets[ep][0].name)
 
     logger.info("Opening serial port %s at %d baud", port_name, baud)
     # Open the port without asserting DTR/RTS so the ESP32-C6 doesn't get
