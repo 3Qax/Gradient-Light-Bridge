@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any
 
 import serial
+import serial.tools.list_ports
 import yaml
 from openrgb import OpenRGBClient
 from openrgb.orgb import Device, Zone
