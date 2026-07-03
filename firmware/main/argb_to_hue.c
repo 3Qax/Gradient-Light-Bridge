@@ -559,6 +559,198 @@ static bool handle_identify_read_attrs_raw(const zb_zcl_parsed_hdr_t *hdr,
     return true;
 }
 
+static bool handle_level_read_attrs_raw(const zb_zcl_parsed_hdr_t *hdr,
+                                        const uint8_t *payload,
+                                        uint16_t payload_len)
+{
+    if (!hdr || !payload ||
+        hdr->addr_data.common_data.source.addr_type != ZB_ZCL_ADDR_TYPE_SHORT ||
+        (payload_len % 2) != 0) {
+        return false;
+    }
+
+    uint8_t endpoint = hdr->addr_data.common_data.dst_endpoint;
+    if (endpoint < HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE ||
+        endpoint >= HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE + ARGB_ENDPOINT_COUNT) {
+        return false;
+    }
+
+    for (uint16_t offset = 0; offset + 1 < payload_len; offset += 2) {
+        uint16_t attr_id = (uint16_t)payload[offset] | ((uint16_t)payload[offset + 1] << 8);
+        if (attr_id != 0x0003 && attr_id != 0x0004) {
+            return false;
+        }
+    }
+
+    zb_bufid_t out = zb_buf_get_out();
+    if (!out) {
+        ESP_LOGE(TAG, "LEVEL_READ_ATTR_RESP_RAW: no ZBOSS output buffer");
+        return true;
+    }
+
+    uint8_t *cmd_ptr = ZB_ZCL_START_PACKET(out);
+    ZB_ZCL_CONSTRUCT_GENERAL_COMMAND_RESP_FRAME_CONTROL_A(cmd_ptr,
+                                                          ZB_ZCL_FRAME_DIRECTION_TO_CLI,
+                                                          ZB_ZCL_MANUFACTURER_SPECIFIC);
+    ZB_ZCL_CONSTRUCT_COMMAND_HEADER_EXT(cmd_ptr,
+                                        hdr->seq_number,
+                                        ZB_TRUE,
+                                        HUE_SIGNIFY_MANUFACTURER_CODE,
+                                        ZB_ZCL_CMD_READ_ATTRIB_RESP);
+
+    for (uint16_t offset = 0; offset + 1 < payload_len; offset += 2) {
+        uint16_t attr_id = (uint16_t)payload[offset] | ((uint16_t)payload[offset + 1] << 8);
+        ZB_ZCL_PACKET_PUT_DATA16_VAL(cmd_ptr, attr_id);
+        if (attr_id == 0x0003) {
+            ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ZB_ZCL_STATUS_SUCCESS);
+            ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ESP_ZB_ZCL_ATTR_TYPE_U16);
+            ZB_ZCL_PACKET_PUT_DATA16_VAL(cmd_ptr, 0x000A);
+        } else {
+            ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ZB_ZCL_STATUS_UNSUP_ATTRIB);
+        }
+    }
+
+    uint16_t dst_addr = hdr->addr_data.common_data.source.u.short_addr;
+    ESP_LOGI(TAG, "LEVEL_READ_ATTR_RESP_RAW: tsn=0x%02x to=0x%04x ep=%u attrs=%u",
+             (unsigned)hdr->seq_number,
+             (unsigned)dst_addr,
+             (unsigned)endpoint,
+             (unsigned)(payload_len / 2));
+    ZB_ZCL_FINISH_N_SEND_PACKET(out,
+                                cmd_ptr,
+                                dst_addr,
+                                ZB_APS_ADDR_MODE_16_ENDP_PRESENT,
+                                hdr->addr_data.common_data.src_endpoint,
+                                endpoint,
+                                hdr->profile_id,
+                                hdr->cluster_id,
+                                NULL);
+    return true;
+}
+
+static bool handle_color_mfg_read_attrs_raw(const zb_zcl_parsed_hdr_t *hdr,
+                                            const uint8_t *payload,
+                                            uint16_t payload_len)
+{
+    if (!hdr || !payload ||
+        hdr->addr_data.common_data.source.addr_type != ZB_ZCL_ADDR_TYPE_SHORT ||
+        (payload_len % 2) != 0) {
+        return false;
+    }
+
+    uint8_t endpoint = hdr->addr_data.common_data.dst_endpoint;
+    if (endpoint < HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE ||
+        endpoint >= HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE + ARGB_ENDPOINT_COUNT) {
+        return false;
+    }
+
+    for (uint16_t offset = 0; offset + 1 < payload_len; offset += 2) {
+        uint16_t attr_id = (uint16_t)payload[offset] | ((uint16_t)payload[offset + 1] << 8);
+        if (attr_id != 0x0003 && attr_id != 0x0004) {
+            return false;
+        }
+    }
+
+    zb_bufid_t out = zb_buf_get_out();
+    if (!out) {
+        ESP_LOGE(TAG, "COLOR_MFG_READ_ATTR_RESP_RAW: no ZBOSS output buffer");
+        return true;
+    }
+
+    uint8_t *cmd_ptr = ZB_ZCL_START_PACKET(out);
+    ZB_ZCL_CONSTRUCT_GENERAL_COMMAND_RESP_FRAME_CONTROL_A(cmd_ptr,
+                                                          ZB_ZCL_FRAME_DIRECTION_TO_CLI,
+                                                          ZB_ZCL_MANUFACTURER_SPECIFIC);
+    ZB_ZCL_CONSTRUCT_COMMAND_HEADER_EXT(cmd_ptr,
+                                        hdr->seq_number,
+                                        ZB_TRUE,
+                                        HUE_SIGNIFY_MANUFACTURER_CODE,
+                                        ZB_ZCL_CMD_READ_ATTRIB_RESP);
+
+    for (uint16_t offset = 0; offset + 1 < payload_len; offset += 2) {
+        uint16_t attr_id = (uint16_t)payload[offset] | ((uint16_t)payload[offset + 1] << 8);
+        ZB_ZCL_PACKET_PUT_DATA16_VAL(cmd_ptr, attr_id);
+        ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ZB_ZCL_STATUS_SUCCESS);
+        ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ESP_ZB_ZCL_ATTR_TYPE_U16);
+        ZB_ZCL_PACKET_PUT_DATA16_VAL(cmd_ptr, 0xFFFF);
+    }
+
+    uint16_t dst_addr = hdr->addr_data.common_data.source.u.short_addr;
+    ESP_LOGI(TAG, "COLOR_MFG_READ_ATTR_RESP_RAW: tsn=0x%02x to=0x%04x ep=%u attrs=%u",
+             (unsigned)hdr->seq_number,
+             (unsigned)dst_addr,
+             (unsigned)endpoint,
+             (unsigned)(payload_len / 2));
+    ZB_ZCL_FINISH_N_SEND_PACKET(out,
+                                cmd_ptr,
+                                dst_addr,
+                                ZB_APS_ADDR_MODE_16_ENDP_PRESENT,
+                                hdr->addr_data.common_data.src_endpoint,
+                                endpoint,
+                                hdr->profile_id,
+                                hdr->cluster_id,
+                                NULL);
+    return true;
+}
+
+static bool handle_scenes_read_attrs_raw(const zb_zcl_parsed_hdr_t *hdr,
+                                         const uint8_t *payload,
+                                         uint16_t payload_len)
+{
+    if (!hdr || !payload ||
+        hdr->addr_data.common_data.source.addr_type != ZB_ZCL_ADDR_TYPE_SHORT ||
+        payload_len != 2) {
+        return false;
+    }
+
+    uint8_t endpoint = hdr->addr_data.common_data.dst_endpoint;
+    if (endpoint < HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE ||
+        endpoint >= HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE + ARGB_ENDPOINT_COUNT) {
+        return false;
+    }
+
+    uint16_t attr_id = (uint16_t)payload[0] | ((uint16_t)payload[1] << 8);
+    if (attr_id != 0x0001) {
+        return false;
+    }
+
+    zb_bufid_t out = zb_buf_get_out();
+    if (!out) {
+        ESP_LOGE(TAG, "SCENES_READ_ATTR_RESP_RAW: no ZBOSS output buffer");
+        return true;
+    }
+
+    uint8_t *cmd_ptr = ZB_ZCL_START_PACKET(out);
+    ZB_ZCL_CONSTRUCT_GENERAL_COMMAND_RESP_FRAME_CONTROL_A(cmd_ptr,
+                                                          ZB_ZCL_FRAME_DIRECTION_TO_CLI,
+                                                          ZB_ZCL_MANUFACTURER_SPECIFIC);
+    ZB_ZCL_CONSTRUCT_COMMAND_HEADER_EXT(cmd_ptr,
+                                        hdr->seq_number,
+                                        ZB_TRUE,
+                                        HUE_SIGNIFY_MANUFACTURER_CODE,
+                                        ZB_ZCL_CMD_READ_ATTRIB_RESP);
+    ZB_ZCL_PACKET_PUT_DATA16_VAL(cmd_ptr, attr_id);
+    ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ZB_ZCL_STATUS_SUCCESS);
+    ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ESP_ZB_ZCL_ATTR_TYPE_32BITMAP);
+    ZB_ZCL_PACKET_PUT_DATA32_VAL(cmd_ptr, 0x00000003);
+
+    uint16_t dst_addr = hdr->addr_data.common_data.source.u.short_addr;
+    ESP_LOGI(TAG, "SCENES_READ_ATTR_RESP_RAW: tsn=0x%02x to=0x%04x ep=%u attr=0x0001 value=0x00000003",
+             (unsigned)hdr->seq_number,
+             (unsigned)dst_addr,
+             (unsigned)endpoint);
+    ZB_ZCL_FINISH_N_SEND_PACKET(out,
+                                cmd_ptr,
+                                dst_addr,
+                                ZB_APS_ADDR_MODE_16_ENDP_PRESENT,
+                                hdr->addr_data.common_data.src_endpoint,
+                                endpoint,
+                                hdr->profile_id,
+                                hdr->cluster_id,
+                                NULL);
+    return true;
+}
+
 static bool handle_fc03_read_attrs_raw(const zb_zcl_parsed_hdr_t *hdr,
                                        const uint8_t *payload,
                                        uint16_t payload_len)
@@ -652,6 +844,26 @@ static bool handle_fc03_read_attrs_raw(const zb_zcl_parsed_hdr_t *hdr,
             ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ZB_ZCL_STATUS_SUCCESS);
             ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ESP_ZB_ZCL_ATTR_TYPE_16BITMAP);
             ZB_ZCL_PACKET_PUT_DATA16_VAL(cmd_ptr, s_fc03_attr13[idx]);
+            break;
+        case 0x0032:
+            ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ZB_ZCL_STATUS_SUCCESS);
+            ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ESP_ZB_ZCL_ATTR_TYPE_U8);
+            ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, s_fc03_attr32[idx]);
+            break;
+        case 0x0033:
+            ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ZB_ZCL_STATUS_SUCCESS);
+            ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ESP_ZB_ZCL_ATTR_TYPE_U8);
+            ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, s_fc03_attr33[idx]);
+            break;
+        case 0x0034:
+            ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ZB_ZCL_STATUS_SUCCESS);
+            ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ESP_ZB_ZCL_ATTR_TYPE_U8);
+            ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, s_fc03_attr34[idx]);
+            break;
+        case 0x0038:
+            ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ZB_ZCL_STATUS_SUCCESS);
+            ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ESP_ZB_ZCL_ATTR_TYPE_U16);
+            ZB_ZCL_PACKET_PUT_DATA16_VAL(cmd_ptr, s_fc03_attr38[idx]);
             break;
         default:
             ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ZB_ZCL_STATUS_UNSUP_ATTRIB);
@@ -1522,6 +1734,33 @@ static bool zb_raw_command_handler(uint8_t bufid)
             hdr->manuf_specific == HUE_SIGNIFY_MANUFACTURER_CODE &&
             hdr->cmd_direction == ESP_ZB_ZCL_CMD_DIRECTION_TO_SRV &&
             handle_identify_read_attrs_raw(hdr, payload, payload_len)) {
+            zb_buf_free(bufid);
+            return true;
+        }
+        if (hdr->cluster_id == ESP_ZB_ZCL_CLUSTER_ID_LEVEL_CONTROL &&
+            hdr->cmd_id == ZB_ZCL_CMD_READ_ATTRIB &&
+            hdr->is_manuf_specific &&
+            hdr->manuf_specific == HUE_SIGNIFY_MANUFACTURER_CODE &&
+            hdr->cmd_direction == ESP_ZB_ZCL_CMD_DIRECTION_TO_SRV &&
+            handle_level_read_attrs_raw(hdr, payload, payload_len)) {
+            zb_buf_free(bufid);
+            return true;
+        }
+        if (hdr->cluster_id == ESP_ZB_ZCL_CLUSTER_ID_COLOR_CONTROL &&
+            hdr->cmd_id == ZB_ZCL_CMD_READ_ATTRIB &&
+            hdr->is_manuf_specific &&
+            hdr->manuf_specific == HUE_SIGNIFY_MANUFACTURER_CODE &&
+            hdr->cmd_direction == ESP_ZB_ZCL_CMD_DIRECTION_TO_SRV &&
+            handle_color_mfg_read_attrs_raw(hdr, payload, payload_len)) {
+            zb_buf_free(bufid);
+            return true;
+        }
+        if (hdr->cluster_id == ESP_ZB_ZCL_CLUSTER_ID_SCENES &&
+            hdr->cmd_id == ZB_ZCL_CMD_READ_ATTRIB &&
+            hdr->is_manuf_specific &&
+            hdr->manuf_specific == HUE_SIGNIFY_MANUFACTURER_CODE &&
+            hdr->cmd_direction == ESP_ZB_ZCL_CMD_DIRECTION_TO_SRV &&
+            handle_scenes_read_attrs_raw(hdr, payload, payload_len)) {
             zb_buf_free(bufid);
             return true;
         }
