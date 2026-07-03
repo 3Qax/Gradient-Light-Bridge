@@ -64,6 +64,7 @@ static const char *TAG = "ARGB_TO_HUE";
 #define HUE_ZDO_SIMPLE_DESC_REQ_CLUSTER_ID     0x0004
 #define HUE_ZDO_SIMPLE_DESC_RSP_CLUSTER_ID     0x8004
 #define HUE_ZDO_SUCCESS_STATUS                 0x00
+#define HUE_ZCL_STATUS_INSUFFICIENT_SPACE      0x89
 
 /* Experiment: bypass the local endpoint table for ZDO discovery and answer
  * like a real LCX004, including Green Power endpoint 242, without registering
@@ -82,6 +83,17 @@ static const char *TAG = "ARGB_TO_HUE";
 
 /* Manufacturer code for Signify Netherlands B.V. */
 #define HUE_SIGNIFY_MANUFACTURER_CODE 0x100B
+
+/* Captured from real LCX004 frame 499 in
+ * sniffer-capture-20260703-real-headboard-rejoin-rxidle. */
+static const uint8_t HUE_FC03_DISCOVERY_READ_ATTRS[] = {
+    0x01, 0x00, 0x02, 0x00, 0x10, 0x00, 0x11, 0x00,
+    0x12, 0x00, 0x13, 0x00, 0x30, 0x00, 0x38, 0x00,
+    0x37, 0x00, 0x33, 0x00, 0x32, 0x00,
+};
+static const uint8_t HUE_FC03_DISCOVERY_ATTR2_STATE[] = {
+    0x06, 0x07, 0x00, 0x01, 0xFE, 0x6E, 0x01,
+};
 
 /* Spoof a Signify Netherlands B.V. extended address so the Hue bridge treats
  * the device as a genuine Hue product. The lower 5 bytes should be unique per
@@ -902,6 +914,9 @@ static bool handle_fc03_read_attrs_raw(const zb_zcl_parsed_hdr_t *hdr,
     if (!has_fc03_attr) {
         return false;
     }
+    bool is_lcx004_discovery_read =
+        payload_len == sizeof(HUE_FC03_DISCOVERY_READ_ATTRS) &&
+        memcmp(payload, HUE_FC03_DISCOVERY_READ_ATTRS, sizeof(HUE_FC03_DISCOVERY_READ_ATTRS)) == 0;
 
     zb_bufid_t out = zb_buf_get_out();
     if (!out) {
@@ -932,7 +947,13 @@ static bool handle_fc03_read_attrs_raw(const zb_zcl_parsed_hdr_t *hdr,
         case 0x0002:
             ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ZB_ZCL_STATUS_SUCCESS);
             ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ESP_ZB_ZCL_ATTR_TYPE_OCTET_STRING);
-            ZB_ZCL_PACKET_PUT_DATA_N(cmd_ptr, s_hue_state[idx], s_hue_state[idx][0] + 1);
+            if (is_lcx004_discovery_read) {
+                ZB_ZCL_PACKET_PUT_DATA_N(cmd_ptr,
+                                         HUE_FC03_DISCOVERY_ATTR2_STATE,
+                                         sizeof(HUE_FC03_DISCOVERY_ATTR2_STATE));
+            } else {
+                ZB_ZCL_PACKET_PUT_DATA_N(cmd_ptr, s_hue_state[idx], s_hue_state[idx][0] + 1);
+            }
             break;
         case 0x0010:
             ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ZB_ZCL_STATUS_SUCCESS);
@@ -955,11 +976,19 @@ static bool handle_fc03_read_attrs_raw(const zb_zcl_parsed_hdr_t *hdr,
             ZB_ZCL_PACKET_PUT_DATA16_VAL(cmd_ptr, s_fc03_attr13[idx]);
             break;
         case 0x0032:
+            if (is_lcx004_discovery_read) {
+                ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, HUE_ZCL_STATUS_INSUFFICIENT_SPACE);
+                break;
+            }
             ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ZB_ZCL_STATUS_SUCCESS);
             ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ESP_ZB_ZCL_ATTR_TYPE_U8);
             ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, s_fc03_attr32[idx]);
             break;
         case 0x0033:
+            if (is_lcx004_discovery_read) {
+                ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, HUE_ZCL_STATUS_INSUFFICIENT_SPACE);
+                break;
+            }
             ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ZB_ZCL_STATUS_SUCCESS);
             ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ESP_ZB_ZCL_ATTR_TYPE_U8);
             ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, s_fc03_attr33[idx]);
@@ -1039,16 +1068,13 @@ static bool handle_fc03_discover_attr_ext_raw(const zb_zcl_parsed_hdr_t *hdr,
     ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, 0x00); /* discovery not complete */
     ZB_ZCL_PACKET_PUT_DATA16_VAL(cmd_ptr, 0x0032);
     ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ESP_ZB_ZCL_ATTR_TYPE_U8);
+    ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, 0x1C);
+    ZB_ZCL_PACKET_PUT_DATA16_VAL(cmd_ptr, 0x2000);
     ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, 0x07);
-    ZB_ZCL_PACKET_PUT_DATA16_VAL(cmd_ptr, 0x0033);
-    ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ESP_ZB_ZCL_ATTR_TYPE_U8);
-    ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, 0x07);
-    ZB_ZCL_PACKET_PUT_DATA16_VAL(cmd_ptr, 0x0034);
-    ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ESP_ZB_ZCL_ATTR_TYPE_U8);
-    ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, 0x07);
+    ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, 0x1C);
 
     uint16_t dst_addr = hdr->addr_data.common_data.source.u.short_addr;
-    ESP_LOGI(TAG, "FC03_DISC_ATTR_EXT_RESP_RAW: tsn=0x%02x to=0x%04x ep=%u attrs=0x0032..0x0034",
+    ESP_LOGI(TAG, "FC03_DISC_ATTR_EXT_RESP_RAW: tsn=0x%02x to=0x%04x ep=%u attrs=0x0032,0x2000 access=0x1c",
              (unsigned)hdr->seq_number,
              (unsigned)dst_addr,
              (unsigned)endpoint);

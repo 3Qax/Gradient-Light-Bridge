@@ -69,3 +69,7 @@ Next useful comparison work is no longer transport-key recovery. Use the
 decrypted real transcript as the baseline for fake-vs-real ZCL parity,
 especially Basic manufacturer writes `0x0051/0x0053/0x0054`, FC03 read
 responses, FC03 command `0x15/0x16`, and OTA cluster behavior.
+
+This capture independently confirms the FC03 extended-discovery classifier:
+frame `537` is command `0x16` advertising attrs `0x0032` type `0x20` access
+`0x1c` and `0x2000` type `0x07` access `0x1c`.

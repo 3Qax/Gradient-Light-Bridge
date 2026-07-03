@@ -1,0 +1,211 @@
+[0;32mI (560) ARGB_TO_HUE: Network(0xfb2f) is open for 40 seconds[0m
+DATA: {"event":"factory_reset"}
+ESP-ROM:esp32c6-20220919
+Build:Sep 19 2022
+rst:0xc (SW_CPU),boot:0xc (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4001975a
+SPIWP:0xee
+mode:DIO, clock div:2
+load:0x40875720,len:0x18ec
+load:0x4086c110,len:0xd9c
+load:0x4086e610,len:0x2f80
+entry 0x4086c11a
+[0;32mI (22) boot: ESP-IDF v5.3.2 2nd stage bootloader[0m
+[0;32mI (22) boot: compile time Jul  2 2026 21:46:20[0m
+[0;32mI (23) boot: chip revision: v0.1[0m
+[0;32mI (24) boot: efuse block revision: v0.3[0m
+[0;32mI (24) boot.esp32c6: SPI Speed      : 80MHz[0m
+[0;32mI (25) boot.esp32c6: SPI Mode       : DIO[0m
+[0;32mI (26) boot.esp32c6: SPI Flash Size : 4MB[0m
+[0;32mI (27) boot: Enabling RNG early entropy source...[0m
+[0;32mI (28) boot: Partition Table:[0m
+[0;32mI (29) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (30) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (30) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (31) boot:  2 factory          factory app      00 00 00010000 000e1000[0m
+[0;32mI (33) boot:  3 zb_storage       Unknown data     01 81 000f1000 00004000[0m
+[0;32mI (34) boot:  4 zb_fct           Unknown data     01 81 000f5000 00000400[0m
+[0;32mI (36) boot: End of partition table[0m
+[0;32mI (36) esp_image: segment 0: paddr=00010020 vaddr=42080020 size=0f908h ( 63752) map[0m
+[0;32mI (61) esp_image: segment 1: paddr=0001f930 vaddr=40800000 size=006e8h (  1768) load[0m
+[0;32mI (64) esp_image: segment 2: paddr=00020020 vaddr=42000020 size=763b0h (484272) map[0m
+[0;32mI (241) esp_image: segment 3: paddr=000963d8 vaddr=408006e8 size=0cfe8h ( 53224) load[0m
+[0;32mI (264) esp_image: segment 4: paddr=000a33c8 vaddr=4080d6d0 size=02370h (  9072) load[0m
+[0;32mI (276) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (276) boot: Disabling RNG early entropy source...[0m
+[0;32mI (279) cpu_start: Unicore app[0m
+[0;32mI (288) cpu_start: Pro cpu start user code[0m
+[0;32mI (288) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (288) app_init: Application information:[0m
+[0;32mI (289) app_init: Project name:     argb_to_hue[0m
+[0;32mI (289) app_init: App version:      1[0m
+[0;32mI (290) app_init: Compile time:     Jul  2 2026 21:46:16[0m
+[0;32mI (291) app_init: ELF file SHA256:  ed62a0621...[0m
+[0;32mI (291) app_init: ESP-IDF:          v5.3.2[0m
+[0;32mI (292) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (292) efuse_init: Max chip rev:     v0.99 [0m
+[0;32mI (293) efuse_init: Chip rev:         v0.1[0m
+[0;32mI (294) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (294) heap_init: At 40814870 len 00067DA0 (415 KiB): RAM[0m
+[0;32mI (295) heap_init: At 4087C610 len 00002F54 (11 KiB): RAM[0m
+[0;32mI (296) heap_init: At 50000000 len 00003FE8 (15 KiB): RTCRAM[0m
+[0;32mI (298) spi_flash: detected chip: generic[0m
+[0;32mI (298) spi_flash: flash io: dio[0m
+[0;32mI (299) sleep: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (300) sleep: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (300) coexist: coex firmware version: cbb41d7[0m
+[0;32mI (301) coexist: coexist rom version 5b8dcfa[0m
+[0;32mI (302) main_task: Started on CPU0[0m
+[0;32mI (302) main_task: Calling app_main()[0m
+[0;32mI (302) phy_init: phy_version 320,348a293,Sep  3 2024,16:33:12[0m
+[0;32mI (352) phy: libbtbb version: 04952fd, Sep  3 2024, 16:33:30[0m
+[0;32mI (362) ARGB_TO_HUE: Node descriptor manufacturer code set to 0x100b[0m
+FAKE_DESCRIPTOR: endpoint=11 profile=0x0104 device=0x010d version=1 server_clusters=[0x0000,0x0003,0x0004,0x0005,0x0006,0x0008,0x1000,0xfc03,0x0300,0xfc01,0xfc04] client_clusters=[0x0019]
+[0;32mI (362) ARGB_TO_HUE: ZDO descriptor override enabled: endpoint list will advertise [11,242][0m
+[0;32mI (362) main_task: Returned from app_main()[0m
+[0;32mI (372) ARGB_TO_HUE: ZDO signal: ZDO Config Ready (0x17), status: ESP_FAIL[0m
+[0;32mI (372) ARGB_TO_HUE: Initialize Zigbee stack[0m
+[0;32mI (372) ARGB_TO_HUE: Deferred driver initialization successful[0m
+[0;32mI (372) ARGB_TO_HUE: Device started up in  factory-reset mode[0m
+[0;32mI (372) ARGB_TO_HUE: Start network steering[0m
+[0;33mW (3742) ARGB_TO_HUE: Network(0xfb2f) closed, devices joining not allowed.[0m
+[0;32mI (4222) ARGB_TO_HUE: Network(0xfb2f) is open for 35 seconds[0m
+[0;32mI (4322) ARGB_TO_HUE: Network(0xfb2f) is open for 180 seconds[0m
+[0;32mI (4322) ARGB_TO_HUE: Joined network successfully (Extended PAN ID: dd:75:8b:a8:25:de:8f:9f, PAN ID: 0xfb2f, Channel:25, Short Address: 0xbc21)[0m
+[0;32mI (9222) ARGB_TO_HUE: Network(0xfb2f) is open for 30 seconds[0m
+[0;32mI (14222) ARGB_TO_HUE: Network(0xfb2f) is open for 25 seconds[0m
+[0;32mI (19242) ARGB_TO_HUE: Network(0xfb2f) is open for 20 seconds[0m
+[0;32mI (24222) ARGB_TO_HUE: Network(0xfb2f) is open for 15 seconds[0m
+[0;32mI (29222) ARGB_TO_HUE: Network(0xfb2f) is open for 10 seconds[0m
+[0;32mI (34222) ARGB_TO_HUE: Network(0xfb2f) is open for 5 seconds[0m
+[0;33mW (39232) ARGB_TO_HUE: Network(0xfb2f) closed, devices joining not allowed.[0m
+[0;33mW (39242) ARGB_TO_HUE: Network(0xfb2f) closed, devices joining not allowed.[0m
+[0;32mI (43232) ARGB_TO_HUE: ZDO override: Node_Desc_req nwk=0xbc21 from=0x0001[0m
+[0;32mI (43232) ARGB_TO_HUE: ZDO override: Node_Desc_rsp nwk=0xbc21 flags=0x4001 mac=0x8e server=0x2c00 to=0x0001[0m
+[0;32mI (46252) ARGB_TO_HUE: ZDO override: Node_Desc_req nwk=0xbc21 from=0x0001[0m
+[0;32mI (46252) ARGB_TO_HUE: ZDO override: Node_Desc_rsp nwk=0xbc21 flags=0x4001 mac=0x8e server=0x2c00 to=0x0001[0m
+[0;32mI (46312) ARGB_TO_HUE: ZDO override: Active_EP_req nwk=0xbc21 from=0x0001[0m
+[0;32mI (46312) ARGB_TO_HUE: ZDO override: Active_EP_rsp nwk=0xbc21 eps=[11,242] to=0x0001[0m
+[0;32mI (46362) ARGB_TO_HUE: ZDO override: Simple_Desc_req nwk=0xbc21 ep=11 from=0x0001[0m
+[0;32mI (46362) ARGB_TO_HUE: ZDO override: Simple_Desc_rsp nwk=0xbc21 ep=11 len=32 to=0x0001[0m
+[0;32mI (46422) ARGB_TO_HUE: ZDO override: Simple_Desc_req nwk=0xbc21 ep=242 from=0x0001[0m
+[0;32mI (46422) ARGB_TO_HUE: ZDO override: Simple_Desc_rsp nwk=0xbc21 ep=242 len=10 to=0x0001[0m
+[0;32mI (46542) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0000 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x0000 common=1 payload_len=8[0m
+ZCL_READ_ATTRS: cluster=0x0000 attrs=[0x0005,0x0004,0x4000,0x0007]
+ZCL_PAYLOAD_HEX: 0500040000400700
+[0;32mI (46652) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0000 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=1 payload_len=12[0m
+ZCL_READ_ATTRS: cluster=0x0000 attrs=[0x0000,0x0001,0x0003,0x0040,0x0041,0x0050]
+ZCL_PAYLOAD_HEX: 000001000300400041005000
+[0;32mI (46652) ARGB_TO_HUE: BASIC_READ_ATTR_RESP_RAW: tsn=0xb5 to=0x0001 ep=11 attrs=6[0m
+[0;32mI (46712) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0006 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x0000 common=1 payload_len=2[0m
+ZCL_READ_ATTRS: cluster=0x0006 attrs=[0x4003]
+ZCL_PAYLOAD_HEX: 0340
+[0;32mI (46782) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0008 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=1 payload_len=4[0m
+ZCL_READ_ATTRS: cluster=0x0008 attrs=[0x0003,0x0004]
+ZCL_PAYLOAD_HEX: 03000400
+[0;32mI (46792) ARGB_TO_HUE: LEVEL_READ_ATTR_RESP_RAW: tsn=0xb7 to=0x0001 ep=11 attrs=2[0m
+[0;32mI (46852) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0008 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x0000 common=1 payload_len=2[0m
+ZCL_READ_ATTRS: cluster=0x0008 attrs=[0x0000]
+ZCL_PAYLOAD_HEX: 0000
+[0;32mI (46902) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0008 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x0000 common=1 payload_len=2[0m
+ZCL_READ_ATTRS: cluster=0x0008 attrs=[0x4000]
+ZCL_PAYLOAD_HEX: 0040
+[0;32mI (46962) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0300 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x0000 common=1 payload_len=2[0m
+ZCL_READ_ATTRS: cluster=0x0300 attrs=[0x4010]
+ZCL_PAYLOAD_HEX: 1040
+[0;32mI (47032) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0300 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x0000 common=1 payload_len=6[0m
+ZCL_READ_ATTRS: cluster=0x0300 attrs=[0x400b,0x400c,0x0007]
+ZCL_PAYLOAD_HEX: 0b400c400700
+[0;32mI (47172) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0300 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=1 payload_len=4[0m
+ZCL_READ_ATTRS: cluster=0x0300 attrs=[0x0003,0x0004]
+ZCL_PAYLOAD_HEX: 03000400
+[0;32mI (47172) ARGB_TO_HUE: COLOR_MFG_READ_ATTR_RESP_RAW: tsn=0xbe to=0x0001 ep=11 attrs=2[0m
+[0;32mI (47282) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0300 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x0000 common=1 payload_len=12[0m
+ZCL_READ_ATTRS: cluster=0x0300 attrs=[0x0032,0x0033,0x0036,0x0037,0x003a,0x003b]
+ZCL_PAYLOAD_HEX: 32003300360037003a003b00
+[0;32mI (47342) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0300 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x0000 common=1 payload_len=4[0m
+ZCL_READ_ATTRS: cluster=0x0300 attrs=[0x0003,0x0004]
+ZCL_PAYLOAD_HEX: 03000400
+[0;32mI (47402) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0300 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x0000 common=1 payload_len=4[0m
+ZCL_READ_ATTRS: cluster=0x0300 attrs=[0x4000,0x0001]
+ZCL_PAYLOAD_HEX: 00400100
+[0;32mI (47472) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0300 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x0000 common=1 payload_len=2[0m
+ZCL_READ_ATTRS: cluster=0x0300 attrs=[0x0008]
+ZCL_PAYLOAD_HEX: 0800
+[0;32mI (47542) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc01 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=1 payload_len=4[0m
+ZCL_READ_ATTRS: cluster=0xfc01 attrs=[0x0000,0x0002]
+ZCL_PAYLOAD_HEX: 00000200
+[0;32mI (47612) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=1 payload_len=22[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0001,0x0002,0x0010,0x0011,0x0012,0x0013,0x0030,0x0038,0x0037,0x0033,0x0032]
+ZCL_PAYLOAD_HEX: 01000200100011001200130030003800370033003200
+[0;32mI (47612) ARGB_TO_HUE: FC03_READ_ATTR_RESP_RAW: tsn=0xc4 to=0x0001 ep=11 attrs=11[0m
+[0;32mI (49602) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=1 payload_len=22[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0001,0x0002,0x0010,0x0011,0x0012,0x0013,0x0030,0x0038,0x0037,0x0033,0x0032]
+ZCL_PAYLOAD_HEX: 01000200100011001200130030003800370033003200
+[0;32mI (49602) ARGB_TO_HUE: FC03_READ_ATTR_RESP_RAW: tsn=0xc8 to=0x0001 ep=11 attrs=11[0m
+[0;32mI (51602) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=1 payload_len=22[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0001,0x0002,0x0010,0x0011,0x0012,0x0013,0x0030,0x0038,0x0037,0x0033,0x0032]
+ZCL_PAYLOAD_HEX: 01000200100011001200130030003800370033003200
+[0;32mI (51612) ARGB_TO_HUE: FC03_READ_ATTR_RESP_RAW: tsn=0xcc to=0x0001 ep=11 attrs=11[0m
+[0;32mI (53602) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=1 payload_len=22[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0001,0x0002,0x0010,0x0011,0x0012,0x0013,0x0030,0x0038,0x0037,0x0033,0x0032]
+ZCL_PAYLOAD_HEX: 01000200100011001200130030003800370033003200
+[0;32mI (53602) ARGB_TO_HUE: FC03_READ_ATTR_RESP_RAW: tsn=0xce to=0x0001 ep=11 attrs=11[0m
+[0;32mI (55602) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=1 payload_len=2[0m
+ZCL_READ_ATTRS: cluster=0x0005 attrs=[0x0001]
+ZCL_PAYLOAD_HEX: 0100
+[0;32mI (55602) ARGB_TO_HUE: SCENES_READ_ATTR_RESP_RAW: tsn=0xd2 to=0x0001 ep=11 attr=0x0001 value=0x00000003[0m
+[0;32mI (55702) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0003 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=1 payload_len=2[0m
+ZCL_READ_ATTRS: cluster=0x0003 attrs=[0x0000]
+ZCL_PAYLOAD_HEX: 0000
+[0;32mI (55702) ARGB_TO_HUE: IDENTIFY_READ_ATTR_RESP_RAW: tsn=0xd3 to=0x0001 ep=11 attr=0x0000 value=0x000b[0m
+[0;32mI (55772) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc04 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=1 payload_len=2[0m
+ZCL_READ_ATTRS: cluster=0xfc04 attrs=[0x0000]
+ZCL_PAYLOAD_HEX: 0000
+[0;32mI (55892) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0000 profile=0x0104 cmd=0xc0/other dir=to_srv manuf=0x100b common=0 payload_len=6[0m
+ZCL_PAYLOAD_HEX: 000000000040
+[0;32mI (55892) ARGB_TO_HUE: BASIC_CMD_C0_RESP_C1_RAW: tsn=0xd5 to=0x0001 ep=64 size=64[0m
+[0;32mI (56022) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0000 profile=0x0104 cmd=0xc0/other dir=to_srv manuf=0x100b common=0 payload_len=6[0m
+ZCL_PAYLOAD_HEX: 003500000040
+[0;32mI (56022) ARGB_TO_HUE: BASIC_CMD_C0_RESP_C1_RAW: tsn=0xd8 to=0x0001 ep=64 size=43[0m
+[0;32mI (56112) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0000 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=1 payload_len=4[0m
+ZCL_PAYLOAD_HEX: 51003001
+[0;32mI (56122) ARGB_TO_HUE: BASIC_WRITE_ATTR_RAW: ep=11 attr=0x0051 type=0x30 value=0x01[0m
+[0;32mI (56122) ARGB_TO_HUE: BASIC_WRITE_ATTR_RESP_RAW: tsn=0xd9 to=0x0001 ep=11 status=success[0m
+[0;32mI (56222) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0000 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=1 payload_len=7[0m
+ZCL_PAYLOAD_HEX: 5300233c914c0f
+[0;32mI (56222) ARGB_TO_HUE: BASIC_WRITE_ATTR_RAW: ep=11 attr=0x0053 type=0x23 value=0x0f4c913c[0m
+[0;32mI (56222) ARGB_TO_HUE: BASIC_WRITE_ATTR_RESP_RAW: tsn=0xda to=0x0001 ep=11 status=success[0m
+[0;32mI (56302) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0000 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=1 payload_len=19[0m
+ZCL_PAYLOAD_HEX: 5400f1c7542afa348cf38378a02d5d1c74f1e6
+[0;32mI (56302) ARGB_TO_HUE: BASIC_WRITE_ATTR_RAW: ep=11 attr=0x0054 type=0xf1 value=[redacted][0m
+[0;32mI (56302) ARGB_TO_HUE: BASIC_WRITE_ATTR_RESP_RAW: tsn=0xdb to=0x0001 ep=11 status=success[0m
+[0;32mI (56402) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x15/discover_attr_ext dir=to_srv manuf=0x100b common=1 payload_len=3[0m
+ZCL_DISC_ATTRS: cluster=0xfc03 cmd=discover_attr_ext start=0x0032 max=3
+ZCL_PAYLOAD_HEX: 320003
+[0;32mI (56402) ARGB_TO_HUE: FC03_DISC_ATTR_EXT_RESP_RAW: tsn=0xdc to=0x0001 ep=11 attrs=0x0032,0x2000 access=0x1c[0m
+[0;32mI (56722) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0004 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x0000 common=0 payload_len=3[0m
+ZCL_READ_ATTRS: cluster=0x0004 attrs=[0xe9d5]
+ZCL_PAYLOAD_HEX: d5e900
+[0;32mI (56732) ARGB_TO_HUE: GROUPS_ADD_GROUP_RESP_RAW: tsn=0xdd to=0x0001 ep=11 group=0xe9d5[0m
+[0;32mI (56792) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0019 profile=0x0104 cmd=0x00/read_attr dir=to_cli manuf=0x0000 common=0 payload_len=2[0m
+ZCL_READ_ATTRS: cluster=0x0019 attrs=[0x6400]
+ZCL_PAYLOAD_HEX: 0064
+[0;32mI (56802) ARGB_TO_HUE: OTA_QUERY_NEXT_IMAGE_REQ_RAW: to=0x0001 ep=64 manuf=0x100b image=0x0118 file=0x01002000[0m
+[0;32mI (56872) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0019 profile=0x0104 cmd=0x02/write_attr dir=to_cli manuf=0x0000 common=0 payload_len=1[0m
+ZCL_PAYLOAD_HEX: 98
+[0;32mI (58452) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0006 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x0000 common=1 payload_len=2[0m
+ZCL_READ_ATTRS: cluster=0x0006 attrs=[0x0000]
+ZCL_PAYLOAD_HEX: 0000
+[0;32mI (58532) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0008 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x0000 common=1 payload_len=2[0m
+ZCL_READ_ATTRS: cluster=0x0008 attrs=[0x0000]
+ZCL_PAYLOAD_HEX: 0000
+[0;32mI (58602) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0300 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x0000 common=1 payload_len=14[0m
+ZCL_READ_ATTRS: cluster=0x0300 attrs=[0x0007,0x4000,0x0001,0x0003,0x0004,0x0008,0x4002]
+ZCL_PAYLOAD_HEX: 0700004001000300040008000240
+[0;32mI (59742) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0000 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x0000 common=1 payload_len=6[0m
+ZCL_READ_ATTRS: cluster=0x0000 attrs=[0x4000,0x0004,0x0005]
+ZCL_PAYLOAD_HEX: 004004000500
+[0;32mI (60862) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x06/other dir=to_srv manuf=0x0000 common=0 payload_len=2[0m
+ZCL_PAYLOAD_HEX: d5e9
+[0;32mI (60862) ARGB_TO_HUE: SCENES_GET_MEMBERSHIP_RESP_RAW: tsn=0xe4 to=0x0001 ep=11 group=0xe9d5 scenes=0[0m

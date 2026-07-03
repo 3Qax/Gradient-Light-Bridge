@@ -78,3 +78,41 @@ traffic by itself.
 The decrypted ZCL transcript should be used as the real-device baseline. The
 generated artifacts redact key-like ZCL values such as Basic attr `0x0054` type
 `0xf1`.
+
+## FC03 Gradient Classifier Frames
+
+The gradient-specific evidence in this passive capture supersedes earlier
+active-probe assumptions:
+
+- frames `499/503`: the bridge's large manufacturer-specific FC03 read returns
+  success for `0x0001/0x0002/0x0010/0x0011/0x0012/0x0013`, unsupported for
+  `0x0030/0x0037`, success for `0x0038=10`, and status `0x89` for
+  `0x0033/0x0032`.
+- frames `507/511`: a focused FC03 read of `0x0032/0x0033` immediately returns
+  success, type `0x20`, value `0`.
+- frames `595/599`: FC03 Discover Attributes Extended (`0x15`) start `0x0032`,
+  max `3`, is answered by command `0x16` advertising attrs `0x0032` type
+  `0x20` access `0x1c` and `0x2000` type `0x07` access `0x1c`.
+
+## Fake Parity Result
+
+`research/hue-api-diffs/discovery-capture-20260703-fc03-read-and-extdisc-parity/`
+is the successful fake-light validation against this passive real-device
+baseline. The bridge recreated the fake as v1 id `59`, `modelid=LCX004`,
+`productname=Hue gradient lightstrip`, and `capabilities.certified=true`.
+
+The decisive firmware behavior was request-shape-specific FC03 parity:
+
+- for the large frame-499 discovery read, return the real short `0x0002` octet
+  string and status `0x89` for tail attrs `0x0033/0x0032`;
+- for the immediate focused read of `0x0032/0x0033`, still return success,
+  type `0x20`, value `0`;
+- for FC03 Discover Attributes Extended start `0x0032`, advertise only
+  `0x0032` type `0x20` access `0x1c` and `0x2000` type `0x07` access `0x1c`.
+
+The v2 light for `/lights/59` now exposes `gradient`, `effects`,
+`effects_v2`, and `content_configuration`. The gradient object reports
+`pixel_count=10`, `points_capable=5`, and the expected palette modes. v1
+`capabilities.streaming` remains `proxy=false`, `renderer=false`, so Hue
+Entertainment streaming appears to be a separate classifier from gradient UI
+exposure.

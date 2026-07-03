@@ -256,14 +256,10 @@ tracked files; keep it only in local `trust_center_key.h` files.
     `gradient`, `effects`, `effects_v2`, and `content_configuration`, while fake
     v2 light has none of those.
   - `research/hue-api-diffs/gradient-probe-lcx004-fc03-missing-attrs-20260703-live/`
-    actively read the bridge-observed FC03 attrs from the real `Headboard`
-    LCX004. Direct reads of FC03 `0x0030`, `0x0031`, `0x0032`, `0x0033`,
-    `0x0034`, `0x0037`, and `0x0038` all returned status `0x86` unsupported,
-    even though the real FC03 Discover Attributes Extended response advertises
-    `0x0032..0x0034`. The fake was updated to intercept the bridge's FC03 read
-    batch and return success only for `0x0001`, `0x0002`, `0x0010`, `0x0011`,
-    `0x0012`, and `0x0013`, with unsupported for the `0x0030+` direct-read
-    attrs.
+    actively read FC03 attrs from the real `Headboard` LCX004, but this active
+    probe is no longer the source of truth for the bridge commissioning path.
+    The decrypted passive capture supersedes the old `0x0032..0x0034`
+    discovery assumption.
   - `research/hue-api-diffs/discovery-capture-20260703-fc03-read-unsupported-parity/`
     verified the new FC03 raw read handler. Hue still created a certified
     LCX004 with v1 streaming false, no v2 `hardware_platform_type`, and no
@@ -293,7 +289,7 @@ tracked files; keep it only in local `trust_center_key.h` files.
     discovery before the bridge reached `0xC0`; the fake was not recreated. The
     cleanup was therefore discarded from firmware and should not be reapplied as
     written.
-- `research/hue-api-diffs/sniffer-capture-20260703-real-headboard-rejoin-rxidle/`
+  - `research/hue-api-diffs/sniffer-capture-20260703-real-headboard-rejoin-rxidle/`
   is the first usable passive real LCX004 rejoin capture. It was recorded after
   fixing the sniffer to keep the IEEE 802.15.4 radio in receive-when-idle mode.
   The bridge deleted real v1 id `63`, rediscovered the same uniqueid
@@ -306,6 +302,45 @@ tracked files; keep it only in local `trust_center_key.h` files.
   as `HUE_ZIGBEE_NWK_KEY` decoded `4674` encrypted NWK rows and `1017` ZCL
   rows. See
   `research/hue-api-diffs/20260703-real-lcx004-sniffer-rxidle-summary.md`.
+  Important gradient classifier frames:
+  - `499/503`: the bridge's large manufacturer-specific FC03 read gets success
+    for attrs `0x0001/0x0002/0x0010/0x0011/0x0012/0x0013`, unsupported for
+    `0x0030/0x0037`, success for `0x0038=10`, and status `0x89` for
+    `0x0033/0x0032`.
+  - `507/511`: the immediate focused FC03 read of `0x0032/0x0033` succeeds
+    with type `0x20` and value `0`.
+  - `595/599`: FC03 Discover Attributes Extended (`0x15`) start `0x0032`,
+    max `3`, is answered with command `0x16` advertising attrs `0x0032`
+    type `0x20` access `0x1c` and `0x2000` type `0x07` access `0x1c`.
+  - `research/hue-api-diffs/discovery-capture-20260703-fc03-real-extdisc-parity/`
+    changed the fake FC03 large-read response to return real-capture status
+    `0x89` for the tail `0x0033/0x0032` attrs and changed FC03 Discover
+    Attributes Extended to advertise `0x0032` and `0x2000` with access `0x1c`.
+    The fresh serial log confirms the patched `0x15 -> 0x16` response was sent,
+    but Hue still created fake v1 id `57` with streaming false and the v2 light
+    still lacked `gradient`, `effects`, `effects_v2`, and
+    `content_configuration`.
+  - `research/hue-api-diffs/discovery-capture-20260703-fc03-extdisc-parity-restored/`
+    is the restored current-state capture after backing out the regressing short
+    FC03 `0x0002` state experiment. Hue recreated the fake as v1 id `58`,
+    certified true, product/platform correct, but still with streaming false and
+    no v2 `entertainment`, `motion_area_candidate`, `gradient`, `effects`,
+    `effects_v2`, or `content_configuration`.
+  - `research/hue-api-diffs/discovery-capture-20260703-fc03-state-and-extdisc-parity/`
+    additionally tried changing initial FC03 attr `0x0002` to the short real
+    frame-503 octet string. That was not viable as written: discovery regressed
+    before FC01/FC03, the bridge retried Color Control attr `0x0008`, then sent
+    a leave/reset and did not recreate the fake. The firmware was restored to
+    the previous long initial `s_hue_state` payload.
+  - `research/hue-api-diffs/discovery-capture-20260703-fc03-read-and-extdisc-parity/`
+    is the successful request-shape-specific FC03 parity capture. The firmware
+    returns the real short `0x0002` state only for the large frame-499 discovery
+    read, keeps the focused `0x0032/0x0033` read successful, and advertises the
+    real `0x0032/0x2000` extended-discovery attrs. Hue recreated the fake as v1
+    id `59`, `certified=true`, `productname=Hue gradient lightstrip`; the v2
+    light now exposes `gradient`, `effects`, `effects_v2`, and
+    `content_configuration`. v1 streaming remains false, so Entertainment
+    streaming is likely a separate classifier.
 - `research/hue-api-diffs/sniffer-capture-20260703-real-headboard-factory-reset-zll-key/`
   captures a true dimmer-switch factory reset and Hue re-add of the same real
   LCX004. Hue created new v1 id `37`, certified true, with streaming
@@ -318,10 +353,12 @@ tracked files; keep it only in local `trust_center_key.h` files.
   `research/hue-api-diffs/20260703-real-lcx004-factory-reset-sniffer-summary.md`.
 - The current evidence rules out the simple descriptor `0x1000` gap, the
   currently spoofed FC01 `0x0002/0x0003` attrs, early ZDO endpoint 11/242
-  descriptor parity, missing standard color-point attrs, and an empty FC03
-  discovery window as sufficient fixes by themselves. Do not treat the FC01
-  command/response behavior as understood yet. The decrypted real LCX004
-  transcript is now the baseline for direct fake-vs-real ZCL comparison.
+  descriptor parity, missing standard color-point attrs, an empty FC03
+  discovery window, and the older active-probe `0x0032..0x0034` FC03 discovery
+  assumption as sufficient fixes by themselves. The solved gradient UI
+  classifier is FC03 request-shape-specific parity from the decrypted real
+  LCX004 transcript. Do not treat Hue Entertainment streaming as solved by this;
+  v1 streaming still reports false.
 
 ## Repo Mapping
 
