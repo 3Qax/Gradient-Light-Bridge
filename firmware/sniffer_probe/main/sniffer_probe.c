@@ -110,6 +110,7 @@ static void sniffer_task(void *arg)
     ESP_ERROR_CHECK(esp_ieee802154_enable());
     ESP_ERROR_CHECK(esp_ieee802154_set_channel(HUE_CHANNEL));
     ESP_ERROR_CHECK(esp_ieee802154_set_promiscuous(true));
+    ESP_ERROR_CHECK(esp_ieee802154_set_rx_when_idle(true));
     ESP_ERROR_CHECK(esp_ieee802154_receive());
 
     ESP_LOGI(TAG, "direct IEEE 802.15.4 sniffer active on Hue channel %u", HUE_CHANNEL);

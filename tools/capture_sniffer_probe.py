@@ -115,6 +115,11 @@ def main() -> int:
         help="Reset the ESP32-C6 after opening serial, before Hue API actions.",
     )
     parser.add_argument(
+        "--flush-input-buffer",
+        action="store_true",
+        help="Discard serial bytes already buffered after opening the port. By default startup logs are preserved.",
+    )
+    parser.add_argument(
         "--delete-light-id",
         action="append",
         help="Hue v1 light id to delete after serial capture opens. Repeatable.",
@@ -161,7 +166,7 @@ def main() -> int:
             ser.dtr = False
             ser.rts = False
             time.sleep(0.5)
-        else:
+        elif args.flush_input_buffer:
             ser.reset_input_buffer()
 
         if client and args.delete_light_id:

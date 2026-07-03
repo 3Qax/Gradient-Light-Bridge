@@ -6,8 +6,10 @@ The firmware prints lines like:
     MAC_RAW ts_us=123456 len=10 channel=25 rssi=-60 lqi=255 psdu=...
 
 This tool extracts complete MAC_RAW PSDUs and writes a pcap that Wireshark can
-open as IEEE 802.15.4 frames. The default link type assumes the ESP/ZBOSS frame
-does not include the FCS.
+open as IEEE 802.15.4 frames. ESP-IDF's direct receive buffer includes the
+802.15.4 FCS. By default this tool strips those two trailer bytes and writes a
+no-FCS pcap, which is what tshark's Zigbee security dissector expects for
+decryption.
 """
 
 from __future__ import annotations
@@ -40,7 +42,7 @@ class Frame:
     lqi: int | None = None
 
 
-def parse_frames(log_path: pathlib.Path) -> tuple[list[Frame], int]:
+def parse_frames(log_path: pathlib.Path, strip_fcs: bool = True) -> tuple[list[Frame], int]:
     frames: list[Frame] = []
     skipped = 0
 
@@ -53,10 +55,24 @@ def parse_frames(log_path: pathlib.Path) -> tuple[list[Frame], int]:
             continue
 
         declared_len = int(match.group("len"))
-        data = bytes.fromhex(match.group("psdu"))
+        psdu = match.group("psdu")
+        if len(psdu) % 2:
+            skipped += 1
+            continue
+        try:
+            data = bytes.fromhex(psdu)
+        except ValueError:
+            skipped += 1
+            continue
         if len(data) != declared_len:
             skipped += 1
             continue
+        lqi = int(match.group("lqi")) if match.group("lqi") else None
+        if strip_fcs:
+            if len(data) < 2:
+                skipped += 1
+                continue
+            data = data[:-2]
 
         frames.append(
             Frame(
@@ -64,7 +80,7 @@ def parse_frames(log_path: pathlib.Path) -> tuple[list[Frame], int]:
                 data=data,
                 channel=int(match.group("channel")) if match.group("channel") else None,
                 rssi=int(match.group("rssi")) if match.group("rssi") else None,
-                lqi=int(match.group("lqi")) if match.group("lqi") else None,
+                lqi=lqi,
             )
         )
 
@@ -113,7 +129,12 @@ def main() -> int:
     parser.add_argument(
         "--with-fcs",
         action="store_true",
-        help="write pcap link type 195 instead of no-FCS link type 230",
+        help="preserve the 802.15.4 FCS and write pcap link type 195",
+    )
+    parser.add_argument(
+        "--keep-trailing-lqi",
+        action="store_true",
+        help=argparse.SUPPRESS,
     )
     parser.add_argument(
         "--summary",
@@ -124,7 +145,7 @@ def main() -> int:
 
     out = args.out or args.log.with_suffix(".pcap")
     linktype = LINKTYPE_IEEE802_15_4_WITHFCS if args.with_fcs else LINKTYPE_IEEE802_15_4_NOFCS
-    frames, skipped = parse_frames(args.log)
+    frames, skipped = parse_frames(args.log, strip_fcs=not args.with_fcs)
 
     write_pcap(out, frames, linktype)
     summary = args.summary or out.with_suffix(".summary.md")

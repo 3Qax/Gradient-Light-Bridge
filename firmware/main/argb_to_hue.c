@@ -334,8 +334,8 @@ static bool handle_basic_write_attrs_raw(const zb_zcl_parsed_hdr_t *hdr,
             }
             memcpy(s_basic_attr54[idx], value, sizeof(s_basic_attr54[idx]));
             value_len = sizeof(s_basic_attr54[idx]);
-            print_hex_bytes("BASIC_WRITE_ATTR_RAW 0x0054: ", s_basic_attr54[idx],
-                            sizeof(s_basic_attr54[idx]));
+            ESP_LOGI(TAG, "BASIC_WRITE_ATTR_RAW: ep=%u attr=0x0054 type=0x%02x value=[redacted]",
+                     (unsigned)endpoint, (unsigned)attr_type);
             break;
         default:
             return false;

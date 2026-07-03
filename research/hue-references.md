@@ -28,6 +28,27 @@ tracked files; keep it only in local `trust_center_key.h` files.
   - Practical behavior matches this project: start "Add light" in the Hue app,
     reset/power-cycle the device, and let the bridge discover it.
 
+- Nordic DevZone, "Joining a Philips Hue HA network"
+  https://devzone.nordicsemi.com/f/nordic-q-a/52260/joining-a-philips-hue-ha-network
+  - Useful independent confirmation of the key split: during a compatible fresh
+    join, the Hue bridge sends the Network Key as an APS Transport Key command
+    encrypted by the ZLL commissioning trust-center link key.
+  - The same thread reports that configuring the ZLL commissioning trust-center
+    link key through ZBOSS's trust-center distributed-key API allowed an
+    nRF52840 device to join Hue. That supports using the key for commissioning,
+    but not treating it as the network key for already-joined encrypted traffic.
+
+- Hal9k, "Sniffing Philips Hue Zigbee traffic with Wireshark"
+  https://www.hal9k.dk/sniffing-philips-hue-zigbee-traffic-with-wireshark/
+  - Practical Wireshark workflow: add the default global trust-center link key,
+    ZLL master key, and ZLL commissioning key as preconfigured Zigbee keys, then
+    capture a device join so Wireshark can decrypt the APS Transport Key and
+    learn the network key.
+  - Important scope note for this repo: the article reports success with an
+    IKEA Tradfri device joining a Hue bridge. The same three-key method did not
+    decrypt the official LCX004 factory-reset join captured locally on
+    2026-07-03.
+
 ## Hue Gradient Emulation
 
 - Colin O'Flynn, "Philips Hue - R.E. Whitepaper from Black Hat 2016"
@@ -259,14 +280,48 @@ tracked files; keep it only in local `trust_center_key.h` files.
     attributes. However, v1 streaming still remained false and v2 still omitted
     `entertainment`, `motion_area_candidate`, `gradient`, `effects`,
     `effects_v2`, and `content_configuration`.
-- We still do not have a passive real LCX004 bridge-commissioning transcript.
-  The current evidence rules out the simple descriptor `0x1000` gap, the
+  - `research/hue-api-diffs/20260703-basic-c0-c1-metadata-summary.md`
+    documents a discarded Basic `0xC0` / `0xC1` cleanup attempt. The two real
+    LCX004 C1 responses captured in
+    `gradient-probe-lcx004-basic-c0-variants-20260703-live/serial-basic-c0-variants.log`
+    are chunks of one 85-byte metadata payload containing `LCX004`,
+    `Signify Netherlands B.V.`, `Hue gradient lightstrip`, and trailing feature
+    bytes. A generated-C1 firmware build reproduced both known response byte
+    sequences exactly, but the flashed rediscovery runs
+    `discovery-capture-20260703-basic-c0-c1-generated/` and
+    `discovery-capture-20260703-basic-c0-c1-generated-rerun/` regressed early
+    discovery before the bridge reached `0xC0`; the fake was not recreated. The
+    cleanup was therefore discarded from firmware and should not be reapplied as
+    written.
+- `research/hue-api-diffs/sniffer-capture-20260703-real-headboard-rejoin-rxidle/`
+  is the first usable passive real LCX004 rejoin capture. It was recorded after
+  fixing the sniffer to keep the IEEE 802.15.4 radio in receive-when-idle mode.
+  The bridge deleted real v1 id `63`, rediscovered the same uniqueid
+  `00:17:88:01:0b:89:54:2f-0b` as new id `25`, and restored it as
+  `certified=true` with streaming `proxy=true` and `renderer=true`. The capture
+  produced `8466` pcap/MAC-summary frames on channel 25, skipping one malformed
+  serial line. `tools/decode_zigbee_pcap.py` decoded the MAC join and assigned
+  target short address `0xadeb`. The ZLL/public transport-key set did not
+  decrypt this rejoin capture by itself, but loading the actual Hue network key
+  as `HUE_ZIGBEE_NWK_KEY` decoded `4674` encrypted NWK rows and `1017` ZCL
+  rows. See
+  `research/hue-api-diffs/20260703-real-lcx004-sniffer-rxidle-summary.md`.
+- `research/hue-api-diffs/sniffer-capture-20260703-real-headboard-factory-reset-zll-key/`
+  captures a true dimmer-switch factory reset and Hue re-add of the same real
+  LCX004. Hue created new v1 id `37`, certified true, with streaming
+  `proxy=true` and `renderer=true`. The corrected pcap shows the target
+  associating at frame `162`, receiving short `0x9dd8` at frame `172`, and
+  receiving a visible APS security `key_id=0x02` command at frame `174`. The
+  Hal9k three-key set and reversed variants did not decrypt that transport
+  frame, but the actual Hue network key decodes the post-join transcript:
+  `4266` encrypted NWK rows and `634` ZCL rows. See
+  `research/hue-api-diffs/20260703-real-lcx004-factory-reset-sniffer-summary.md`.
+- The current evidence rules out the simple descriptor `0x1000` gap, the
   currently spoofed FC01 `0x0002/0x0003` attrs, early ZDO endpoint 11/242
   descriptor parity, missing standard color-point attrs, and an empty FC03
   discovery window as sufficient fixes by themselves. Do not treat the FC01
-  command/response behavior as understood yet. The next useful artifact is still
-  a real LCX004 passive commissioning transcript, focused on the ZCL responses
-  and manufacturer-specific commands that happen after Simple Descriptor.
+  command/response behavior as understood yet. The decrypted real LCX004
+  transcript is now the baseline for direct fake-vs-real ZCL comparison.
 
 ## Repo Mapping
 
@@ -277,9 +332,10 @@ tracked files; keep it only in local `trust_center_key.h` files.
 - `firmware/gradient_probe/main/gradient_probe.c` is the exploratory firmware
   for observing real gradient device behavior, especially the Signify
   manufacturer-specific clusters `0xFC01`, `0xFC03`, and `0xFC04`.
-- `firmware/sniffer_probe/` is a standalone, build-verified ESP32-C6 ZBOSS
-  sniffer target for the missing passive real LCX004 commissioning transcript.
-  It prints `MAC_RAW` and `ZBOSS_SNIFF` serial lines on Hue channel 25.
+- `firmware/sniffer_probe/` is a standalone, build-verified ESP32-C6 sniffer
+  target for passive real LCX004 commissioning captures. It uses direct IEEE
+  802.15.4 promiscuous receive on Hue channel 25 and keeps the radio in
+  receive-when-idle mode so it can capture continuous `MAC_RAW` serial lines.
 - `tools/capture_sniffer_probe.py` records `firmware/sniffer_probe` serial
   output into timestamped `research/hue-api-diffs/sniffer-capture-*`
   directories. It is passive by default, but can optionally delete a specific
@@ -292,7 +348,17 @@ tracked files; keep it only in local `trust_center_key.h` files.
   coordinated delete/search sniffer capture, and restore the main fake-light
   firmware afterward unless `--no-restore` is passed.
 - `tools/sniffer_log_to_pcap.py` converts complete `MAC_RAW` lines from a
-  sniffer serial log into an IEEE 802.15.4 pcap for Wireshark inspection.
+  sniffer serial log into an IEEE 802.15.4 no-FCS pcap for Wireshark
+  inspection. It strips ESP-IDF's trailing two-byte 802.15.4 FCS from each
+  received frame; leaving those bytes in the pcap breaks Zigbee security
+  decryption. It skips malformed/interleaved raw serial lines instead of
+  aborting the whole conversion.
+- `tools/decode_zigbee_pcap.py` runs tshark over an IEEE 802.15.4 pcap and
+  emits `zigbee-transcript.csv` plus `zigbee-decode-summary.md`. It can read
+  keys from env vars such as `HUE_ZIGBEE_NWK_KEY`, `HUE_ZIGBEE_TC_LINK_KEY`,
+  `HUE_ZLL_MASTER_KEY`, or `HUE_ZLL_LINK_KEY`, but generated artifacts include
+  only key-source labels and never key bytes. Key-like ZCL attr values such as
+  Basic `0x0054` type `0xf1` are redacted in generated outputs.
 - `tools/summarize_sniffer_log.py` produces `mac-summary.csv` and
   `mac-summary.md` from `MAC_RAW` lines, decoding the 802.15.4 MAC header and
   flagging visible candidate markers like `fc01_le`, `fc03_le`, and
