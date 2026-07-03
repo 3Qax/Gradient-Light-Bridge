@@ -170,6 +170,95 @@ tracked files; keep it only in local `trust_center_key.h` files.
     `Extended color light`; v2 `product_data.certified=false` and the v2 light
     had no `gradient`. Keep this as the non-crashing FC01 default-response
     baseline, but treat it as insufficient by itself.
+- 2026-07-03 follow-up after `capabilities.certified=true`:
+  - `research/hue-api-diffs/discovery-capture-20260703-basic-write-success/`
+    added explicit raw handling for the bridge's manufacturer-specific Basic
+    writes to attrs `0x0051`, `0x0053`, and `0x0054`. The firmware parsed all
+    three writes and returned successful Write Attributes responses without a
+    ZBOSS buffer assertion. The bridge still left v1
+    `capabilities.streaming.proxy/renderer=false`; v2 still omitted
+    `hardware_platform_type`, `entertainment`, `motion_area_candidate`,
+    `gradient`, `effects`, and `effects_v2`.
+  - `research/hue-api-diffs/discovery-capture-20260703-basic-read-raw-productid/`
+    added explicit raw handling for the bridge's manufacturer-specific Basic
+    read batch `[0x0000,0x0001,0x0003,0x0040,0x0041,0x0050]` and corrected the
+    known real `0x0021` value used by the normal attribute table. This fixed the
+    v1 identity fields: the fake now reports
+    `swconfigid=C4C1C739` and `productid=Philips-LCX004-1-GALSECLv1`, matching
+    the real LCX004. It still did not enable v1 streaming or any v2 gradient /
+    effects objects.
+  - The same capture confirms the remaining API delta against a real LCX004:
+    fake v1 has the full LCX004 identity and certified product name, but no
+    `mindimlevel` and streaming remains false; fake v2 has no
+    `hardware_platform_type`, no `entertainment` service, no
+    `motion_area_candidate`, and no `gradient`/effects/content configuration.
+  - `research/hue-api-diffs/gradient-probe-lcx004-basic-bridge-batch-20260703-live/`
+    attempted to use `firmware/gradient_probe` to read the exact Basic
+    manufacturer batch from the real `00:17:88:01:0b:89:54:2f` LCX004 without
+    deleting it. The EUI-to-network-address lookup failed with ZDO status 133,
+    so it did not capture the missing real responses for Basic attrs
+    `0x0000/0x0001/0x0003` under manufacturer `0x100B`. The temporary probe
+    join created an uncertified Hue record, which was deleted afterward.
+  - `research/hue-api-diffs/discovery-capture-20260703-basic-0001-lcx004-rerun/`
+    changed the raw Basic manufacturer read response for attr `0x0001` to match
+    a real LCX004 / Play gradient tube response: success, type `U32`, value
+    `0x00000000`. The bridge still created the fake as certified LCX004, but v1
+    streaming stayed false and v2 still omitted `hardware_platform_type`,
+    `entertainment`, and `gradient`.
+  - `research/hue-api-diffs/discovery-capture-20260703-identify-raw-lcx004/`
+    added a raw response for the bridge's manufacturer-specific Identify read
+    `cluster=0x0003 attr=0x0000 manuf=0x100B`, matching the real LCX004 response
+    `type=0x19 value=0x000B`. This moved the bridge far enough to send the later
+    FC01 command `0x03` with payload `0001afb40700`, but v2 still had no
+    hardware platform or gradient object.
+  - `research/hue-api-diffs/discovery-capture-20260703-fc01-updates-basic21-lcx004/`
+    tested whether the post-FC01 Basic `0x0021` value gates streaming. The
+    firmware updated `0x0021` to `0x00152CA8`, matching one real LCX004 direct
+    FC01-command capture. Hue still created a certified LCX004 without streaming
+    or v2 gradient resources.
+  - `research/hue-api-diffs/discovery-capture-20260703-realish-eui-lcx004/`
+    changed the spoofed EUI from the synthetic-looking
+    `00:17:88:01:0b:ff:fe:05` to the real-looking unused adjacent address
+    `00:17:88:01:0b:89:54:30`. Hue treated it as a new certified LCX004 and
+    wrote a different Basic `0x0054` value, but v1 streaming remained false and
+    v2 still omitted `hardware_platform_type`, `entertainment`, and `gradient`.
+  - `research/hue-api-diffs/real-headboard-vs-fake-readonly-20260703/` is the
+    clean read-only API baseline after removing extra strips and adding the real
+    LCX004 back as `Headboard`. Real v1 id `60`
+    (`00:17:88:01:0b:89:54:2f-0b`) and fake v1 id `61`
+    (`00:17:88:01:0b:ff:fe:05-0b`) are both certified LCX004 and both report
+    `productname=Hue gradient lightstrip`. The remaining API gate is now very
+    narrow: real v1 has `streaming.proxy=true` and `streaming.renderer=true`,
+    while fake streaming is false; real v2 device has
+    `hardware_platform_type=100b-118`, `entertainment`, and
+    `motion_area_candidate`, while fake v2 has none of those; real v2 light has
+    `gradient`, `effects`, `effects_v2`, and `content_configuration`, while fake
+    v2 light has none of those.
+  - `research/hue-api-diffs/gradient-probe-lcx004-fc03-missing-attrs-20260703-live/`
+    actively read the bridge-observed FC03 attrs from the real `Headboard`
+    LCX004. Direct reads of FC03 `0x0030`, `0x0031`, `0x0032`, `0x0033`,
+    `0x0034`, `0x0037`, and `0x0038` all returned status `0x86` unsupported,
+    even though the real FC03 Discover Attributes Extended response advertises
+    `0x0032..0x0034`. The fake was updated to intercept the bridge's FC03 read
+    batch and return success only for `0x0001`, `0x0002`, `0x0010`, `0x0011`,
+    `0x0012`, and `0x0013`, with unsupported for the `0x0030+` direct-read
+    attrs.
+  - `research/hue-api-diffs/discovery-capture-20260703-fc03-read-unsupported-parity/`
+    verified the new FC03 raw read handler. Hue still created a certified
+    LCX004 with v1 streaming false, no v2 `hardware_platform_type`, and no
+    gradient/effects resources. FC03 direct-read parity is therefore not
+    sufficient by itself.
+  - `research/hue-api-diffs/discovery-capture-20260703-ota-query-next-image-0118/`
+    added an OTA client response path: when Hue sends OTA Image Notify
+    (`cluster=0x0019`, command `0x00`, direction to client), the fake sends
+    Query Next Image Request with manufacturer `0x100B`, image type `0x0118`,
+    and file version `0x01002000`. Hue replied with a one-byte OTA response
+    payload `0x98` and then created the fake v2 device with
+    `hardware_platform_type=100b-118`. This proves the missing hardware
+    platform field was gated by the OTA command exchange, not static OTA
+    attributes. However, v1 streaming still remained false and v2 still omitted
+    `entertainment`, `motion_area_candidate`, `gradient`, `effects`,
+    `effects_v2`, and `content_configuration`.
 - We still do not have a passive real LCX004 bridge-commissioning transcript.
   The current evidence rules out the simple descriptor `0x1000` gap, the
   currently spoofed FC01 `0x0002/0x0003` attrs, early ZDO endpoint 11/242

@@ -1,0 +1,137 @@
+{
+  "60": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 1200,
+        "mindimlevel": 10
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "huelightstrip",
+      "direction": "omnidirectional",
+      "function": "mixed",
+      "startup": {
+        "configured": true,
+        "mode": "safety"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "LCX004",
+    "name": "Headboard",
+    "productid": "Philips-LCX004-1-GALSECLv1",
+    "productname": "Hue gradient lightstrip",
+    "state": {
+      "alert": "none",
+      "bri": 132,
+      "colormode": "xy",
+      "ct": 366,
+      "effect": "none",
+      "hue": 8418,
+      "mode": "homeautomation",
+      "on": true,
+      "reachable": true,
+      "sat": 140,
+      "xy": [
+        0.1671,
+        0.0853
+      ]
+    },
+    "swconfigid": "C4C1C739",
+    "swupdate": {
+      "lastinstall": "2026-07-03T14:30:33",
+      "state": "noupdates"
+    },
+    "swversion": "1.129.5",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0b:89:54:2f-0b"
+  },
+  "61": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 1200
+      },
+      "streaming": {
+        "proxy": false,
+        "renderer": false
+      }
+    },
+    "config": {
+      "archetype": "huelightstrip",
+      "direction": "omnidirectional",
+      "function": "mixed"
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "LCX004",
+    "name": "Hue gradient lightstrip 2",
+    "productid": "Philips-LCX004-1-GALSECLv1",
+    "productname": "Hue gradient lightstrip",
+    "state": {
+      "alert": "none",
+      "bri": 254,
+      "colormode": "xy",
+      "ct": 500,
+      "effect": "none",
+      "hue": 3344,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 254,
+      "xy": [
+        0.6233,
+        0.3595
+      ]
+    },
+    "swconfigid": "C4C1C739",
+    "swupdate": {
+      "lastinstall": null,
+      "state": "noupdates"
+    },
+    "swversion": "1.129.5",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0b:ff:fe:05-0b"
+  }
+}

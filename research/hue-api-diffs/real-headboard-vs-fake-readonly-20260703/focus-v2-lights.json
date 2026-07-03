@@ -1,0 +1,327 @@
+{
+  "data": [
+    {
+      "alert": {
+        "action_values": [
+          "breathe"
+        ]
+      },
+      "color": {
+        "gamut": {
+          "blue": {
+            "x": 0.1532,
+            "y": 0.0475
+          },
+          "green": {
+            "x": 0.17,
+            "y": 0.7
+          },
+          "red": {
+            "x": 0.6915,
+            "y": 0.3083
+          }
+        },
+        "gamut_type": "C",
+        "xy": {
+          "x": 0.6233,
+          "y": 0.3595
+        }
+      },
+      "color_temperature": {
+        "mirek": null,
+        "mirek_schema": {
+          "mirek_maximum": 500,
+          "mirek_minimum": 153
+        },
+        "mirek_valid": false
+      },
+      "color_temperature_delta": {},
+      "dimming": {
+        "brightness": 100.0
+      },
+      "dimming_delta": {},
+      "dynamics": {
+        "speed": 0.0,
+        "speed_valid": false,
+        "status": "none",
+        "status_values": [
+          "none"
+        ]
+      },
+      "id": "3da0eff1-a0e3-4f02-bc9c-a59637ea2eb2",
+      "id_v1": "/lights/61",
+      "identify": {},
+      "metadata": {
+        "archetype": "hue_lightstrip",
+        "function": "mixed",
+        "name": "Hue gradient lightstrip 2"
+      },
+      "mode": "normal",
+      "on": {
+        "on": false
+      },
+      "owner": {
+        "rid": "e6df77f4-92ea-4a71-9cac-b697907e0cb4",
+        "rtype": "device"
+      },
+      "product_data": {
+        "function": "mixed"
+      },
+      "service_id": 0,
+      "signaling": {
+        "signal_values": [
+          "no_signal",
+          "on_off",
+          "on_off_color",
+          "alternating"
+        ]
+      },
+      "type": "light"
+    },
+    {
+      "alert": {
+        "action_values": [
+          "breathe"
+        ]
+      },
+      "color": {
+        "gamut": {
+          "blue": {
+            "x": 0.1532,
+            "y": 0.0475
+          },
+          "green": {
+            "x": 0.17,
+            "y": 0.7
+          },
+          "red": {
+            "x": 0.6915,
+            "y": 0.3083
+          }
+        },
+        "gamut_type": "C",
+        "xy": {
+          "x": 0.1671,
+          "y": 0.0853
+        }
+      },
+      "color_temperature": {
+        "mirek": null,
+        "mirek_schema": {
+          "mirek_maximum": 500,
+          "mirek_minimum": 153
+        },
+        "mirek_valid": false
+      },
+      "color_temperature_delta": {},
+      "content_configuration": {
+        "association": {
+          "association": "not_associated"
+        },
+        "order": {
+          "configurable": true,
+          "order": "forward",
+          "status": "set"
+        },
+        "orientation": {
+          "configurable": true,
+          "orientation": "horizontal",
+          "status": "set"
+        }
+      },
+      "dimming": {
+        "brightness": 51.78,
+        "min_dim_level": 0.01
+      },
+      "dimming_delta": {},
+      "dynamics": {
+        "speed": 0.0,
+        "speed_valid": false,
+        "status": "none",
+        "status_values": [
+          "none",
+          "dynamic_palette"
+        ]
+      },
+      "effects": {
+        "effect_values": [
+          "no_effect",
+          "candle",
+          "fire",
+          "prism",
+          "sparkle",
+          "opal",
+          "glisten",
+          "underwater",
+          "cosmos",
+          "sunbeam",
+          "enchant"
+        ],
+        "status": "no_effect",
+        "status_values": [
+          "no_effect",
+          "candle",
+          "fire",
+          "prism",
+          "sparkle",
+          "opal",
+          "glisten",
+          "underwater",
+          "cosmos",
+          "sunbeam",
+          "enchant"
+        ]
+      },
+      "effects_v2": {
+        "action": {
+          "effect_values": [
+            "no_effect",
+            "candle",
+            "fire",
+            "prism",
+            "sparkle",
+            "opal",
+            "glisten",
+            "underwater",
+            "cosmos",
+            "sunbeam",
+            "enchant"
+          ]
+        },
+        "status": {
+          "effect": "no_effect",
+          "effect_values": [
+            "no_effect",
+            "candle",
+            "fire",
+            "prism",
+            "sparkle",
+            "opal",
+            "glisten",
+            "underwater",
+            "cosmos",
+            "sunbeam",
+            "enchant"
+          ]
+        }
+      },
+      "gradient": {
+        "mode": "interpolated_palette",
+        "mode_values": [
+          "interpolated_palette",
+          "interpolated_palette_mirrored",
+          "random_pixelated",
+          "segmented_palette"
+        ],
+        "pixel_count": 10,
+        "points": [
+          {
+            "color": {
+              "xy": {
+                "x": 0.1671,
+                "y": 0.0853
+              }
+            }
+          },
+          {
+            "color": {
+              "xy": {
+                "x": 0.1824,
+                "y": 0.0807
+              }
+            }
+          },
+          {
+            "color": {
+              "xy": {
+                "x": 0.1554,
+                "y": 0.0996
+              }
+            }
+          },
+          {
+            "color": {
+              "xy": {
+                "x": 0.1729,
+                "y": 0.146
+              }
+            }
+          },
+          {
+            "color": {
+              "xy": {
+                "x": 0.4974,
+                "y": 0.4535
+              }
+            }
+          }
+        ],
+        "points_capable": 5
+      },
+      "id": "5b9e49a2-6e08-4bbd-b6cf-6dfc5c389699",
+      "id_v1": "/lights/60",
+      "identify": {},
+      "metadata": {
+        "archetype": "hue_lightstrip",
+        "function": "mixed",
+        "name": "Headboard"
+      },
+      "mode": "normal",
+      "on": {
+        "on": true
+      },
+      "owner": {
+        "rid": "0fe3ca1a-c265-4d4d-873c-38116e299109",
+        "rtype": "device"
+      },
+      "powerup": {
+        "color": {
+          "color_temperature": {
+            "mirek": 366
+          },
+          "mode": "color_temperature"
+        },
+        "configured": true,
+        "dimming": {
+          "dimming": {
+            "brightness": 100.0
+          },
+          "mode": "dimming"
+        },
+        "on": {
+          "mode": "on",
+          "on": {
+            "on": true
+          }
+        },
+        "preset": "safety"
+      },
+      "product_data": {
+        "function": "mixed"
+      },
+      "service_id": 0,
+      "signaling": {
+        "signal_values": [
+          "no_signal",
+          "on_off",
+          "on_off_color",
+          "alternating"
+        ]
+      },
+      "timed_effects": {
+        "effect_values": [
+          "no_effect",
+          "sunrise",
+          "sunset"
+        ],
+        "status": "no_effect",
+        "status_values": [
+          "no_effect",
+          "sunrise",
+          "sunset"
+        ]
+      },
+      "type": "light"
+    }
+  ]
+}

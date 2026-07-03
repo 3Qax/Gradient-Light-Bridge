@@ -109,6 +109,12 @@ def main() -> int:
     )
     parser.add_argument("--start-search", action="store_true", help="Start Hue bridge light search after serial capture opens.")
     parser.add_argument(
+        "--reset-board",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Reset the ESP32-C6 after opening serial, before Hue API actions.",
+    )
+    parser.add_argument(
         "--delete-light-id",
         action="append",
         help="Hue v1 light id to delete after serial capture opens. Repeatable.",
@@ -148,7 +154,15 @@ def main() -> int:
         ser.dtr = False
         ser.rts = False
         time.sleep(0.5)
-        ser.reset_input_buffer()
+        if args.reset_board:
+            ser.dtr = True
+            ser.rts = True
+            time.sleep(0.1)
+            ser.dtr = False
+            ser.rts = False
+            time.sleep(0.5)
+        else:
+            ser.reset_input_buffer()
 
         if client and args.delete_light_id:
             for light_id in args.delete_light_id:

@@ -1,0 +1,77 @@
+{
+  "data": [
+    {
+      "id": "0fe3ca1a-c265-4d4d-873c-38116e299109",
+      "id_v1": "/lights/60",
+      "identify": {},
+      "metadata": {
+        "archetype": "hue_lightstrip",
+        "name": "Headboard"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-118",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "LCX004",
+        "product_archetype": "hue_lightstrip",
+        "product_name": "Hue gradient lightstrip",
+        "software_version": "1.129.5"
+      },
+      "services": [
+        {
+          "rid": "d44bacff-c47c-4977-b9c0-aa710be693d8",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "5b9e49a2-6e08-4bbd-b6cf-6dfc5c389699",
+          "rtype": "light"
+        },
+        {
+          "rid": "3442f820-64ef-4d6f-803a-f007a50f48e3",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "8814f1eb-34c0-43aa-8bb5-6dca377c1bec",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "084a776c-917d-412a-ba6d-23247af66a00",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "e6df77f4-92ea-4a71-9cac-b697907e0cb4",
+      "id_v1": "/lights/61",
+      "identify": {},
+      "metadata": {
+        "archetype": "hue_lightstrip",
+        "name": "Hue gradient lightstrip 2"
+      },
+      "product_data": {
+        "certified": true,
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "LCX004",
+        "product_archetype": "hue_lightstrip",
+        "product_name": "Hue gradient lightstrip",
+        "software_version": "1.129.5"
+      },
+      "services": [
+        {
+          "rid": "23c238e0-3c4b-4b80-a9c9-6da45b3ae4b1",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "3da0eff1-a0e3-4f02-bc9c-a59637ea2eb2",
+          "rtype": "light"
+        },
+        {
+          "rid": "14267e8a-541f-49eb-9a74-fd15439e20a5",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    }
+  ]
+}

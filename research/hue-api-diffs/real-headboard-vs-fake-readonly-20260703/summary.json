@@ -1,0 +1,130 @@
+[
+  {
+    "certified": true,
+    "modelid": "LCX004",
+    "name": "Headboard",
+    "productname": "Hue gradient lightstrip",
+    "streaming": {
+      "proxy": true,
+      "renderer": true
+    },
+    "uniqueid": "00:17:88:01:0b:89:54:2f-0b",
+    "v1_id": "60"
+  },
+  {
+    "certified": true,
+    "modelid": "LCX004",
+    "name": "Hue gradient lightstrip 2",
+    "productname": "Hue gradient lightstrip",
+    "streaming": {
+      "proxy": false,
+      "renderer": false
+    },
+    "uniqueid": "00:17:88:01:0b:ff:fe:05-0b",
+    "v1_id": "61"
+  },
+  {
+    "hardware_platform_type": "100b-118",
+    "model_id": "LCX004",
+    "name": "Headboard",
+    "product_name": "Hue gradient lightstrip",
+    "services": [
+      "zigbee_connectivity",
+      "light",
+      "entertainment",
+      "motion_area_candidate",
+      "device_software_update"
+    ],
+    "v2_device_id": "0fe3ca1a-c265-4d4d-873c-38116e299109"
+  },
+  {
+    "hardware_platform_type": null,
+    "model_id": "LCX004",
+    "name": "Hue gradient lightstrip 2",
+    "product_name": "Hue gradient lightstrip",
+    "services": [
+      "zigbee_connectivity",
+      "light",
+      "device_software_update"
+    ],
+    "v2_device_id": "e6df77f4-92ea-4a71-9cac-b697907e0cb4"
+  },
+  {
+    "gradient": null,
+    "has_content_configuration": false,
+    "has_effects": false,
+    "has_effects_v2": false,
+    "has_gradient": false,
+    "name": "Hue gradient lightstrip 2",
+    "owner": {
+      "rid": "e6df77f4-92ea-4a71-9cac-b697907e0cb4",
+      "rtype": "device"
+    },
+    "v2_light_id": "3da0eff1-a0e3-4f02-bc9c-a59637ea2eb2"
+  },
+  {
+    "gradient": {
+      "mode": "interpolated_palette",
+      "mode_values": [
+        "interpolated_palette",
+        "interpolated_palette_mirrored",
+        "random_pixelated",
+        "segmented_palette"
+      ],
+      "pixel_count": 10,
+      "points": [
+        {
+          "color": {
+            "xy": {
+              "x": 0.1671,
+              "y": 0.0853
+            }
+          }
+        },
+        {
+          "color": {
+            "xy": {
+              "x": 0.1824,
+              "y": 0.0807
+            }
+          }
+        },
+        {
+          "color": {
+            "xy": {
+              "x": 0.1554,
+              "y": 0.0996
+            }
+          }
+        },
+        {
+          "color": {
+            "xy": {
+              "x": 0.1729,
+              "y": 0.146
+            }
+          }
+        },
+        {
+          "color": {
+            "xy": {
+              "x": 0.4974,
+              "y": 0.4535
+            }
+          }
+        }
+      ],
+      "points_capable": 5
+    },
+    "has_content_configuration": true,
+    "has_effects": true,
+    "has_effects_v2": true,
+    "has_gradient": true,
+    "name": "Headboard",
+    "owner": {
+      "rid": "0fe3ca1a-c265-4d4d-873c-38116e299109",
+      "rtype": "device"
+    },
+    "v2_light_id": "5b9e49a2-6e08-4bbd-b6cf-6dfc5c389699"
+  }
+]

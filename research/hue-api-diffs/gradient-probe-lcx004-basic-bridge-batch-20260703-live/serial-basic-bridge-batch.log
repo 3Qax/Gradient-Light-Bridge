@@ -1,0 +1,27 @@
+HOST: rejoin
+HOST: metadataeui 001788010b89542f
+[0;32mI (137) esp_image: segment 3: paddr=00094ea4 vaddr=408005[0;32mI (21892) GRADIENT_PROBE: Serial command: metadata by IEEE[0m
+[0;32mI (21892) GRADIENT_PROBE: METADATA_EUI serial: resolving via broadcast[0m
+[0;31mE (26902) GRADIENT_PROBE: METADATA_EUI serial: nwk_addr failed status=133[0m
+[0;32mI (30322) GRADIENT_PROBE: ZDO signal: NWK No Active Links Left (0x18), status: ESP_OK[0m
+HOST: readattr 48ad 0000 0000 100b
+[0;32mI (31992) GRADIENT_PROBE: Serial command: read attr 0x0000 from cluster 0x0000 on 0x48ad[0m
+[0;32mI (31992) GRADIENT_PROBE: tx read attr 0x0000 from cluster 0x0000 -> nwk=0x48ad ep=11 (manuf=0x100b)[0m
+HOST: readattr 48ad 0000 0001 100b
+[0;32mI (32492) GRADIENT_PROBE: Serial command: read attr 0x0001 from cluster 0x0000 on 0x48ad[0m
+[0;32mI (32492) GRADIENT_PROBE: tx read attr 0x0001 from cluster 0x0000 -> nwk=0x48ad ep=11 (manuf=0x100b)[0m
+HOST: readattr 48ad 0000 0003 100b
+[0;32mI (32992) GRADIENT_PROBE: Serial command: read attr 0x0003 from cluster 0x0000 on 0x48ad[0m
+[0;32mI (32992) GRADIENT_PROBE: tx read attr 0x0003 from cluster 0x0000 -> nwk=0x48ad ep=11 (manuf=0x100b)[0m
+HOST: readattr 48ad 0000 0040 100b
+[0;32mI (33492) GRADIENT_PROBE: Serial command: read attr 0x0040 from cluster 0x0000 on 0x48ad[0m
+[0;32mI (33492) GRADIENT_PROBE: tx read attr 0x0040 from cluster 0x0000 -> nwk=0x48ad ep=11 (manuf=0x100b)[0m
+HOST: readattr 48ad 0000 0041 100b
+[0;32mI (33992) GRADIENT_PROBE: Serial command: read attr 0x0041 from cluster 0x0000 on 0x48ad[0m
+[0;32mI (33992) GRADIENT_PROBE: tx read attr 0x0041 from cluster 0x0000 -> nwk=0x48ad ep=11 (manuf=0x100b)[0m
+HOST: readattr 48ad 0000 0050 100b
+[0;32mI (34492) GRADIENT_PROBE: Serial command: read attr 0x0050 from cluster 0x0000 on 0x48ad[0m
+[0;32mI (34492) GRADIENT_PROBE: tx read attr 0x0050 from cluster 0x0000 -> nwk=0x48ad ep=11 (manuf=0x100b)[0m
+[0;32mI (35562) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (39602) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (44652) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m

@@ -1,0 +1,3916 @@
+{
+  "1": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 1000,
+        "mindimlevel": 100
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "walllantern",
+      "direction": "downwards",
+      "function": "functional",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "1745630P7",
+    "name": "Frontowe nad gara\u017cem",
+    "productid": "3241-3127-7871_HC05_PSU19",
+    "productname": "Hue outdoor wall",
+    "state": {
+      "alert": "select",
+      "bri": 86,
+      "colormode": "xy",
+      "ct": 500,
+      "effect": "none",
+      "hue": 4101,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 177,
+      "xy": [
+        0.539,
+        0.3728
+      ]
+    },
+    "swconfigid": "E6DC79F3",
+    "swupdate": {
+      "lastinstall": "2026-04-16T12:05:53",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.2",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0c:6c:ab:ee-0b"
+  },
+  "10": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 800,
+        "mindimlevel": 200
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "wallshade",
+      "direction": "omnidirectional",
+      "function": "functional",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "LCA001",
+    "name": "Talerz",
+    "productid": "Philips-LCA001-4-A19ECLv6",
+    "productname": "Hue color lamp",
+    "state": {
+      "alert": "select",
+      "bri": 254,
+      "colormode": "ct",
+      "ct": 346,
+      "effect": "none",
+      "hue": 8596,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 121,
+      "xy": [
+        0.445,
+        0.4067
+      ]
+    },
+    "swconfigid": "5A9128EA",
+    "swupdate": {
+      "lastinstall": "2026-04-16T12:09:51",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.2",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:08:32:a8:85-0b"
+  },
+  "11": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 800,
+        "mindimlevel": 200
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "wallshade",
+      "direction": "omnidirectional",
+      "function": "mixed",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "LCA001",
+    "name": "Upper Wall Lamp",
+    "productid": "Philips-LCA001-4-A19ECLv6",
+    "productname": "Hue color lamp",
+    "state": {
+      "alert": "select",
+      "bri": 1,
+      "colormode": "xy",
+      "ct": 500,
+      "effect": "none",
+      "hue": 1339,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 181,
+      "xy": [
+        0.5826,
+        0.3426
+      ]
+    },
+    "swconfigid": "5A9128EA",
+    "swupdate": {
+      "lastinstall": "2026-04-16T12:05:59",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.2",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:08:2e:e1:e3-0b"
+  },
+  "12": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 350,
+        "mindimlevel": 200
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "singlespot",
+      "direction": "omnidirectional",
+      "function": "functional",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "5060730P7_04",
+    "name": "Toplight 1",
+    "productid": "Philips-LCG002-3-GU10ECLv2",
+    "productname": "Hue Centris spot",
+    "state": {
+      "alert": "select",
+      "bri": 143,
+      "colormode": "ct",
+      "ct": 446,
+      "effect": "none",
+      "hue": 7684,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 199,
+      "xy": [
+        0.5013,
+        0.4152
+      ]
+    },
+    "swconfigid": "24EB3638",
+    "swupdate": {
+      "lastinstall": "2026-03-03T13:13:50",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.1",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0d:4d:a4:a2-0b"
+  },
+  "13": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 2800,
+        "mindimlevel": 100
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "ceilinghorizontal",
+      "direction": "omnidirectional",
+      "function": "functional",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "5060730P7_01",
+    "name": "Toplight",
+    "productid": "3241-3129-1221_HC05_PSU03",
+    "productname": "Hue Centris ceiling",
+    "state": {
+      "alert": "select",
+      "bri": 143,
+      "colormode": "ct",
+      "ct": 446,
+      "effect": "none",
+      "hue": 7684,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 199,
+      "xy": [
+        0.5013,
+        0.4152
+      ]
+    },
+    "swconfigid": "E37F77FD",
+    "swupdate": {
+      "lastinstall": "2026-04-17T12:57:43",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.2",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0d:21:75:48-0b"
+  },
+  "14": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 350,
+        "mindimlevel": 200
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "singlespot",
+      "direction": "omnidirectional",
+      "function": "functional",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "5060730P7_05",
+    "name": "Toplight 2",
+    "productid": "Philips-LCG002-3-GU10ECLv2",
+    "productname": "Hue Centris spot",
+    "state": {
+      "alert": "select",
+      "bri": 143,
+      "colormode": "ct",
+      "ct": 446,
+      "effect": "none",
+      "hue": 7684,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 199,
+      "xy": [
+        0.5013,
+        0.4152
+      ]
+    },
+    "swconfigid": "24EB3638",
+    "swupdate": {
+      "lastinstall": "2026-03-03T13:18:20",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.1",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0d:4d:a4:cf-0b"
+  },
+  "15": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 350,
+        "mindimlevel": 200
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "singlespot",
+      "direction": "omnidirectional",
+      "function": "functional",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "5060730P7_03",
+    "name": "Toplight 3",
+    "productid": "Philips-LCG002-3-GU10ECLv2",
+    "productname": "Hue Centris spot",
+    "state": {
+      "alert": "select",
+      "bri": 143,
+      "colormode": "ct",
+      "ct": 446,
+      "effect": "none",
+      "hue": 7684,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 199,
+      "xy": [
+        0.5013,
+        0.4152
+      ]
+    },
+    "swconfigid": "24EB3638",
+    "swupdate": {
+      "lastinstall": "2026-03-04T13:36:51",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.1",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0d:4d:b0:91-0b"
+  },
+  "16": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 350,
+        "mindimlevel": 200
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "singlespot",
+      "direction": "omnidirectional",
+      "function": "functional",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "5060730P7_02",
+    "name": "Toplight 4",
+    "productid": "Philips-LCG002-3-GU10ECLv2",
+    "productname": "Hue Centris spot",
+    "state": {
+      "alert": "select",
+      "bri": 143,
+      "colormode": "ct",
+      "ct": 446,
+      "effect": "none",
+      "hue": 7684,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 199,
+      "xy": [
+        0.5013,
+        0.4152
+      ]
+    },
+    "swconfigid": "24EB3638",
+    "swupdate": {
+      "lastinstall": "2026-03-04T13:42:05",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.1",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0d:4d:b3:57-0b"
+  },
+  "17": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 1600,
+        "mindimlevel": 10
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "huesigne",
+      "direction": "horizontal",
+      "function": "decorative",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "915005987201",
+    "name": "Floor Lamp",
+    "productid": "4422-9482-0441_HG01_PSU03",
+    "productname": "Signe gradient floor",
+    "state": {
+      "alert": "select",
+      "bri": 143,
+      "colormode": "ct",
+      "ct": 446,
+      "effect": "none",
+      "hue": 7684,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 199,
+      "xy": [
+        0.5013,
+        0.4152
+      ]
+    },
+    "swconfigid": "7C1C2697",
+    "swupdate": {
+      "lastinstall": "2025-12-18T13:51:28",
+      "state": "noupdates"
+    },
+    "swversion": "1.129.5",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0b:e5:d3:80-0b"
+  },
+  "18": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 1300,
+        "mindimlevel": 10
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "huetube",
+      "direction": "vertical",
+      "function": "mixed",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "915005988201",
+    "name": "Light strip",
+    "productid": "4422-9482-0441_HG01_PSU13",
+    "productname": "Play gradient tube",
+    "state": {
+      "alert": "select",
+      "bri": 143,
+      "colormode": "xy",
+      "ct": 290,
+      "effect": "none",
+      "hue": 12090,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 113,
+      "xy": [
+        0.4092,
+        0.4287
+      ]
+    },
+    "swconfigid": "10DBEEE6",
+    "swupdate": {
+      "lastinstall": "2025-12-18T13:52:01",
+      "state": "noupdates"
+    },
+    "swversion": "1.129.5",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0b:e4:de:3f-0b"
+  },
+  "19": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 700,
+        "mindimlevel": 10
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "huesigne",
+      "direction": "horizontal",
+      "function": "decorative",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "915005987001",
+    "name": "Desk Lamp",
+    "productid": "4422-9482-0441_HG01_PSU13",
+    "productname": "Signe gradient table",
+    "state": {
+      "alert": "select",
+      "bri": 143,
+      "colormode": "ct",
+      "ct": 446,
+      "effect": "none",
+      "hue": 7684,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 199,
+      "xy": [
+        0.5013,
+        0.4152
+      ]
+    },
+    "swconfigid": "10DBEEE6",
+    "swupdate": {
+      "lastinstall": "2025-12-18T13:46:36",
+      "state": "noupdates"
+    },
+    "swversion": "1.129.5",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0b:e5:1c:99-0b"
+  },
+  "2": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 1000,
+        "mindimlevel": 100
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "walllantern",
+      "direction": "downwards",
+      "function": "functional",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "1745630P7",
+    "name": "Frontowe nad drzwiami wejciowymi",
+    "productid": "3241-3127-7871_HC05_PSU19",
+    "productname": "Hue outdoor wall",
+    "state": {
+      "alert": "select",
+      "bri": 86,
+      "colormode": "xy",
+      "ct": 500,
+      "effect": "none",
+      "hue": 4101,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 177,
+      "xy": [
+        0.539,
+        0.3728
+      ]
+    },
+    "swconfigid": "E6DC79F3",
+    "swupdate": {
+      "lastinstall": "2026-04-16T12:05:49",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.2",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0c:5e:e3:23-0b"
+  },
+  "20": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 800,
+        "mindimlevel": 200
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "sultanbulb",
+      "direction": "omnidirectional",
+      "function": "functional",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "LCA001",
+    "name": "Toplight 3",
+    "productid": "Philips-LCA001-4-A19ECLv6",
+    "productname": "Hue color lamp",
+    "state": {
+      "alert": "select",
+      "bri": 82,
+      "colormode": "xy",
+      "ct": 500,
+      "effect": "none",
+      "hue": 6291,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 251,
+      "xy": [
+        0.5612,
+        0.4042
+      ]
+    },
+    "swconfigid": "5A9128EA",
+    "swupdate": {
+      "lastinstall": "2026-04-17T12:57:30",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.2",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:08:2e:dd:28-0b"
+  },
+  "21": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 700,
+        "mindimlevel": 10
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "huesigne",
+      "direction": "horizontal",
+      "function": "decorative",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "915005987001",
+    "name": "Chair lamp",
+    "productid": "4422-9482-0441_HG01_PSU13",
+    "productname": "Signe gradient table",
+    "state": {
+      "alert": "select",
+      "bri": 203,
+      "colormode": "xy",
+      "ct": 500,
+      "effect": "none",
+      "hue": 1590,
+      "mode": "homeautomation",
+      "on": true,
+      "reachable": true,
+      "sat": 254,
+      "xy": [
+        0.6586,
+        0.3327
+      ]
+    },
+    "swconfigid": "10DBEEE6",
+    "swupdate": {
+      "lastinstall": "2025-12-18T13:46:44",
+      "state": "noupdates"
+    },
+    "swversion": "1.129.5",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0b:e5:1c:be-0b"
+  },
+  "22": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 800,
+        "mindimlevel": 200
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "wallshade",
+      "direction": "omnidirectional",
+      "function": "mixed",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "LCA001",
+    "name": "Lower Wall Lamp",
+    "productid": "Philips-LCA001-4-A19ECLv6",
+    "productname": "Hue color lamp",
+    "state": {
+      "alert": "select",
+      "bri": 1,
+      "colormode": "xy",
+      "ct": 498,
+      "effect": "none",
+      "hue": 6204,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 200,
+      "xy": [
+        0.5258,
+        0.3976
+      ]
+    },
+    "swconfigid": "5A9128EA",
+    "swupdate": {
+      "lastinstall": "2026-04-17T12:56:57",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.2",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:08:37:cb:fc-0b"
+  },
+  "23": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 1680,
+        "mindimlevel": 200
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "pendantround",
+      "direction": "omnidirectional",
+      "function": "functional",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "LCA008",
+    "name": "Chupachups",
+    "productid": "Philips-LCA008-1-A67ECLv1",
+    "productname": "Hue color lamp",
+    "state": {
+      "alert": "select",
+      "bri": 186,
+      "colormode": "xy",
+      "ct": 500,
+      "effect": "none",
+      "hue": 3515,
+      "mode": "homeautomation",
+      "on": true,
+      "reachable": true,
+      "sat": 254,
+      "xy": [
+        0.6199,
+        0.3621
+      ]
+    },
+    "swconfigid": "8D4F68CF",
+    "swupdate": {
+      "lastinstall": "2026-03-04T13:36:58",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.1",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0b:b1:f1:14-0b"
+  },
+  "24": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 1680,
+        "mindimlevel": 200
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "pendantround",
+      "direction": "omnidirectional",
+      "function": "functional",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "LCA008",
+    "name": "Hue color lamp 8",
+    "productid": "Philips-LCA008-1-A67ECLv1",
+    "productname": "Hue color lamp",
+    "state": {
+      "alert": "select",
+      "bri": 143,
+      "colormode": "ct",
+      "ct": 442,
+      "effect": "none",
+      "hue": 7720,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 196,
+      "xy": [
+        0.4993,
+        0.4152
+      ]
+    },
+    "swconfigid": "8D4F68CF",
+    "swupdate": {
+      "lastinstall": "2026-03-04T13:37:12",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.1",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0c:41:20:bd-0b"
+  },
+  "26": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 300,
+        "mindimlevel": 200
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "doublespot",
+      "direction": "omnidirectional",
+      "function": "decorative",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "5062448P7",
+    "name": "Hue Argenta color spot 1",
+    "productid": "Philips-LCG002-3-GU10ECLv2",
+    "productname": "Hue Argenta color spot",
+    "state": {
+      "alert": "select",
+      "bri": 166,
+      "colormode": "xy",
+      "ct": 500,
+      "effect": "none",
+      "hue": 6290,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 251,
+      "xy": [
+        0.5612,
+        0.4042
+      ]
+    },
+    "swconfigid": "24EB3638",
+    "swupdate": {
+      "lastinstall": "2026-03-04T13:37:25",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.1",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0b:bc:48:a1-0b"
+  },
+  "27": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 300,
+        "mindimlevel": 200
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "doublespot",
+      "direction": "omnidirectional",
+      "function": "decorative",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "5062448P7",
+    "name": "Hue Argenta color spot 2",
+    "productid": "Philips-LCG002-3-GU10ECLv2",
+    "productname": "Hue Argenta color spot",
+    "state": {
+      "alert": "select",
+      "bri": 166,
+      "colormode": "xy",
+      "ct": 500,
+      "effect": "none",
+      "hue": 6290,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 251,
+      "xy": [
+        0.5612,
+        0.4042
+      ]
+    },
+    "swconfigid": "24EB3638",
+    "swupdate": {
+      "lastinstall": "2026-03-04T13:42:22",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.1",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0b:b9:7f:14-0b"
+  },
+  "28": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 300,
+        "mindimlevel": 200
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "doublespot",
+      "direction": "omnidirectional",
+      "function": "decorative",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "5062448P7",
+    "name": "Hue Argenta color spot 3",
+    "productid": "Philips-LCG002-3-GU10ECLv2",
+    "productname": "Hue Argenta color spot",
+    "state": {
+      "alert": "select",
+      "bri": 166,
+      "colormode": "xy",
+      "ct": 500,
+      "effect": "none",
+      "hue": 6290,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 251,
+      "xy": [
+        0.5612,
+        0.4042
+      ]
+    },
+    "swconfigid": "24EB3638",
+    "swupdate": {
+      "lastinstall": "2026-03-03T13:13:43",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.1",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0b:b9:9a:55-0b"
+  },
+  "29": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 300,
+        "mindimlevel": 200
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "doublespot",
+      "direction": "omnidirectional",
+      "function": "decorative",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "5062448P7",
+    "name": "Hue Argenta color spot 4",
+    "productid": "Philips-LCG002-3-GU10ECLv2",
+    "productname": "Hue Argenta color spot",
+    "state": {
+      "alert": "select",
+      "bri": 166,
+      "colormode": "xy",
+      "ct": 500,
+      "effect": "none",
+      "hue": 6290,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 251,
+      "xy": [
+        0.5612,
+        0.4042
+      ]
+    },
+    "swconfigid": "24EB3638",
+    "swupdate": {
+      "lastinstall": "2026-03-03T13:13:39",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.1",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0b:bc:32:cd-0b"
+  },
+  "3": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 400,
+        "mindimlevel": 70
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "tableshade",
+      "direction": "downwards",
+      "function": "mixed",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "929003128501",
+    "name": "Jakub\u2019s Bedside Table Lamp",
+    "productid": "Philips-LCT030-1-HueGoECLv2",
+    "productname": "Go table lamp",
+    "state": {
+      "alert": "select",
+      "bri": 152,
+      "colormode": "xy",
+      "ct": 153,
+      "effect": "none",
+      "hue": 45424,
+      "mode": "homeautomation",
+      "on": true,
+      "reachable": true,
+      "sat": 253,
+      "xy": [
+        0.1554,
+        0.0996
+      ]
+    },
+    "swconfigid": "20894415",
+    "swupdate": {
+      "lastinstall": "2025-07-19T12:38:26",
+      "state": "noupdates"
+    },
+    "swversion": "1.122.8",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0c:b9:2f:63-0b"
+  },
+  "30": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 800,
+        "mindimlevel": 200
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "sultanbulb",
+      "direction": "omnidirectional",
+      "function": "functional",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "LCA001",
+    "name": "Toplight 1",
+    "productid": "Philips-LCA001-5-A19ECLv6",
+    "productname": "Hue color lamp",
+    "state": {
+      "alert": "select",
+      "bri": 82,
+      "colormode": "xy",
+      "ct": 500,
+      "effect": "none",
+      "hue": 6291,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 251,
+      "xy": [
+        0.5612,
+        0.4042
+      ]
+    },
+    "swconfigid": "65A786EA",
+    "swupdate": {
+      "lastinstall": "2026-04-17T12:57:02",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.2",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:08:ac:21:9b-0b"
+  },
+  "31": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 800,
+        "mindimlevel": 200
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "sultanbulb",
+      "direction": "omnidirectional",
+      "function": "functional",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "LCA001",
+    "name": "Toplight 2",
+    "productid": "Philips-LCA001-4-A19ECLv6",
+    "productname": "Hue color lamp",
+    "state": {
+      "alert": "select",
+      "bri": 82,
+      "colormode": "xy",
+      "ct": 500,
+      "effect": "none",
+      "hue": 6291,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 251,
+      "xy": [
+        0.5612,
+        0.4042
+      ]
+    },
+    "swconfigid": "5A9128EA",
+    "swupdate": {
+      "lastinstall": "2026-04-17T12:57:39",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.2",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:08:32:cb:1f-0b"
+  },
+  "32": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 800,
+        "mindimlevel": 200
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "christmastree",
+      "direction": "omnidirectional",
+      "function": "decorative",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "LCA001",
+    "name": "Rice Paper Lamp",
+    "productid": "Philips-LCA001-4-A19ECLv6",
+    "productname": "Hue color lamp",
+    "state": {
+      "alert": "select",
+      "bri": 254,
+      "colormode": "xy",
+      "ct": 500,
+      "effect": "none",
+      "hue": 1606,
+      "mode": "homeautomation",
+      "on": true,
+      "reachable": true,
+      "sat": 254,
+      "xy": [
+        0.6588,
+        0.3329
+      ]
+    },
+    "swconfigid": "5A9128EA",
+    "swupdate": {
+      "lastinstall": "2026-04-17T12:57:12",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.2",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:08:32:af:01-0b"
+  },
+  "33": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 800,
+        "mindimlevel": 200
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "sultanbulb",
+      "direction": "omnidirectional",
+      "function": "mixed",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "LCA001",
+    "name": "Toplight",
+    "productid": "Philips-LCA001-5-A19ECLv6",
+    "productname": "Hue color lamp",
+    "state": {
+      "alert": "select",
+      "bri": 90,
+      "colormode": "xy",
+      "ct": 500,
+      "effect": "none",
+      "hue": 6290,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 251,
+      "xy": [
+        0.5612,
+        0.4042
+      ]
+    },
+    "swconfigid": "65A786EA",
+    "swupdate": {
+      "lastinstall": "2026-04-17T12:57:25",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.2",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:08:a7:29:81-0b"
+  },
+  "34": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 4000,
+        "mindimlevel": 100
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "ceilinground",
+      "direction": "downwards",
+      "function": "functional",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "915005997901",
+    "name": "Toplight",
+    "productid": "3241-3129-1221_HC05_PSU05",
+    "productname": "Hue Xamento ceiling",
+    "state": {
+      "alert": "select",
+      "bri": 203,
+      "colormode": "xy",
+      "ct": 406,
+      "effect": "none",
+      "hue": 7999,
+      "mode": "homeautomation",
+      "on": true,
+      "reachable": true,
+      "sat": 172,
+      "xy": [
+        0.4807,
+        0.4133
+      ]
+    },
+    "swconfigid": "94B73C4A",
+    "swupdate": {
+      "lastinstall": "2026-04-17T12:57:48",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.2",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0d:23:92:b1-0b"
+  },
+  "35": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 2268,
+        "mindimlevel": 100
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "walllantern",
+      "direction": "downwards",
+      "function": "functional",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "1743530P7",
+    "name": "Terrace top light",
+    "productid": "3241-3127-7871_HC05_PSU03",
+    "productname": "Hue Discover outdoor wall",
+    "state": {
+      "alert": "select",
+      "bri": 58,
+      "colormode": "xy",
+      "ct": 500,
+      "effect": "none",
+      "hue": 4185,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 188,
+      "xy": [
+        0.5476,
+        0.3735
+      ]
+    },
+    "swconfigid": "3B6A23AC",
+    "swupdate": {
+      "lastinstall": "2026-04-17T12:58:10",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.2",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0d:1f:84:1e-0b"
+  },
+  "36": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 2600,
+        "mindimlevel": 100
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "ceilinground",
+      "direction": "downwards",
+      "function": "functional",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "929003598101",
+    "name": "Toplight",
+    "productid": "3241-3129-1221_HC05_PSU05",
+    "productname": "Hue Surimu panel",
+    "state": {
+      "alert": "select",
+      "bri": 1,
+      "colormode": "xy",
+      "ct": 500,
+      "effect": "none",
+      "hue": 4775,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 201,
+      "xy": [
+        0.5496,
+        0.3804
+      ]
+    },
+    "swconfigid": "94B73C4A",
+    "swupdate": {
+      "lastinstall": "2026-04-17T12:58:20",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.2",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0d:17:a2:2e-0b"
+  },
+  "38": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 470,
+        "mindimlevel": 200
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "tablewash",
+      "direction": "omnidirectional",
+      "function": "decorative",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "LCU001",
+    "name": "\u017bo\u0142\u0105dz",
+    "productid": "Philips-LCU001-1-P45ECLv1",
+    "productname": "Hue color luster",
+    "state": {
+      "alert": "select",
+      "bri": 74,
+      "colormode": "xy",
+      "ct": 500,
+      "effect": "none",
+      "hue": 6291,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 251,
+      "xy": [
+        0.5612,
+        0.4042
+      ]
+    },
+    "swconfigid": "A5CD4F53",
+    "swupdate": {
+      "lastinstall": "2026-03-04T13:36:45",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.1",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0d:40:71:11-0b"
+  },
+  "39": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 470,
+        "mindimlevel": 200
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "christmastree",
+      "direction": "omnidirectional",
+      "function": "mixed",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "LCU001",
+    "name": "Snowman",
+    "productid": "Philips-LCU001-1-P45ECLv1",
+    "productname": "Hue color luster",
+    "state": {
+      "alert": "select",
+      "bri": 74,
+      "colormode": "xy",
+      "ct": 500,
+      "effect": "none",
+      "hue": 6291,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 251,
+      "xy": [
+        0.5612,
+        0.4042
+      ]
+    },
+    "swconfigid": "A5CD4F53",
+    "swupdate": {
+      "lastinstall": "2026-03-04T13:37:02",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.1",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0d:40:7b:ed-0b"
+  },
+  "4": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 400,
+        "mindimlevel": 70
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "tableshade",
+      "direction": "downwards",
+      "function": "mixed",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "929003128501",
+    "name": "Ania\u2019s Bedside Table Lamp",
+    "productid": "Philips-LCT030-1-HueGoECLv2",
+    "productname": "Go table lamp",
+    "state": {
+      "alert": "select",
+      "bri": 152,
+      "colormode": "xy",
+      "ct": 153,
+      "effect": "none",
+      "hue": 47461,
+      "mode": "homeautomation",
+      "on": true,
+      "reachable": true,
+      "sat": 232,
+      "xy": [
+        0.1824,
+        0.0807
+      ]
+    },
+    "swconfigid": "20894415",
+    "swupdate": {
+      "lastinstall": "2025-07-18T13:00:45",
+      "state": "noupdates"
+    },
+    "swversion": "1.122.8",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0c:bb:d9:d8-0b"
+  },
+  "40": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 1680,
+        "mindimlevel": 200
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "pendantround",
+      "direction": "omnidirectional",
+      "function": "functional",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "LCA008",
+    "name": "Hue color lamp 9",
+    "productid": "Philips-LCA008-1-A67ECLv1",
+    "productname": "Hue color lamp",
+    "state": {
+      "alert": "select",
+      "bri": 143,
+      "colormode": "ct",
+      "ct": 442,
+      "effect": "none",
+      "hue": 7720,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 196,
+      "xy": [
+        0.4993,
+        0.4152
+      ]
+    },
+    "swconfigid": "8D4F68CF",
+    "swupdate": {
+      "lastinstall": "2026-03-04T13:37:22",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.1",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0c:fd:52:f3-0b"
+  },
+  "41": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 1680,
+        "mindimlevel": 200
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "sultanbulb",
+      "direction": "omnidirectional",
+      "function": "mixed",
+      "startup": {
+        "configured": true,
+        "mode": "safety"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "LCA008",
+    "name": "Hue color lamp 10",
+    "productid": "Philips-LCA008-1-A67ECLv1",
+    "productname": "Hue color lamp",
+    "state": {
+      "alert": "select",
+      "bri": 127,
+      "colormode": "xy",
+      "ct": 500,
+      "effect": "none",
+      "hue": 7114,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 239,
+      "xy": [
+        0.5368,
+        0.4148
+      ]
+    },
+    "swconfigid": "8D4F68CF",
+    "swupdate": {
+      "lastinstall": "2026-03-04T13:40:54",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.1",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0c:fd:6d:ec-0b"
+  },
+  "42": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 470,
+        "mindimlevel": 200
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "twilight",
+      "direction": "omnidirectional",
+      "function": "mixed",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "LCU001",
+    "name": "Clitoris",
+    "productid": "Philips-LCU001-1-P45ECLv1",
+    "productname": "Hue color luster",
+    "state": {
+      "alert": "select",
+      "bri": 74,
+      "colormode": "xy",
+      "ct": 500,
+      "effect": "none",
+      "hue": 6291,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 251,
+      "xy": [
+        0.5612,
+        0.4042
+      ]
+    },
+    "swconfigid": "A5CD4F53",
+    "swupdate": {
+      "lastinstall": "2026-03-04T13:37:15",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.1",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0d:40:7d:92-0b"
+  },
+  "43": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 404,
+        "mindimlevel": 100
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "bollard",
+      "direction": "omnidirectional",
+      "function": "decorative",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "1743230P7",
+    "name": "Impress outdoor post 1",
+    "productid": "3241-3127-7871_HC05_PSU19",
+    "productname": "Hue Impress outdoor post",
+    "state": {
+      "alert": "select",
+      "bri": 74,
+      "colormode": "xy",
+      "ct": 500,
+      "effect": "none",
+      "hue": 4101,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 177,
+      "xy": [
+        0.539,
+        0.3728
+      ]
+    },
+    "swconfigid": "E6DC79F3",
+    "swupdate": {
+      "lastinstall": "2026-04-17T12:57:53",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.2",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0e:34:56:95-0b"
+  },
+  "44": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 404,
+        "mindimlevel": 100
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "bollard",
+      "direction": "omnidirectional",
+      "function": "decorative",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "1743230P7",
+    "name": "Impress outdoor post 2",
+    "productid": "3241-3127-7871_HC05_PSU19",
+    "productname": "Hue Impress outdoor post",
+    "state": {
+      "alert": "select",
+      "bri": 76,
+      "colormode": "xy",
+      "ct": 500,
+      "effect": "none",
+      "hue": 4101,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 177,
+      "xy": [
+        0.539,
+        0.3728
+      ]
+    },
+    "swconfigid": "E6DC79F3",
+    "swupdate": {
+      "lastinstall": "2026-04-17T13:01:45",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.2",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0e:34:55:eb-0b"
+  },
+  "45": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 1680,
+        "mindimlevel": 200
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "pendantround",
+      "direction": "omnidirectional",
+      "function": "mixed",
+      "startup": {
+        "configured": true,
+        "mode": "safety"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "LCA008",
+    "name": "Hue color lamp 11",
+    "productid": "Philips-LCA008-1-A67ECLv1",
+    "productname": "Hue color lamp",
+    "state": {
+      "alert": "select",
+      "bri": 143,
+      "colormode": "ct",
+      "ct": 437,
+      "effect": "none",
+      "hue": 7767,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 193,
+      "xy": [
+        0.4967,
+        0.4151
+      ]
+    },
+    "swconfigid": "8D4F68CF",
+    "swupdate": {
+      "lastinstall": "2026-03-04T13:37:05",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.1",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0d:92:fa:fd-0b"
+  },
+  "46": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 1680,
+        "mindimlevel": 200
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "pendantround",
+      "direction": "omnidirectional",
+      "function": "mixed",
+      "startup": {
+        "configured": true,
+        "mode": "safety"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "LCA008",
+    "name": "Hue color lamp 12",
+    "productid": "Philips-LCA008-1-A67ECLv1",
+    "productname": "Hue color lamp",
+    "state": {
+      "alert": "select",
+      "bri": 143,
+      "colormode": "ct",
+      "ct": 437,
+      "effect": "none",
+      "hue": 7767,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 193,
+      "xy": [
+        0.4967,
+        0.4151
+      ]
+    },
+    "swconfigid": "8D4F68CF",
+    "swupdate": {
+      "lastinstall": "2026-03-04T13:36:37",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.1",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0d:92:f4:d6-0b"
+  },
+  "47": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 1680,
+        "mindimlevel": 200
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "pendantspot",
+      "direction": "omnidirectional",
+      "function": "functional",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "LCA008",
+    "name": "Nad Sztalug\u0105",
+    "productid": "Philips-LCA008-1-A67ECLv1",
+    "productname": "Hue color lamp",
+    "state": {
+      "alert": "select",
+      "bri": 143,
+      "colormode": "ct",
+      "ct": 437,
+      "effect": "none",
+      "hue": 7767,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 193,
+      "xy": [
+        0.4967,
+        0.4151
+      ]
+    },
+    "swconfigid": "8D4F68CF",
+    "swupdate": {
+      "lastinstall": "2026-03-04T13:41:50",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.1",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0d:93:d6:56-0b"
+  },
+  "48": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 1680,
+        "mindimlevel": 200
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "pendantspot",
+      "direction": "omnidirectional",
+      "function": "functional",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "LCA008",
+    "name": "Hue color lamp 14",
+    "productid": "Philips-LCA008-1-A67ECLv1",
+    "productname": "Hue color lamp",
+    "state": {
+      "alert": "select",
+      "bri": 143,
+      "colormode": "ct",
+      "ct": 437,
+      "effect": "none",
+      "hue": 7767,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 193,
+      "xy": [
+        0.4967,
+        0.4151
+      ]
+    },
+    "swconfigid": "8D4F68CF",
+    "swupdate": {
+      "lastinstall": "2026-03-04T13:36:55",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.1",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0d:93:d6:1b-0b"
+  },
+  "49": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 1680,
+        "mindimlevel": 200
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "pendantspot",
+      "direction": "omnidirectional",
+      "function": "functional",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "LCA008",
+    "name": "Hue color lamp 15",
+    "productid": "Philips-LCA008-1-A67ECLv1",
+    "productname": "Hue color lamp",
+    "state": {
+      "alert": "select",
+      "bri": 143,
+      "colormode": "ct",
+      "ct": 437,
+      "effect": "none",
+      "hue": 7767,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 193,
+      "xy": [
+        0.4967,
+        0.4151
+      ]
+    },
+    "swconfigid": "8D4F68CF",
+    "swupdate": {
+      "lastinstall": "2026-03-04T13:37:29",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.1",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0d:93:d2:1c-0b"
+  },
+  "5": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 300,
+        "mindimlevel": 200
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "doublespot",
+      "direction": "omnidirectional",
+      "function": "functional",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "5063330P7",
+    "name": "Toplight 1",
+    "productid": "Philips-LCG002-3-GU10ECLv2",
+    "productname": "Hue Fugato color spot",
+    "state": {
+      "alert": "select",
+      "bri": 152,
+      "colormode": "xy",
+      "ct": 436,
+      "effect": "none",
+      "hue": 9554,
+      "mode": "homeautomation",
+      "on": true,
+      "reachable": true,
+      "sat": 253,
+      "xy": [
+        0.4964,
+        0.4542
+      ]
+    },
+    "swconfigid": "24EB3638",
+    "swupdate": {
+      "lastinstall": "2026-03-04T13:40:42",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.1",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0c:4c:95:ce-0b"
+  },
+  "50": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 1680,
+        "mindimlevel": 200
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "pendantspot",
+      "direction": "omnidirectional",
+      "function": "functional",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "LCA008",
+    "name": "Nad sztalug\u0105",
+    "productid": "Philips-LCA008-1-A67ECLv1",
+    "productname": "Hue color lamp",
+    "state": {
+      "alert": "select",
+      "bri": 143,
+      "colormode": "ct",
+      "ct": 442,
+      "effect": "none",
+      "hue": 7720,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 196,
+      "xy": [
+        0.4993,
+        0.4152
+      ]
+    },
+    "swconfigid": "8D4F68CF",
+    "swupdate": {
+      "lastinstall": "2026-03-04T13:41:41",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.1",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0d:93:d3:f6-0b"
+  },
+  "51": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "mindimlevel": 5000
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "stringlight",
+      "direction": "omnidirectional",
+      "function": "decorative",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "LCX017",
+    "name": "Festavia string lights",
+    "productid": "Philips-LCX017-1-DSLECLv2",
+    "productname": "Festavia string lights",
+    "state": {
+      "alert": "select",
+      "bri": 203,
+      "colormode": "xy",
+      "ct": 346,
+      "effect": "none",
+      "hue": 6468,
+      "mode": "homeautomation",
+      "on": true,
+      "reachable": false,
+      "sat": 254,
+      "xy": [
+        0.5596,
+        0.4073
+      ]
+    },
+    "swconfigid": "E99CFB8C",
+    "swupdate": {
+      "lastinstall": "2025-11-23T13:15:31",
+      "state": "noupdates"
+    },
+    "swversion": "1.122.8",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0e:1b:34:60-0b"
+  },
+  "52": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 1000,
+        "mindimlevel": 10
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "huetube",
+      "direction": "vertical",
+      "function": "decorative",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "915005987901",
+    "name": "Play gradient tube",
+    "productid": "4422-9482-0441_HG01_PSU13",
+    "productname": "Play gradient tube",
+    "state": {
+      "alert": "select",
+      "bri": 74,
+      "colormode": "xy",
+      "ct": 500,
+      "effect": "none",
+      "hue": 6291,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 251,
+      "xy": [
+        0.5612,
+        0.4042
+      ]
+    },
+    "swconfigid": "10DBEEE6",
+    "swupdate": {
+      "lastinstall": "2025-12-18T13:51:15",
+      "state": "noupdates"
+    },
+    "swversion": "1.129.5",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0b:e5:29:a7-0b"
+  },
+  "53": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 1400,
+        "mindimlevel": 100
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "wallwasher",
+      "direction": "omnidirectional",
+      "function": "decorative",
+      "startup": {
+        "configured": true,
+        "mode": "safety"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "1746630P7",
+    "name": "Bamboo wash 1",
+    "productid": "3241-3129-1221_HC07_PSG01",
+    "productname": "Hue Amarant wall washer",
+    "state": {
+      "alert": "select",
+      "bri": 81,
+      "colormode": "xy",
+      "ct": 500,
+      "effect": "none",
+      "hue": 4185,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 188,
+      "xy": [
+        0.5476,
+        0.3735
+      ]
+    },
+    "swconfigid": "A70CB483",
+    "swupdate": {
+      "lastinstall": "2026-04-17T12:58:01",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.2",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0e:c9:8c:ff-0b"
+  },
+  "54": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 1400,
+        "mindimlevel": 100
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "wallwasher",
+      "direction": "omnidirectional",
+      "function": "decorative",
+      "startup": {
+        "configured": true,
+        "mode": "safety"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "1746630P7",
+    "name": "Bamboo wash 2",
+    "productid": "3241-3129-1221_HC07_PSG01",
+    "productname": "Hue Amarant wall washer",
+    "state": {
+      "alert": "select",
+      "bri": 81,
+      "colormode": "xy",
+      "ct": 500,
+      "effect": "none",
+      "hue": 4185,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 188,
+      "xy": [
+        0.5476,
+        0.3735
+      ]
+    },
+    "swconfigid": "A70CB483",
+    "swupdate": {
+      "lastinstall": "2026-04-17T12:58:06",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.2",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0e:c9:8c:55-0b"
+  },
+  "55": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 404,
+        "mindimlevel": 100
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "walllantern",
+      "direction": "omnidirectional",
+      "function": "decorative",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "1742930P7",
+    "name": "Hue Impress outdoor wall 1",
+    "productid": "3241-3127-7871_HC05_PSU19",
+    "productname": "Hue Impress outdoor wall",
+    "state": {
+      "alert": "select",
+      "bri": 105,
+      "colormode": "xy",
+      "ct": 500,
+      "effect": "none",
+      "hue": 4101,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 177,
+      "xy": [
+        0.539,
+        0.3728
+      ]
+    },
+    "swconfigid": "E6DC79F3",
+    "swupdate": {
+      "lastinstall": "2026-04-17T12:58:15",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.2",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0e:10:a0:16-0b"
+  },
+  "56": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 404,
+        "mindimlevel": 100
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "walllantern",
+      "direction": "omnidirectional",
+      "function": "decorative",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "1742930P7",
+    "name": "Hue Impress outdoor wall 2",
+    "productid": "3241-3127-7871_HC05_PSU19",
+    "productname": "Hue Impress outdoor wall",
+    "state": {
+      "alert": "select",
+      "bri": 105,
+      "colormode": "xy",
+      "ct": 500,
+      "effect": "none",
+      "hue": 4101,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 177,
+      "xy": [
+        0.539,
+        0.3728
+      ]
+    },
+    "swconfigid": "E6DC79F3",
+    "swupdate": {
+      "lastinstall": "2026-04-17T12:56:52",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.2",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0e:10:a0:98-0b"
+  },
+  "6": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 300,
+        "mindimlevel": 200
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "doublespot",
+      "direction": "omnidirectional",
+      "function": "functional",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "5063330P7",
+    "name": "Toplight 2",
+    "productid": "Philips-LCG002-3-GU10ECLv2",
+    "productname": "Hue Fugato color spot",
+    "state": {
+      "alert": "select",
+      "bri": 152,
+      "colormode": "xy",
+      "ct": 153,
+      "effect": "none",
+      "hue": 46463,
+      "mode": "homeautomation",
+      "on": true,
+      "reachable": true,
+      "sat": 239,
+      "xy": [
+        0.1671,
+        0.0853
+      ]
+    },
+    "swconfigid": "24EB3638",
+    "swupdate": {
+      "lastinstall": "2026-03-03T13:23:26",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.1",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0c:94:0f:b8-0b"
+  },
+  "60": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 1200,
+        "mindimlevel": 10
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "huelightstrip",
+      "direction": "omnidirectional",
+      "function": "mixed",
+      "startup": {
+        "configured": true,
+        "mode": "safety"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "LCX004",
+    "name": "Headboard",
+    "productid": "Philips-LCX004-1-GALSECLv1",
+    "productname": "Hue gradient lightstrip",
+    "state": {
+      "alert": "none",
+      "bri": 132,
+      "colormode": "xy",
+      "ct": 153,
+      "effect": "none",
+      "hue": 46463,
+      "mode": "homeautomation",
+      "on": true,
+      "reachable": true,
+      "sat": 239,
+      "xy": [
+        0.167,
+        0.0852
+      ]
+    },
+    "swconfigid": "C4C1C739",
+    "swupdate": {
+      "lastinstall": "2026-07-03T14:30:33",
+      "state": "noupdates"
+    },
+    "swversion": "1.129.5",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0b:89:54:2f-0b"
+  },
+  "61": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 1200
+      },
+      "streaming": {
+        "proxy": false,
+        "renderer": false
+      }
+    },
+    "config": {
+      "archetype": "huelightstrip",
+      "direction": "omnidirectional",
+      "function": "mixed"
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "LCX004",
+    "name": "Hue gradient lightstrip 2",
+    "productid": "Philips-LCX004-1-GALSECLv1",
+    "productname": "Hue gradient lightstrip",
+    "state": {
+      "alert": "none",
+      "bri": 254,
+      "colormode": "xy",
+      "ct": 500,
+      "effect": "none",
+      "hue": 3344,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 254,
+      "xy": [
+        0.6233,
+        0.3595
+      ]
+    },
+    "swconfigid": "C4C1C739",
+    "swupdate": {
+      "lastinstall": null,
+      "state": "noupdates"
+    },
+    "swversion": "1.129.5",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0b:ff:fe:05-0b"
+  },
+  "7": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 300,
+        "mindimlevel": 200
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "doublespot",
+      "direction": "omnidirectional",
+      "function": "functional",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "5063330P7",
+    "name": "Toplight 3",
+    "productid": "Philips-LCG002-3-GU10ECLv2",
+    "productname": "Hue Fugato color spot",
+    "state": {
+      "alert": "select",
+      "bri": 152,
+      "colormode": "xy",
+      "ct": 153,
+      "effect": "none",
+      "hue": 44507,
+      "mode": "homeautomation",
+      "on": true,
+      "reachable": true,
+      "sat": 234,
+      "xy": [
+        0.1729,
+        0.146
+      ]
+    },
+    "swconfigid": "24EB3638",
+    "swupdate": {
+      "lastinstall": "2026-03-03T13:13:46",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.1",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:0c:46:6d:65-0b"
+  },
+  "8": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 800,
+        "mindimlevel": 200
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "sultanbulb",
+      "direction": "omnidirectional",
+      "function": "mixed",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "LCA001",
+    "name": "Toplight 1",
+    "productid": "Philips-LCA001-4-A19ECLv6",
+    "productname": "Hue color lamp",
+    "state": {
+      "alert": "select",
+      "bri": 65,
+      "colormode": "ct",
+      "ct": 369,
+      "effect": "none",
+      "hue": 8391,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 142,
+      "xy": [
+        0.459,
+        0.4103
+      ]
+    },
+    "swconfigid": "5A9128EA",
+    "swupdate": {
+      "lastinstall": "2026-04-17T12:57:34",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.2",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:08:32:bb:4f-0b"
+  },
+  "9": {
+    "capabilities": {
+      "certified": true,
+      "control": {
+        "colorgamut": [
+          [
+            0.6915,
+            0.3083
+          ],
+          [
+            0.17,
+            0.7
+          ],
+          [
+            0.1532,
+            0.0475
+          ]
+        ],
+        "colorgamuttype": "C",
+        "ct": {
+          "max": 500,
+          "min": 153
+        },
+        "maxlumen": 800,
+        "mindimlevel": 200
+      },
+      "streaming": {
+        "proxy": true,
+        "renderer": true
+      }
+    },
+    "config": {
+      "archetype": "sultanbulb",
+      "direction": "omnidirectional",
+      "function": "mixed",
+      "startup": {
+        "configured": true,
+        "mode": "powerfail"
+      }
+    },
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "LCA001",
+    "name": "Toplight 2",
+    "productid": "Philips-LCA001-4-A19ECLv6",
+    "productname": "Hue color lamp",
+    "state": {
+      "alert": "select",
+      "bri": 65,
+      "colormode": "ct",
+      "ct": 369,
+      "effect": "none",
+      "hue": 8391,
+      "mode": "homeautomation",
+      "on": false,
+      "reachable": true,
+      "sat": 142,
+      "xy": [
+        0.459,
+        0.4103
+      ]
+    },
+    "swconfigid": "5A9128EA",
+    "swupdate": {
+      "lastinstall": "2026-04-17T12:57:07",
+      "state": "noupdates"
+    },
+    "swversion": "1.145.2",
+    "type": "Extended color light",
+    "uniqueid": "00:17:88:01:08:2e:e0:7a-0b"
+  }
+}

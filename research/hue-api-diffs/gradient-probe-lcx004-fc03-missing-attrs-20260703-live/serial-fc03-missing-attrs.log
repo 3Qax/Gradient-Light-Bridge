@@ -1,0 +1,63 @@
+SEND readattr fbb6 fc03 0030 100b
+[0;32mI (550) GRADIENT_PROBE: Serial command: read attr 0x0030 from cluster 0xfc03 on 0xfbb6[0m
+[0;32mI (550) GRADIENT_PROBE: tx read attr 0x0030 from cluster 0xfc03 -> nwk=0xfbb6 ep=11 (manuf=0x100b)[0m
+[0;32mI (940) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (990) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (1200) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (1710) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+SEND readattr fbb6 fc03 0037 100b
+[0;32mI (5550) GRADIENT_PROBE: Serial command: read attr 0x0037 from cluster 0xfc03 on 0xfbb6[0m
+[0;32mI (5550) GRADIENT_PROBE: tx read attr 0x0037 from cluster 0xfc03 -> nwk=0xfbb6 ep=11 (manuf=0x100b)[0m
+[0;32mI (5570) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0xfc03 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x100b common=1 payload_len=3[0m
+PROBE: zcl_raw_payload (3 bytes): 370086
+PROBE: read_attr_resp cluster=0xfc03 src_ep=11 dst_ep=11
+  attr=0x0037 status=0x86 type=0x00 size=0 data=(nil)
+SEND readattr fbb6 fc03 0038 100b
+[0;32mI (10650) GRADIENT_PROBE: Serial command: read attr 0x0038 from cluster 0xfc03 on 0xfbb6[0m
+[0;32mI (10650) GRADIENT_PROBE: tx read attr 0x0038 from cluster 0xfc03 -> nwk=0xfbb6 ep=11 (manuf=0x100b)[0m
+[0;32mI (10670) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0xfc03 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x100b common=1 payload_len=3[0m
+PROBE: zcl_raw_payload (3 bytes): 380086
+PROBE: read_attr_resp cluster=0xfc03 src_ep=11 dst_ep=11
+  attr=0x0038 status=0x86 type=0x00 size=0 data=(nil)
+[0;32mI (11350) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+SEND discext fbb6 fc03 0030 10 100b 0b
+[0;32mI (15850) GRADIENT_PROBE: Serial command: discover attrs EXT cluster 0xfc03 start 0x0030 on 0xfbb6 ep=11[0m
+[0;32mI (15850) GRADIENT_PROBE: tx discover attr EXT start=0x0030 max=16 cluster 0xfc03 -> nwk=0xfbb6 ep=11 (manuf=0x100b)[0m
+[0;32mI (15870) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0xfc03 profile=0x0104 cmd=0x0b/other dir=to_cli manuf=0x100b common=1 payload_len=2[0m
+PROBE: zcl_raw_payload (2 bytes): 1581
+PROBE: default_resp cluster=0xfc03 resp_to_cmd=0x15 status=0x81 (129)
+SEND readattr fbb6 fc03 0030 100b
+[0;32mI (550) GRADIENT_PROBE: Serial command: read attr 0x0030 from cluster 0xfc03 on 0xfbb6[0m
+[0;32mI (550) GRADIENT_PROBE: tx read attr 0x0030 from cluster 0xfc03 -> nwk=0xfbb6 ep=11 (manuf=0x100b)[0m
+[0;32mI (620) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0xfc03 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x100b common=1 payload_len=3[0m
+PROBE: zcl_raw_payload (3 bytes): 300086
+PROBE: read_attr_resp cluster=0xfc03 src_ep=11 dst_ep=11
+  attr=0x0030 status=0x86 type=0x00 size=0 data=(nil)
+SEND readattr fbb6 fc03 0031 100b
+[0;32mI (6650) GRADIENT_PROBE: Serial command: read attr 0x0031 from cluster 0xfc03 on 0xfbb6[0m
+[0;32mI (6650) GRADIENT_PROBE: tx read attr 0x0031 from cluster 0xfc03 -> nwk=0xfbb6 ep=11 (manuf=0x100b)[0m
+[0;32mI (6670) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0xfc03 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x100b common=1 payload_len=3[0m
+PROBE: zcl_raw_payload (3 bytes): 310086
+PROBE: read_attr_resp cluster=0xfc03 src_ep=11 dst_ep=11
+  attr=0x0031 status=0x86 type=0x00 size=0 data=(nil)
+SEND readattr fbb6 fc03 0032 100b
+[0;32mI (12750) GRADIENT_PROBE: Serial command: read attr 0x0032 from cluster 0xfc03 on 0xfbb6[0m
+[0;32mI (12750) GRADIENT_PROBE: tx read attr 0x0032 from cluster 0xfc03 -> nwk=0xfbb6 ep=11 (manuf=0x100b)[0m
+[0;32mI (12770) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0xfc03 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x100b common=1 payload_len=3[0m
+PROBE: zcl_raw_payload (3 bytes): 320086
+PROBE: read_attr_resp cluster=0xfc03 src_ep=11 dst_ep=11
+  attr=0x0032 status=0x86 type=0x00 size=0 data=(nil)
+SEND readattr fbb6 fc03 0033 100b
+[0;32mI (18850) GRADIENT_PROBE: Serial command: read attr 0x0033 from cluster 0xfc03 on 0xfbb6[0m
+[0;32mI (18850) GRADIENT_PROBE: tx read attr 0x0033 from cluster 0xfc03 -> nwk=0xfbb6 ep=11 (manuf=0x100b)[0m
+[0;32mI (18870) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0xfc03 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x100b common=1 payload_len=3[0m
+PROBE: zcl_raw_payload (3 bytes): 330086
+PROBE: read_attr_resp cluster=0xfc03 src_ep=11 dst_ep=11
+  attr=0x0033 status=0x86 type=0x00 size=0 data=(nil)
+SEND readattr fbb6 fc03 0034 100b
+[0;32mI (24950) GRADIENT_PROBE: Serial command: read attr 0x0034 from cluster 0xfc03 on 0xfbb6[0m
+[0;32mI (24950) GRADIENT_PROBE: tx read attr 0x0034 from cluster 0xfc03 -> nwk=0xfbb6 ep=11 (manuf=0x100b)[0m
+[0;32mI (24970) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0xfc03 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x100b common=1 payload_len=3[0m
+PROBE: zcl_raw_payload (3 bytes): 340086
+PROBE: read_attr_resp cluster=0xfc03 src_ep=11 dst_ep=11
+  attr=0x0034 status=0x86 type=0x00 size=0 data=(nil)

@@ -1,0 +1,56 @@
+HOST: readattr d938 0000 0000 100b
+[0;32mI (61792) GRADIENT_PROBE: Serial command: read attr 0x0000 from cluster 0x0000 on 0xd938[0m
+[0;32mI (61792) GRADIENT_PROBE: tx read attr 0x0000 from cluster 0x0000 -> nwk=0xd938 ep=11 (manuf=0x100b)[0m
+[0;32mI (61802) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0000 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x100b common=1 payload_len=3[0m
+PROBE: zcl_raw_payload (3 bytes): 000086
+PROBE: read_attr_resp cluster=0x0000 src_ep=11 dst_ep=11
+  attr=0x0000 status=0x86 type=0x00 size=0 data=(nil)
+HOST: readattr d938 0000 0001 100b
+[0;32mI (62592) GRADIENT_PROBE: Serial command: read attr 0x0001 from cluster 0x0000 on 0xd938[0m
+[0;32mI (62592) GRADIENT_PROBE: tx read attr 0x0001 from cluster 0x0000 -> nwk=0xd938 ep=11 (manuf=0x100b)[0m
+[0;32mI (62612) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0000 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x100b common=1 payload_len=8[0m
+PROBE: zcl_raw_payload (8 bytes): 0100002300000000
+PROBE: read_attr_resp cluster=0x0000 src_ep=11 dst_ep=11
+  attr=0x0001 status=0x00 type=0x23 size=4 data=PROBE: value (4 bytes): 00000000
+HOST: readattr d938 0000 0003 100b
+[0;32mI (63392) GRADIENT_PROBE: Serial command: read attr 0x0003 from cluster 0x0000 on 0xd938[0m
+[0;32mI (63392) GRADIENT_PROBE: tx read attr 0x0003 from cluster 0x0000 -> nwk=0xd938 ep=11 (manuf=0x100b)[0m
+[0;32mI (63402) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0000 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x100b common=1 payload_len=3[0m
+PROBE: zcl_raw_payload (3 bytes): 030086
+PROBE: read_attr_resp cluster=0x0000 src_ep=11 dst_ep=11
+  attr=0x0003 status=0x86 type=0x00 size=0 data=(nil)
+HOST: readattr d938 0000 0040 100b
+[0;32mI (64192) GRADIENT_PROBE: Serial command: read attr 0x0040 from cluster 0x0000 on 0xd938[0m
+[0;32mI (64192) GRADIENT_PROBE: tx read attr 0x0040 from cluster 0x0000 -> nwk=0xd938 ep=11 (manuf=0x100b)[0m
+[0;32mI (64202) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0000 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x100b common=1 payload_len=30[0m
+PROBE: zcl_raw_payload (30 bytes): 4000004219343432322d393438322d303434315f484730315f5053553033
+PROBE: read_attr_resp cluster=0x0000 src_ep=11 dst_ep=11
+  attr=0x0040 status=0x00 type=0x42 size=26 data=PROBE: value (26 bytes): 19343432322d393438322d303434315f484730315f5053553033
+HOST: readattr d938 0000 0041 100b
+[0;32mI (64992) GRADIENT_PROBE: Serial command: read attr 0x0041 from cluster 0x0000 on 0xd938[0m
+[0;32mI (64992) GRADIENT_PROBE: tx read attr 0x0041 from cluster 0x0000 -> nwk=0xd938 ep=11 (manuf=0x100b)[0m
+[0;32mI (65012) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0000 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x100b common=1 payload_len=8[0m
+PROBE: zcl_raw_payload (8 bytes): 4100002397261c7c
+PROBE: read_attr_resp cluster=0x0000 src_ep=11 dst_ep=11
+  attr=0x0041 status=0x00 type=0x23 size=4 data=PROBE: value (4 bytes): 97261c7c
+HOST: readattr d938 0000 0050 100b
+[0;32mI (65792) GRADIENT_PROBE: Serial command: read attr 0x0050 from cluster 0x0000 on 0xd938[0m
+[0;32mI (65792) GRADIENT_PROBE: tx read attr 0x0050 from cluster 0x0000 -> nwk=0xd938 ep=11 (manuf=0x100b)[0m
+[0;32mI (65812) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0000 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x100b common=1 payload_len=8[0m
+PROBE: zcl_raw_payload (8 bytes): 5000001b01000000
+PROBE: read_attr_resp cluster=0x0000 src_ep=11 dst_ep=11
+  attr=0x0050 status=0x00 type=0x1b size=4 data=PROBE: value (4 bytes): 01000000
+HOST: readattr d938 0000 0020 100b
+[0;32mI (66592) GRADIENT_PROBE: Serial command: read attr 0x0020 from cluster 0x0000 on 0xd938[0m
+[0;32mI (66592) GRADIENT_PROBE: tx read attr 0x0020 from cluster 0x0000 -> nwk=0xd938 ep=11 (manuf=0x100b)[0m
+[0;32mI (66602) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0000 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x100b common=1 payload_len=14[0m
+PROBE: zcl_raw_payload (14 bytes): 2000004209303a5057524f4e4031
+PROBE: read_attr_resp cluster=0x0000 src_ep=11 dst_ep=11
+  attr=0x0020 status=0x00 type=0x42 size=10 data=PROBE: value (10 bytes): 09303a5057524f4e4031
+HOST: readattr d938 0000 0021 100b
+[0;32mI (67392) GRADIENT_PROBE: Serial command: read attr 0x0021 from cluster 0x0000 on 0xd938[0m
+[0;32mI (67392) GRADIENT_PROBE: tx read attr 0x0021 from cluster 0x0000 -> nwk=0xd938 ep=11 (manuf=0x100b)[0m
+[0;32mI (67402) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0000 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x100b common=1 payload_len=8[0m
+PROBE: zcl_raw_payload (8 bytes): 21000023d4450a00
+PROBE: read_attr_resp cluster=0x0000 src_ep=11 dst_ep=11
+  attr=0x0021 status=0x00 type=0x23 size=4 data=PROBE: value (4 bytes): d4450a00
