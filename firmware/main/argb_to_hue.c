@@ -1314,6 +1314,73 @@ static bool mirek_to_xy(uint16_t mirek, uint16_t *x_out, uint16_t *y_out)
     return true;
 }
 
+static void set_standard_attr(uint8_t endpoint,
+                              uint16_t cluster_id,
+                              uint16_t attr_id,
+                              void *value)
+{
+    esp_zb_zcl_status_t status = esp_zb_zcl_set_attribute_val(endpoint,
+                                                              cluster_id,
+                                                              ESP_ZB_ZCL_CLUSTER_SERVER_ROLE,
+                                                              attr_id,
+                                                              value,
+                                                              false);
+    if (status != ESP_ZB_ZCL_STATUS_SUCCESS) {
+        ESP_LOGW(TAG, "standard attr sync failed: ep=%u cluster=0x%04x attr=0x%04x status=0x%02x",
+                 (unsigned)endpoint,
+                 (unsigned)cluster_id,
+                 (unsigned)attr_id,
+                 (unsigned)status);
+    }
+}
+
+static void sync_fc03_to_standard_attrs(uint8_t endpoint,
+                                        const light_state_t *st,
+                                        bool has_on,
+                                        bool has_bri,
+                                        bool has_color,
+                                        bool has_mirek,
+                                        uint16_t mirek)
+{
+    if (!st) {
+        return;
+    }
+
+    if (has_on) {
+        bool on = st->on;
+        set_standard_attr(endpoint,
+                          ESP_ZB_ZCL_CLUSTER_ID_ON_OFF,
+                          ESP_ZB_ZCL_ATTR_ON_OFF_ON_OFF_ID,
+                          &on);
+    }
+    if (has_bri) {
+        uint8_t bri = st->bri;
+        set_standard_attr(endpoint,
+                          ESP_ZB_ZCL_CLUSTER_ID_LEVEL_CONTROL,
+                          ESP_ZB_ZCL_ATTR_LEVEL_CONTROL_CURRENT_LEVEL_ID,
+                          &bri);
+    }
+    if (has_color) {
+        uint16_t x = st->x;
+        uint16_t y = st->y;
+        set_standard_attr(endpoint,
+                          ESP_ZB_ZCL_CLUSTER_ID_COLOR_CONTROL,
+                          ESP_ZB_ZCL_ATTR_COLOR_CONTROL_CURRENT_X_ID,
+                          &x);
+        set_standard_attr(endpoint,
+                          ESP_ZB_ZCL_CLUSTER_ID_COLOR_CONTROL,
+                          ESP_ZB_ZCL_ATTR_COLOR_CONTROL_CURRENT_Y_ID,
+                          &y);
+    }
+    if (has_mirek) {
+        uint16_t color_temperature = mirek;
+        set_standard_attr(endpoint,
+                          ESP_ZB_ZCL_CLUSTER_ID_COLOR_CONTROL,
+                          ESP_ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_TEMPERATURE_ID,
+                          &color_temperature);
+    }
+}
+
 static void emit_gradient_json(uint8_t endpoint,
                                uint16_t fc03_flags,
                                uint8_t n_colors,
@@ -1567,8 +1634,10 @@ static void handle_hue_multicolor_command(uint8_t endpoint, const uint8_t *data,
     if (has_on && st->on && st->bri == 0) {
         st->bri = st->last_bri ? st->last_bri : 0xFE;
         st->last_bri = st->bri;
+        has_bri = true;
     }
 
+    sync_fc03_to_standard_attrs(endpoint, st, has_on, has_bri, has_mirek || has_xy, has_mirek, mirek);
     sync_fc03_state_prefix(idx);
 
     /* Keep the FC03 state attribute in sync so ZHA/bridge reads reflect the
