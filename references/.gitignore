@@ -1,0 +1,4 @@
+# Keep downloaded papers/slides local. Several public Hue/Zigbee papers discuss
+# or contain key material, so do not commit mirrored PDFs into the repo.
+papers/*.pdf
+slides/*.pdf

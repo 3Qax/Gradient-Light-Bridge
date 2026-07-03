@@ -41,6 +41,9 @@ You can change the names/count in `firmware/main/argb_to_hue.h`.
 
 To join a Philips Hue bridge, the ESP32 must present the Hue Zigbee trust-center link key. This key is widely documented in the Hue reverse-engineering community but is not included in this repository for legal reasons.
 
+Background references for Hue commissioning and gradient behavior are collected
+in [`research/hue-references.md`](research/hue-references.md).
+
 1. Copy the placeholder header:
 
    ```bash
