@@ -139,9 +139,16 @@ class GradientState:
 def ensure_direct_mode(device: Device) -> None:
     try:
         # OpenRGB mode names vary; try the most common Direct/Custom names.
+        try:
+            active_mode = device.modes[device.active_mode]
+            if active_mode.name.lower() in ("direct", "custom"):
+                return
+        except (AttributeError, IndexError, TypeError):
+            pass
+
         for mode_name in ("Direct", "Custom", "direct", "custom"):
             for mode in device.modes:
-                if mode.name == mode_name:
+                if mode.name.lower() == mode_name.lower():
                     device.set_mode(mode_name)
                     return
     except Exception as exc:
@@ -443,7 +450,11 @@ def render_gradient(
 def dynamic_cycle_seconds(effect_speed: int | None, min_seconds: float, max_seconds: float) -> float:
     speed = max(1, min(254, coerce_int(effect_speed, 1)))
     speed_ratio = speed / 254.0
-    return max(min_seconds, max_seconds - ((max_seconds - min_seconds) * speed_ratio))
+    # Hue's "extreme" dynamic-scene speed has been observed as 224 rather
+    # than 254. Use an eased curve so high app speeds feel fast instead of
+    # landing near the middle of a long linear cycle.
+    remaining_ratio = 1.0 - speed_ratio
+    return max(min_seconds, min_seconds + ((max_seconds - min_seconds) * remaining_ratio * remaining_ratio))
 
 
 def dynamic_offset(state: GradientState, now: float, min_seconds: float, max_seconds: float) -> float:
@@ -498,7 +509,7 @@ def apply_gradient_state(
     state: GradientState,
     set_direct_mode: bool,
     now: float | None = None,
-    min_cycle_seconds: float = 8.0,
+    min_cycle_seconds: float = 1.5,
     max_cycle_seconds: float = 90.0,
 ) -> None:
     offset = state.offset
@@ -640,8 +651,8 @@ def run(config: dict[str, Any]) -> None:
     port_name = find_serial_port(serial_cfg.get("port"))
     baud = serial_cfg.get("baud", 115200)
     prefix = serial_cfg.get("prefix", "DATA: ")
-    dynamic_frame_interval = max(0.02, coerce_float(dynamic_cfg.get("frame_interval_seconds"), 0.1))
-    dynamic_min_cycle = max(1.0, coerce_float(dynamic_cfg.get("min_cycle_seconds"), 8.0))
+    dynamic_frame_interval = max(0.02, coerce_float(dynamic_cfg.get("frame_interval_seconds"), 0.05))
+    dynamic_min_cycle = max(0.5, coerce_float(dynamic_cfg.get("min_cycle_seconds"), 1.5))
     dynamic_max_cycle = max(dynamic_min_cycle, coerce_float(dynamic_cfg.get("max_cycle_seconds"), 90.0))
     serial_timeout = max(0.02, min(coerce_float(serial_cfg.get("timeout"), dynamic_frame_interval), dynamic_frame_interval))
 

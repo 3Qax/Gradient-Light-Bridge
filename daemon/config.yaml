@@ -36,3 +36,11 @@ endpoints:
 # If true, attempt to switch matched devices into Direct/Custom mode before
 # setting colors.
 set_direct_mode: true
+
+dynamic:
+  # Hue dynamic-scene speed is mapped to one full palette cycle. Extreme speed
+  # has been observed as effect_speed=224, so the daemon uses a non-linear
+  # curve and this short minimum to keep max-speed scenes visibly active.
+  frame_interval_seconds: 0.05
+  min_cycle_seconds: 1.5
+  max_cycle_seconds: 90.0
