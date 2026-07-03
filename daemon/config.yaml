@@ -18,12 +18,19 @@ serial:
 
 endpoints:
   # endpoint number -> OpenRGB mapping
-  # The firmware now exposes a single Hue gradient endpoint (11).
-  # Adjust zone/leds to match your physical wiring.
+  # The firmware exposes one Hue gradient endpoint (11).
+  # OpenRGB profile argb-to-hue.orp:
+  #   0: JAF      -> global motherboard zone, leave untouched
+  #   1: JARGB 1 -> 6 LEDs
+  #   2: JARGB 2 -> 48 LEDs split into 12 LED segments:
+  #      VRM [0:12], Right [12:24], Center [24:36], Left [36:48]
+  #   3: JARGB 3 -> 6 LEDs
   11:
-    name: "PC Case"
+    name: "VRM"
     device: "MSI MYSTIC LIGHT"
-    zone: 1
+    zone: 2
+    segment: "VRM"
+    segment_start: 0
     leds: 12
 
 # If true, attempt to switch matched devices into Direct/Custom mode before

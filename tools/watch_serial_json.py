@@ -12,6 +12,7 @@ import argparse
 import json
 import os
 import re
+import subprocess
 import sys
 import time
 from datetime import datetime
@@ -19,6 +20,7 @@ from pathlib import Path
 from typing import Any
 
 import serial
+from serial import SerialException
 
 
 DEFAULT_BAUD = 115200
@@ -51,11 +53,48 @@ def parse_data_line(line: str) -> dict[str, Any] | None:
     return parsed
 
 
-def open_serial(port: str, baud: int, timeout: float) -> serial.Serial:
+def systemctl_user(*args: str) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        ["systemctl", "--user", *args],
+        check=False,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+
+
+def service_is_active(service: str) -> bool:
+    result = systemctl_user("is-active", service)
+    return result.returncode == 0 and result.stdout.strip() == "active"
+
+
+def stop_daemon_for_capture(service: str, enabled: bool) -> bool:
+    if not enabled or not service_is_active(service):
+        return False
+
+    print(f"stopping {service} while serial capture owns the port", file=sys.stderr, flush=True)
+    result = systemctl_user("stop", service)
+    if result.returncode != 0:
+        raise RuntimeError(f"failed to stop {service}: {result.stderr.strip()}")
+    return True
+
+
+def restart_daemon_after_capture(service: str, should_restart: bool) -> None:
+    if not should_restart:
+        return
+
+    print(f"restarting {service}", file=sys.stderr, flush=True)
+    result = systemctl_user("start", service)
+    if result.returncode != 0:
+        print(f"failed to restart {service}: {result.stderr.strip()}", file=sys.stderr, flush=True)
+
+
+def open_serial(port: str, baud: int, timeout: float, exclusive: bool) -> serial.Serial:
     ser = serial.Serial()
     ser.port = port
     ser.baudrate = baud
     ser.timeout = timeout
+    ser.exclusive = exclusive
     ser.dtr = False
     ser.rts = False
     ser.open()
@@ -78,6 +117,18 @@ def make_parser() -> argparse.ArgumentParser:
     parser.add_argument("--reset-input", action="store_true", help="Drop buffered serial input after opening.")
     parser.add_argument("--raw", action="store_true", help="Echo all serial lines to stderr for debugging.")
     parser.add_argument("--no-time", action="store_true", help="Do not add elapsed _t seconds to output JSON.")
+    parser.add_argument(
+        "--no-manage-daemon",
+        action="store_true",
+        help="Do not stop/restart argb-to-hue.service around the serial capture.",
+    )
+    parser.add_argument(
+        "--no-restart-daemon",
+        action="store_true",
+        help="If this script stops the daemon, leave it stopped on exit.",
+    )
+    parser.add_argument("--daemon-service", default="argb-to-hue.service", help="systemd --user service owning the serial port.")
+    parser.add_argument("--no-exclusive", action="store_true", help="Do not request exclusive serial access.")
     return parser
 
 
@@ -91,9 +142,12 @@ def main(argv: list[str] | None = None) -> int:
 
     start = time.monotonic()
     deadline = start + args.duration if args.duration > 0 else None
+    stopped_daemon = False
 
     try:
-        with open_serial(args.port, args.baud, args.timeout) as ser:
+        stopped_daemon = stop_daemon_for_capture(args.daemon_service, not args.no_manage_daemon)
+
+        with open_serial(args.port, args.baud, args.timeout, not args.no_exclusive) as ser:
             if args.reset_input:
                 ser.reset_input_buffer()
 
@@ -105,7 +159,16 @@ def main(argv: list[str] | None = None) -> int:
             )
 
             while deadline is None or time.monotonic() < deadline:
-                raw = ser.readline()
+                try:
+                    raw = ser.readline()
+                except SerialException as exc:
+                    print(
+                        f"serial read failed: {exc}. "
+                        "If another process owns the port, stop it or rerun without --no-manage-daemon.",
+                        file=sys.stderr,
+                        flush=True,
+                    )
+                    return 2
                 if not raw:
                     continue
 
@@ -132,9 +195,13 @@ def main(argv: list[str] | None = None) -> int:
                     out_file.flush()
     except KeyboardInterrupt:
         return 130
+    except RuntimeError as exc:
+        print(str(exc), file=sys.stderr, flush=True)
+        return 2
     finally:
         if out_file:
             out_file.close()
+        restart_daemon_after_capture(args.daemon_service, stopped_daemon and not args.no_restart_daemon)
 
     return 0
 

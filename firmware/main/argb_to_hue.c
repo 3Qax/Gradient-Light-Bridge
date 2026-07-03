@@ -11,6 +11,7 @@
 #include "trust_center_key.h"
 
 #include <ctype.h>
+#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -834,6 +835,44 @@ static bool handle_scenes_get_membership_raw(const zb_zcl_parsed_hdr_t *hdr,
     return true;
 }
 
+static void hue_group_add_confirm_cb(zb_uint8_t param)
+{
+    zb_apsme_add_group_conf_t *conf = ZB_BUF_GET_PARAM(param, zb_apsme_add_group_conf_t);
+    ESP_LOGI(TAG, "GROUPS_APS_ADD_CONFIRM: group=0x%04x ep=%u status=%d in_group=%u",
+             (unsigned)conf->group_address,
+             (unsigned)conf->endpoint,
+             (int)conf->status,
+             (unsigned)zb_aps_is_endpoint_in_group(conf->group_address, conf->endpoint));
+    zb_buf_free(param);
+}
+
+static void hue_join_group(uint16_t group_id, uint8_t endpoint)
+{
+    if (zb_aps_is_endpoint_in_group(group_id, endpoint)) {
+        ESP_LOGI(TAG, "GROUPS_APS_ADD: group=0x%04x ep=%u already present",
+                 (unsigned)group_id,
+                 (unsigned)endpoint);
+        return;
+    }
+
+    zb_bufid_t group_buf = zb_buf_get_out();
+    if (!group_buf) {
+        ESP_LOGE(TAG, "GROUPS_APS_ADD: no ZBOSS output buffer for group=0x%04x ep=%u",
+                 (unsigned)group_id,
+                 (unsigned)endpoint);
+        return;
+    }
+
+    zb_apsme_add_group_req_t *req = ZB_BUF_GET_PARAM(group_buf, zb_apsme_add_group_req_t);
+    req->group_address = group_id;
+    req->endpoint = endpoint;
+    req->confirm_cb = hue_group_add_confirm_cb;
+    ESP_LOGI(TAG, "GROUPS_APS_ADD: requesting group=0x%04x ep=%u",
+             (unsigned)group_id,
+             (unsigned)endpoint);
+    zb_zdo_add_group_req(group_buf);
+}
+
 static bool handle_groups_add_group_raw(const zb_zcl_parsed_hdr_t *hdr,
                                         const uint8_t *payload,
                                         uint16_t payload_len)
@@ -855,6 +894,7 @@ static bool handle_groups_add_group_raw(const zb_zcl_parsed_hdr_t *hdr,
     if ((uint16_t)(3 + name_len) != payload_len) {
         return false;
     }
+    hue_join_group(group_id, endpoint);
 
     zb_bufid_t out = zb_buf_get_out();
     if (!out) {
@@ -1137,7 +1177,9 @@ static void sync_fc03_state_prefix(uint8_t idx)
 static void emit_state_json_internal(uint8_t endpoint,
                                      const char *source,
                                      bool has_fade,
-                                     uint16_t fade)
+                                     uint16_t fade,
+                                     bool has_fc03_flags,
+                                     uint16_t fc03_flags)
 {
     if (endpoint < HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE ||
         endpoint >= HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE + ARGB_ENDPOINT_COUNT) {
@@ -1161,6 +1203,9 @@ static void emit_state_json_internal(uint8_t endpoint,
     if (source) {
         printf(",\"source\":\"%s\"", source);
     }
+    if (has_fc03_flags) {
+        printf(",\"fc03_flags\":%u", (unsigned)fc03_flags);
+    }
     if (has_fade) {
         printf(",\"fade\":%u", (unsigned)fade);
     }
@@ -1176,7 +1221,7 @@ static void emit_state_json_internal(uint8_t endpoint,
 
 void emit_state_json(uint8_t endpoint)
 {
-    emit_state_json_internal(endpoint, NULL, false, 0);
+    emit_state_json_internal(endpoint, NULL, false, 0, false, 0);
 }
 
 #define HUE_FC03_MULTICOLOR_CMD_ID 0x00
@@ -1203,19 +1248,91 @@ static void scaled_gradient_to_xy(const uint8_t *p, float *x, float *y)
     *y = (ys * 0.8413f) / 4095.0f;
 }
 
+static float clamp_unit_float(float v)
+{
+    if (v < 0.0f) {
+        return 0.0f;
+    }
+    if (v > 1.0f) {
+        return 1.0f;
+    }
+    return v;
+}
+
+/* Convert Hue "mirek" color temperature (micro reciprocal kelvin) into the
+ * same xy state used by the rest of the FC03 path. The polynomial is the
+ * common CCT-to-CIE approximation used for warm/cool white lamps. */
+static bool mirek_to_xy(uint16_t mirek, uint16_t *x_out, uint16_t *y_out)
+{
+    if (mirek == 0 || x_out == NULL || y_out == NULL) {
+        return false;
+    }
+
+    float kelvin = 1000000.0f / (float)mirek;
+    if (kelvin < 1667.0f) {
+        kelvin = 1667.0f;
+    } else if (kelvin > 25000.0f) {
+        kelvin = 25000.0f;
+    }
+
+    float t = kelvin;
+    float x;
+    if (t <= 4000.0f) {
+        x = (-0.2661239e9f / (t * t * t)) -
+            (0.2343580e6f / (t * t)) +
+            (0.8776956e3f / t) +
+            0.179910f;
+    } else {
+        x = (-3.0258469e9f / (t * t * t)) +
+            (2.1070379e6f / (t * t)) +
+            (0.2226347e3f / t) +
+            0.240390f;
+    }
+
+    float y;
+    if (t <= 2222.0f) {
+        y = (-1.1063814f * x * x * x) -
+            (1.34811020f * x * x) +
+            (2.18555832f * x) -
+            0.20219683f;
+    } else if (t <= 4000.0f) {
+        y = (-0.9549476f * x * x * x) -
+            (1.37418593f * x * x) +
+            (2.09137015f * x) -
+            0.16748867f;
+    } else {
+        y = (3.0817580f * x * x * x) -
+            (5.87338670f * x * x) +
+            (3.75112997f * x) -
+            0.37001483f;
+    }
+
+    x = clamp_unit_float(x);
+    y = clamp_unit_float(y);
+    *x_out = (uint16_t)lroundf(x * 65535.0f);
+    *y_out = (uint16_t)lroundf(y * 65535.0f);
+    return true;
+}
+
 static void emit_gradient_json(uint8_t endpoint,
+                               uint16_t fc03_flags,
                                uint8_t n_colors,
                                const gradient_color_t *colors,
                                bool on,
+                               uint8_t bri,
                                uint8_t style,
                                uint8_t scale_raw,
                                uint8_t offset_raw,
                                bool has_fade,
-                               uint16_t fade)
+                               uint16_t fade,
+                               bool has_effect_speed,
+                               uint8_t effect_speed)
 {
-    printf("DATA: {\"endpoint\":%u,\"source\":\"fc03\",\"on\":%s,\"gradient\":true,\"n\":%u,\"style\":%u,\"segments\":%u,\"scale\":%.3f,\"scale_raw\":%u,\"offset\":%u,\"offset_raw\":%u",
+    printf("DATA: {\"endpoint\":%u,\"source\":\"fc03\",\"fc03_flags\":%u,\"on\":%s,\"bri\":%u,\"gradient\":true,\"n\":%u,\"style\":%u,\"segments\":%u,\"scale\":%.3f,\"scale_raw\":%u,\"offset\":%u,\"offset_raw\":%u",
            (unsigned)endpoint,
+           (unsigned)fc03_flags,
            on ? "true" : "false",
+           (unsigned)bri,
            (unsigned)n_colors,
            (unsigned)style,
            (unsigned)(scale_raw >> 3),
@@ -1225,6 +1342,9 @@ static void emit_gradient_json(uint8_t endpoint,
            (unsigned)offset_raw);
     if (has_fade) {
         printf(",\"fade\":%u", (unsigned)fade);
+    }
+    if (has_effect_speed) {
+        printf(",\"effect_speed\":%u", (unsigned)effect_speed);
     }
     printf(",\"colors\":[");
     for (uint8_t i = 0; i < n_colors; i++) {
@@ -1290,6 +1410,7 @@ static void handle_hue_multicolor_command(uint8_t endpoint, const uint8_t *data,
     size_t off = 2;
     bool has_on = false;
     bool has_bri = false;
+    bool has_mirek = false;
     bool has_xy = false;
     bool has_fade = false;
     bool has_effect = false;
@@ -1297,6 +1418,7 @@ static void handle_hue_multicolor_command(uint8_t endpoint, const uint8_t *data,
     bool has_gradient = false;
     bool has_gradient_params = false;
     uint16_t fade = 0;
+    uint16_t mirek = 0;
     uint8_t effect = 0;
     uint8_t effect_speed = 0;
     uint8_t n_colors = 0;
@@ -1332,7 +1454,13 @@ static void handle_hue_multicolor_command(uint8_t endpoint, const uint8_t *data,
         if (!fc03_require_bytes(off, 2, size, "mirek")) {
             return;
         }
+        mirek = hue_u16_le(&data[off]);
         off += 2;
+        if (mirek_to_xy(mirek, &st->x, &st->y)) {
+            has_mirek = true;
+        } else {
+            ESP_LOGW(TAG, "FC03 mirek value out of range: %u", (unsigned)mirek);
+        }
     }
 
     if (flags & HUE_FC03_FLAG_COLOR_XY) {
@@ -1461,10 +1589,11 @@ static void handle_hue_multicolor_command(uint8_t endpoint, const uint8_t *data,
         state[15 + 3 * n_colors] = offset_raw;
     }
 
-    ESP_LOGI(TAG, "FC03 update: flags=0x%04x on=%s bri=%s xy=%s fade=%s gradient=%u effect=%d speed=%d params=%s scale=%u offset=%u",
+    ESP_LOGI(TAG, "FC03 update: flags=0x%04x on=%s bri=%s mirek=%s xy=%s fade=%s gradient=%u effect=%d speed=%d params=%s scale=%u offset=%u",
              (unsigned)flags,
              has_on ? (st->on ? "true" : "false") : "-",
              has_bri ? "set" : "-",
+             has_mirek ? "set" : "-",
              has_xy ? "set" : "-",
              has_fade ? "set" : "-",
              (unsigned)n_colors,
@@ -1476,16 +1605,20 @@ static void handle_hue_multicolor_command(uint8_t endpoint, const uint8_t *data,
 
     if (has_gradient) {
         emit_gradient_json(endpoint,
+                           flags,
                            n_colors,
                            colors,
                            st->on,
+                           st->bri,
                            style,
                            scale_raw,
                            offset_raw,
                            has_fade,
-                           fade);
-    } else if (has_on || has_bri || has_xy) {
-        emit_state_json_internal(endpoint, "fc03", has_fade, fade);
+                           fade,
+                           has_effect_speed,
+                           effect_speed);
+    } else if (has_on || has_bri || has_mirek || has_xy) {
+        emit_state_json_internal(endpoint, "fc03", has_fade, fade, true, flags);
     }
 }
 
@@ -2813,7 +2946,7 @@ static size_t hex_to_bytes(const char *hex, uint8_t *out, size_t out_len)
 
 /* Minimal serial CLI for self-testing the gradient parser without re-pairing
  * the device through the Hue app every time.  Typing:
- *   gradient 51010104001350000000c2ad57c2ad57c2ad57c2ad57c2ad572800
+ *   g 51010104001350000000c2ad57c2ad57c2ad57c2ad57c2ad572800
  * will emit the same DATA line the daemon will see when the bridge/ZHA sends
  * an FC03 multiColor command. */
 static void serial_cmd_task(void *pvParameters)
@@ -2830,22 +2963,37 @@ static void serial_cmd_task(void *pvParameters)
         /* Drop trailing newline. */
         line[strcspn(line, "\r\n")] = '\0';
 
+        const char *gradient_hex = NULL;
         if (strncmp(line, "gradient ", 9) == 0) {
+            gradient_hex = line + 9;
+        } else if (strncmp(line, "g ", 2) == 0) {
+            gradient_hex = line + 2;
+        }
+
+        if (gradient_hex) {
             uint8_t payload[64];
-            size_t len = hex_to_bytes(line + 9, payload, sizeof(payload));
+            size_t len = hex_to_bytes(gradient_hex, payload, sizeof(payload));
             if (len) {
                 handle_hue_multicolor_command(HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE,
                                               payload, len);
             } else {
-                printf("USAGE: gradient <hex payload>\n");
+                printf("USAGE: g <hex payload>\n");
             }
+        } else if (strncmp(line, "group ", 6) == 0) {
+            char *end = NULL;
+            uint16_t group_id = (uint16_t)strtoul(line + 6, &end, 0);
+            uint8_t endpoint = HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE;
+            if (end && *end) {
+                endpoint = (uint8_t)strtoul(end, NULL, 0);
+            }
+            hue_join_group(group_id, endpoint);
         } else if (strcmp(line, "state") == 0) {
             emit_state_json(HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE);
         } else if (strcmp(line, "discover") == 0 || strcmp(line, "reset") == 0) {
             printf("DATA: {\"event\":\"factory_reset\"}\n");
             esp_zb_factory_reset();
         } else if (strcmp(line, "help") == 0) {
-            printf("Commands: gradient <hex>, state, discover/reset, help\n");
+            printf("Commands: g <hex>, gradient <hex>, group <id> [endpoint], state, discover/reset, help\n");
         }
     }
 }
