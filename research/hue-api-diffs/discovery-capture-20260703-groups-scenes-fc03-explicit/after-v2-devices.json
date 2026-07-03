@@ -1,0 +1,2936 @@
+{
+  "data": [
+    {
+      "id": "018305e4-d540-4f4c-bcd5-9df1265465f9",
+      "id_v1": "/lights/35",
+      "identify": {},
+      "metadata": {
+        "archetype": "wall_lantern",
+        "name": "Terrace top light"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-11f",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "1743530P7",
+        "product_archetype": "wall_lantern",
+        "product_name": "Hue Discover outdoor wall",
+        "software_version": "1.145.2"
+      },
+      "services": [
+        {
+          "rid": "be869f94-a95e-4765-bc62-cd02ab4af1a3",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "5f8e63a7-643a-45cd-b927-7fcc5cf91159",
+          "rtype": "light"
+        },
+        {
+          "rid": "2e6df473-ec14-4172-8804-c776578b6836",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "f46497a0-743e-4d5d-bf1c-2abcb84ff11f",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "efa757b6-9280-43c9-9c57-e495aa0c22b8",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "0766d35a-4d73-4220-812b-edef88305b30",
+      "id_v1": "/lights/11",
+      "identify": {},
+      "metadata": {
+        "archetype": "wall_shade",
+        "name": "Upper Wall Lamp"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-112",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "LCA001",
+        "product_archetype": "sultan_bulb",
+        "product_name": "Hue color lamp",
+        "software_version": "1.145.2"
+      },
+      "services": [
+        {
+          "rid": "08ff2177-23ab-43cc-af4d-725da06834fb",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "4d8ff328-639b-4dc2-805b-2200f85804f2",
+          "rtype": "light"
+        },
+        {
+          "rid": "be59a402-f3bf-41ac-b030-250626621545",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "d8a0fcc7-ae8d-4049-8118-4ebdb7186172",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "57d173fc-fe5b-40d6-8242-cb491dd28c00",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "0bbd24a1-01a1-4ac4-9682-300a803e6f25",
+      "id_v1": "/lights/24",
+      "identify": {},
+      "metadata": {
+        "archetype": "pendant_round",
+        "name": "Hue color lamp 8"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-114",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "LCA008",
+        "product_archetype": "sultan_bulb",
+        "product_name": "Hue color lamp",
+        "software_version": "1.145.1"
+      },
+      "services": [
+        {
+          "rid": "e74cb31d-ccc4-41bd-b115-3f4f6fab736c",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "b3b6a0c0-a0ca-4835-ba47-010c26f2fbc1",
+          "rtype": "light"
+        },
+        {
+          "rid": "b4c441f0-f942-4834-90e7-889bec2273f6",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "31d5224c-feb2-4679-82ca-4ba4d929e0ca",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "3ed2a46f-4653-45c8-ba07-0955121d2071",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "0c71a894-a953-4504-b701-0ec4f6ccae62",
+      "id_v1": "/lights/20",
+      "identify": {},
+      "metadata": {
+        "archetype": "sultan_bulb",
+        "name": "Toplight 3"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-112",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "LCA001",
+        "product_archetype": "sultan_bulb",
+        "product_name": "Hue color lamp",
+        "software_version": "1.145.2"
+      },
+      "services": [
+        {
+          "rid": "694c2eca-ef7d-4cc2-a50c-62b137abf125",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "32efb1d3-f487-4f6b-872b-2b7a5e63ed66",
+          "rtype": "light"
+        },
+        {
+          "rid": "e8b8ea08-cec9-45d0-877d-246d2f445698",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "3502cc61-5801-4c08-8782-b958d4be3b47",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "6f467520-949b-4c1a-974b-e22f143ba524",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "0fe3ca1a-c265-4d4d-873c-38116e299109",
+      "id_v1": "/lights/60",
+      "identify": {},
+      "metadata": {
+        "archetype": "hue_lightstrip",
+        "name": "Headboard"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-118",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "LCX004",
+        "product_archetype": "hue_lightstrip",
+        "product_name": "Hue gradient lightstrip",
+        "software_version": "1.129.5"
+      },
+      "services": [
+        {
+          "rid": "d44bacff-c47c-4977-b9c0-aa710be693d8",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "5b9e49a2-6e08-4bbd-b6cf-6dfc5c389699",
+          "rtype": "light"
+        },
+        {
+          "rid": "3442f820-64ef-4d6f-803a-f007a50f48e3",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "8814f1eb-34c0-43aa-8bb5-6dca377c1bec",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "084a776c-917d-412a-ba6d-23247af66a00",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "1c9ebeed-6501-4c68-a781-c34a26fb62cf",
+      "id_v1": "/sensors/4",
+      "identify": {},
+      "metadata": {
+        "archetype": "unknown_archetype",
+        "name": "Wardrobe Motion Sensor"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-11b",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "SML003",
+        "product_archetype": "unknown_archetype",
+        "product_name": "Hue motion sensor",
+        "software_version": "2.85.1"
+      },
+      "services": [
+        {
+          "rid": "e9232121-863b-4162-b925-a311c50a1c96",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "8512559a-b4ed-4892-9e91-26d8619b820a",
+          "rtype": "motion"
+        },
+        {
+          "rid": "e9626592-b14a-4976-b93c-b7739842cfed",
+          "rtype": "device_power"
+        },
+        {
+          "rid": "a12c3226-f1e1-487c-bf5a-c27a1a7e84bb",
+          "rtype": "light_level"
+        },
+        {
+          "rid": "260715e9-45a5-4298-87fe-1e72b8d588cd",
+          "rtype": "temperature"
+        },
+        {
+          "rid": "865736e7-4501-46ac-b235-e7ab5027c6bf",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device",
+      "usertest": {
+        "status": "set",
+        "usertest": false
+      }
+    },
+    {
+      "id": "1d6ab6e6-6068-4375-8f90-5588226a7d74",
+      "id_v1": "/lights/19",
+      "identify": {},
+      "metadata": {
+        "archetype": "hue_signe",
+        "name": "Desk Lamp"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-118",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "915005987001",
+        "product_archetype": "hue_signe",
+        "product_name": "Signe gradient table",
+        "software_version": "1.129.5"
+      },
+      "services": [
+        {
+          "rid": "18c0e7ad-0ab3-4332-b0c7-266ecb47f668",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "b705f4ae-56ba-4179-9196-eafdf7bf4913",
+          "rtype": "light"
+        },
+        {
+          "rid": "e3e9da8f-8fc0-4235-bc91-a28f913e20d1",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "d9119d0a-3571-4734-bd5c-d2764b777e93",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "f7352b96-b2a7-49da-8cc6-7917ca7c7db8",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "202a80b7-dda4-4f51-9b92-a0474a7f0489",
+      "id_v1": "/sensors/17",
+      "metadata": {
+        "archetype": "unknown_archetype",
+        "name": "Dimmer Switch"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-119",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "RWL022",
+        "product_archetype": "unknown_archetype",
+        "product_name": "Hue dimmer switch",
+        "software_version": "2.85.1"
+      },
+      "services": [
+        {
+          "rid": "e6980f0b-8b28-4cb3-8922-56ebbd34f688",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "86481449-a686-4ff6-be7d-96add5e50c9d",
+          "rtype": "button"
+        },
+        {
+          "rid": "ae92e8c6-3b74-4c89-a3d8-0576fc821431",
+          "rtype": "button"
+        },
+        {
+          "rid": "7f573f3d-1392-47fc-9429-0127d670690b",
+          "rtype": "button"
+        },
+        {
+          "rid": "6b823420-1862-403e-80f3-c05ef0048443",
+          "rtype": "button"
+        },
+        {
+          "rid": "a94d8c00-d38e-4651-9a1b-44fda3889c46",
+          "rtype": "device_power"
+        },
+        {
+          "rid": "9ddfcfb9-053e-404f-ba1d-b54ce1f64157",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "22cdf4b2-1f31-4556-88fd-e18b58599a66",
+      "id_v1": "/lights/13",
+      "identify": {},
+      "metadata": {
+        "archetype": "ceiling_horizontal",
+        "name": "Toplight"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-11f",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "5060730P7_01",
+        "product_archetype": "hue_centris",
+        "product_name": "Hue Centris ceiling",
+        "software_version": "1.145.2"
+      },
+      "services": [
+        {
+          "rid": "aa8c256d-62d3-406e-b6df-a88d223472b1",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "44bcd65a-231d-4537-9c67-9adc092a6375",
+          "rtype": "light"
+        },
+        {
+          "rid": "388a365a-d33f-4525-acf8-4ea3a4ad5f2a",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "5d8137b6-836d-4109-ba39-956e11b33a4b",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "8321cce2-a63c-45ea-b7a2-ab26ae5f4998",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "2a6b27b0-439b-48fb-adeb-8fb1ec934847",
+      "id_v1": "/lights/18",
+      "identify": {},
+      "metadata": {
+        "archetype": "hue_tube",
+        "name": "Light strip"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-118",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "915005988201",
+        "product_archetype": "hue_tube",
+        "product_name": "Play gradient tube",
+        "software_version": "1.129.5"
+      },
+      "services": [
+        {
+          "rid": "625c7aa6-5fb6-48b3-bd42-11a1b31cc7f5",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "61d1a074-66f5-4bc9-a846-17c4ab6f2be3",
+          "rtype": "light"
+        },
+        {
+          "rid": "f9816ac8-6f43-4b93-9a00-dcf4f148f2cf",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "919e9c28-6a3a-4b02-93e6-7a93fb8ac6db",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "8b4c1329-e81a-4df1-86a6-6b1b24ca71b2",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "2ea075fe-c1a1-4e2a-94e6-38aa66469e0f",
+      "id_v1": "/lights/49",
+      "identify": {},
+      "metadata": {
+        "archetype": "pendant_spot",
+        "name": "Hue color lamp 15"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-114",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "LCA008",
+        "product_archetype": "sultan_bulb",
+        "product_name": "Hue color lamp",
+        "software_version": "1.145.1"
+      },
+      "services": [
+        {
+          "rid": "dba8dcd0-5c69-4cd7-b41f-030efac0cbb6",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "81a60e05-3e29-4b31-b9a6-f648b41eaa83",
+          "rtype": "light"
+        },
+        {
+          "rid": "0bd46671-f7e6-438d-9a2f-553256150089",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "e80e9fe5-c030-410c-ae20-4d9558c1e198",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "8d4a1397-8a30-422f-aec0-90386db6f399",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "3211e1d4-f7b4-41f5-a046-741df80215e4",
+      "id_v1": "/lights/34",
+      "identify": {},
+      "metadata": {
+        "archetype": "ceiling_round",
+        "name": "Toplight"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-11f",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "915005997901",
+        "product_archetype": "ceiling_round",
+        "product_name": "Hue Xamento ceiling",
+        "software_version": "1.145.2"
+      },
+      "services": [
+        {
+          "rid": "17771903-9953-4849-a71a-2390a1595cee",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "50045e02-ef73-4b53-a2d4-3f95c92c86ae",
+          "rtype": "light"
+        },
+        {
+          "rid": "ab0bf364-ed5e-4baf-9069-4d887a9ccc65",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "285edc8c-82e7-4c04-bc68-71ff91248909",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "c271958a-b01a-4b10-9607-a70cf9bdb162",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "36de89af-4935-47b5-a577-5b728a830413",
+      "id_v1": "/lights/38",
+      "identify": {},
+      "metadata": {
+        "archetype": "table_wash",
+        "name": "\u017bo\u0142\u0105dz"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-114",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "LCU001",
+        "product_archetype": "luster_bulb",
+        "product_name": "Hue color luster",
+        "software_version": "1.145.1"
+      },
+      "services": [
+        {
+          "rid": "41d996d4-2f57-4e33-86bd-749265373ed9",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "feeae1f5-c594-4cda-bdea-189fcce2534a",
+          "rtype": "light"
+        },
+        {
+          "rid": "7e06c942-bc66-4ca7-8209-4a853d6d6d8e",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "fb7d677e-2028-439a-b30f-8738c3118cbb",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "9cc9cfd8-4bff-4604-8055-c047c314e026",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "3832ec7f-cb8f-401a-8ab4-185c5427f422",
+      "id_v1": "/lights/51",
+      "identify": {},
+      "metadata": {
+        "archetype": "string_light",
+        "name": "Festavia string lights"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-123",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "LCX017",
+        "product_archetype": "string_light",
+        "product_name": "Festavia string lights",
+        "software_version": "1.122.8"
+      },
+      "services": [
+        {
+          "rid": "3f016bcf-35ed-435a-b5d6-bae44f92804a",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "f53d5f32-6a2e-4ce5-97bf-5a047d698c84",
+          "rtype": "light"
+        },
+        {
+          "rid": "1112f19e-af02-415d-bc13-717b84ff645c",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "7b3f5af1-ba74-4360-9323-2504d85a5aba",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "3dd81f4d-e81f-469b-9115-20fadd11fb93",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "3aa20a67-f00c-4261-96ca-cd22c93d7ddb",
+      "id_v1": "/lights/30",
+      "identify": {},
+      "metadata": {
+        "archetype": "sultan_bulb",
+        "name": "Toplight 1"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-112",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "LCA001",
+        "product_archetype": "sultan_bulb",
+        "product_name": "Hue color lamp",
+        "software_version": "1.145.2"
+      },
+      "services": [
+        {
+          "rid": "10b2f5f8-cac4-4085-a17c-ef5177aa1621",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "09ee0d98-d907-4eb6-b48c-4d99d8894f49",
+          "rtype": "light"
+        },
+        {
+          "rid": "dc7b5799-1914-4d2f-ad53-f796080191cc",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "fa93de61-ec14-4db4-97c5-b4d76676a134",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "fa369f27-5779-4431-b1f1-8e67953ab9d7",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "3dd4f3b5-5069-42ea-b3f8-9edccba78c52",
+      "id_v1": "/lights/48",
+      "identify": {},
+      "metadata": {
+        "archetype": "pendant_spot",
+        "name": "Hue color lamp 14"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-114",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "LCA008",
+        "product_archetype": "sultan_bulb",
+        "product_name": "Hue color lamp",
+        "software_version": "1.145.1"
+      },
+      "services": [
+        {
+          "rid": "e7686f15-a2ca-4493-9d58-6c32d56ad8b4",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "0b0b4b3c-e314-4369-9a88-9a0208a4a841",
+          "rtype": "light"
+        },
+        {
+          "rid": "a9426085-f0c7-4ed7-8b9d-e4f5765049ec",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "47ac1b96-6171-4f47-98b5-d9127e995a8a",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "d204e287-2155-44a2-ad87-38872d66c2bf",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "4bc949ae-e967-44d2-9df7-6bff31c6f1a3",
+      "id_v1": "/lights/42",
+      "identify": {},
+      "metadata": {
+        "archetype": "twilight",
+        "name": "Clitoris"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-114",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "LCU001",
+        "product_archetype": "luster_bulb",
+        "product_name": "Hue color luster",
+        "software_version": "1.145.1"
+      },
+      "services": [
+        {
+          "rid": "57c843de-0407-41ca-a7aa-5f36795a57aa",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "77ba1e77-249a-4b38-8291-6c47918425c5",
+          "rtype": "light"
+        },
+        {
+          "rid": "68c03815-b010-4582-b2ce-26c37f62ae46",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "95b5def0-06e1-4a9b-b59d-5706adaa1d27",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "1e43c330-cdb8-45b8-acee-82d40747bc4c",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "4d8413f1-e865-4ca7-a083-ca0f5b2b8901",
+      "id_v1": "/lights/50",
+      "identify": {},
+      "metadata": {
+        "archetype": "pendant_spot",
+        "name": "Nad sztalug\u0105"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-114",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "LCA008",
+        "product_archetype": "sultan_bulb",
+        "product_name": "Hue color lamp",
+        "software_version": "1.145.1"
+      },
+      "services": [
+        {
+          "rid": "91b0cc75-d128-42de-b3b7-d95b99b85550",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "2c46a291-b4d8-47e1-af37-97b9592a2a17",
+          "rtype": "light"
+        },
+        {
+          "rid": "6c289d65-e001-4baf-adf0-be16b0a06f1f",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "1e30ab02-336e-4d8e-b028-3e4093579ee4",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "b86e3c32-7f5f-4685-a335-8aa4143d1f82",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "5087f3ff-c517-43f0-81fc-cc67f534e14f",
+      "id_v1": "/lights/8",
+      "identify": {},
+      "metadata": {
+        "archetype": "sultan_bulb",
+        "name": "Toplight 1"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-112",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "LCA001",
+        "product_archetype": "sultan_bulb",
+        "product_name": "Hue color lamp",
+        "software_version": "1.145.2"
+      },
+      "services": [
+        {
+          "rid": "540df95f-71df-4b89-9350-7f06673ef692",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "007e0737-5003-4fbf-8e6d-b79e15d7abfd",
+          "rtype": "light"
+        },
+        {
+          "rid": "61775196-f66f-4edc-9972-81910e3c9bf6",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "a07aa5ad-5729-48bc-a54e-c49f284457bf",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "2199658f-f5b3-4574-884b-b8c81fac7edd",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "52ae6dc6-a371-44e0-a60e-0db6e797094c",
+      "id_v1": "/lights/56",
+      "identify": {},
+      "metadata": {
+        "archetype": "wall_lantern",
+        "name": "Hue Impress outdoor wall 2"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-11f",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "1742930P7",
+        "product_archetype": "wall_lantern",
+        "product_name": "Hue Impress outdoor wall",
+        "software_version": "1.145.2"
+      },
+      "services": [
+        {
+          "rid": "95eb005a-8244-4e98-bf1f-e81599e92c05",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "fab8b1eb-f1e7-46a1-8575-2df802bac674",
+          "rtype": "light"
+        },
+        {
+          "rid": "c002d51a-e860-4019-ba31-427dc68d538e",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "132520b5-77e1-4fc2-a141-bd8d042182f5",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "adef2082-7483-44b9-bcc3-05c8b1ad9bf6",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "53be18cb-5a59-4dc2-8470-1a5a751732ba",
+      "id_v1": "/lights/44",
+      "identify": {},
+      "metadata": {
+        "archetype": "bollard",
+        "name": "Impress outdoor post 2"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-11f",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "1743230P7",
+        "product_archetype": "bollard",
+        "product_name": "Hue Impress outdoor post",
+        "software_version": "1.145.2"
+      },
+      "services": [
+        {
+          "rid": "f60b2b88-58db-495a-8a07-2d065f0516b3",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "41ae8610-903d-4199-8a01-3ce57cd8a41f",
+          "rtype": "light"
+        },
+        {
+          "rid": "8cfff71d-2ad1-4d43-a644-52644422ecca",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "3376a31c-bd78-4f83-b063-cff34255f14c",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "e78ae751-fb0e-43ba-98aa-ae26ebc15daf",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "5bf71f22-3dcb-4257-8b0e-3b9334be3e9e",
+      "id_v1": "/lights/40",
+      "identify": {},
+      "metadata": {
+        "archetype": "pendant_round",
+        "name": "Hue color lamp 9"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-114",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "LCA008",
+        "product_archetype": "sultan_bulb",
+        "product_name": "Hue color lamp",
+        "software_version": "1.145.1"
+      },
+      "services": [
+        {
+          "rid": "8a366dce-e1b2-42da-8d92-8128543028f8",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "a1d37f71-2041-4540-8074-c47469c1e717",
+          "rtype": "light"
+        },
+        {
+          "rid": "7780a653-0322-44eb-84ce-83dad75b0bb8",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "e346ba0c-c4fa-4e22-bbc6-aa0f3bb8a7e9",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "2412b66a-2379-4f3f-b1cd-5375d1ea8134",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "5fc61bcc-f751-43bb-9983-c60873ebad07",
+      "id_v1": "/lights/29",
+      "identify": {},
+      "metadata": {
+        "archetype": "double_spot",
+        "name": "Hue Argenta color spot 4"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-114",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "5062448P7",
+        "product_archetype": "double_spot",
+        "product_name": "Hue Argenta color spot",
+        "software_version": "1.145.1"
+      },
+      "services": [
+        {
+          "rid": "a7482578-5867-4b54-b377-6b1b11884a85",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "d9b7c1a5-c8b8-4aa6-8fb7-f612a17354b9",
+          "rtype": "light"
+        },
+        {
+          "rid": "64e62748-c351-4b39-8cd6-35eccd419843",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "2e6ebef6-85d2-4b57-a329-cd5cadf3f322",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "c151910b-87f1-4959-8629-bac88851c6dd",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "5fe8963b-8e17-4fa0-8839-b7dfa83d2dcc",
+      "id_v1": "/sensors/2",
+      "metadata": {
+        "archetype": "unknown_archetype",
+        "name": "Hue tap dial switch 1"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-121",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "RDM002",
+        "product_archetype": "unknown_archetype",
+        "product_name": "Hue tap dial switch",
+        "software_version": "2.85.1"
+      },
+      "services": [
+        {
+          "rid": "469cf6e4-41bf-4430-8e1c-f5227e1d9dba",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "8d503dab-81a2-4038-bd81-cee4251b2089",
+          "rtype": "relative_rotary"
+        },
+        {
+          "rid": "557a14d0-addf-4f21-84fe-a8e1e05c985e",
+          "rtype": "device_power"
+        },
+        {
+          "rid": "bd490d18-1a76-4efd-a0a8-9d1fbed16de1",
+          "rtype": "button"
+        },
+        {
+          "rid": "ed8398fc-dbd0-4c8b-a0a2-b39cf55b3522",
+          "rtype": "button"
+        },
+        {
+          "rid": "70bb1b4f-f892-4738-bb8b-5cf3feaf6857",
+          "rtype": "button"
+        },
+        {
+          "rid": "5f325ac7-8ec9-43a5-a1dd-3f7f8b118bfc",
+          "rtype": "button"
+        },
+        {
+          "rid": "704ebb70-23f6-4325-8a5a-58136b1a336c",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "624a4c50-24cf-41b0-ac31-da6afe44d183",
+      "id_v1": "/lights/27",
+      "identify": {},
+      "metadata": {
+        "archetype": "double_spot",
+        "name": "Hue Argenta color spot 2"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-114",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "5062448P7",
+        "product_archetype": "double_spot",
+        "product_name": "Hue Argenta color spot",
+        "software_version": "1.145.1"
+      },
+      "services": [
+        {
+          "rid": "0c60ad61-2c8b-4ed3-8e14-c53283d470a3",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "f1f2860d-f7b1-4f1b-9568-e2341434f130",
+          "rtype": "light"
+        },
+        {
+          "rid": "00cbe426-74fd-402b-ac0a-a7ab0ae24ee8",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "8a389462-8a41-4749-99ef-c239902c559b",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "24000708-5776-4aa8-afa3-556403fab636",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "654381d9-fd09-4fa5-9db8-00c1d91145d6",
+      "id_v1": "/lights/15",
+      "identify": {},
+      "metadata": {
+        "archetype": "single_spot",
+        "name": "Toplight 3"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-114",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "5060730P7_03",
+        "product_archetype": "hue_centris",
+        "product_name": "Hue Centris spot",
+        "software_version": "1.145.1"
+      },
+      "services": [
+        {
+          "rid": "bd4f5832-f7cd-4540-9c95-f4387c67fdd3",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "ad72d542-60fe-49cc-b6ca-cc8580a7dabd",
+          "rtype": "light"
+        },
+        {
+          "rid": "e175a51f-da50-4e47-a414-14855a404930",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "a3857516-9a3c-4af5-881e-1c2c057aea77",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "39d6d612-d78a-4158-b396-cee9daa3ab42",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "6650c58a-5689-417c-ae98-92260d099676",
+      "id_v1": "/lights/1",
+      "identify": {},
+      "metadata": {
+        "archetype": "wall_lantern",
+        "name": "Frontowe nad gara\u017cem"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-11f",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "1745630P7",
+        "product_archetype": "wall_lantern",
+        "product_name": "Hue outdoor wall",
+        "software_version": "1.145.2"
+      },
+      "services": [
+        {
+          "rid": "d950f3e2-f0bf-475f-bf30-4509cd6b765c",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "966b9c4e-7fce-4061-bb32-8f57f31cd3c9",
+          "rtype": "light"
+        },
+        {
+          "rid": "c7930755-8a36-434e-a90d-476ab6f12b06",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "c6f7f55e-89dc-4d2a-9b10-f7d628fd35a4",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "3e995629-437e-4d24-a8f0-6aeb837e1304",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "68764681-c9b4-4303-a93d-c120b362f804",
+      "id_v1": "/lights/43",
+      "identify": {},
+      "metadata": {
+        "archetype": "bollard",
+        "name": "Impress outdoor post 1"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-11f",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "1743230P7",
+        "product_archetype": "bollard",
+        "product_name": "Hue Impress outdoor post",
+        "software_version": "1.145.2"
+      },
+      "services": [
+        {
+          "rid": "eb3aa217-40e4-414c-8ecd-a99aaa425597",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "3d267e99-ec20-4c2f-8413-58a237b26427",
+          "rtype": "light"
+        },
+        {
+          "rid": "6d05befa-5829-4de3-a7e4-94e6f2251442",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "9a962da3-0d28-492b-b2c8-914daa2eb46b",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "38148b4f-9d79-4f54-b0f1-b43791a8aaf7",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "704c8a00-4729-473e-a0f0-02e7e55f4a02",
+      "id_v1": "/lights/21",
+      "identify": {},
+      "metadata": {
+        "archetype": "hue_signe",
+        "name": "Chair lamp"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-118",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "915005987001",
+        "product_archetype": "hue_signe",
+        "product_name": "Signe gradient table",
+        "software_version": "1.129.5"
+      },
+      "services": [
+        {
+          "rid": "7f2a24d9-3f68-4928-abed-fb5749bc743f",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "fa22d7a4-04ae-4c0c-b852-79e8c6e10711",
+          "rtype": "light"
+        },
+        {
+          "rid": "62cbef8d-e93b-4ad3-9063-832e6f551fc5",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "d01a16ee-226a-49b8-ba13-4caedab8a3ea",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "27f3d0f2-d302-4504-8cbf-1ad17c50911e",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "7f581e8a-6e2a-4538-ae19-9054e3e5627f",
+      "id_v1": "/sensors/50",
+      "metadata": {
+        "archetype": "unknown_archetype",
+        "name": "Button Hallway"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-12b",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "RDM005",
+        "product_archetype": "unknown_archetype",
+        "product_name": "Hue smart button",
+        "software_version": "2.85.1"
+      },
+      "services": [
+        {
+          "rid": "2cc1dfc0-93dc-418a-b3e8-8dcf54ebf4f0",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "e1573745-84a4-429d-9789-b1aebdad9c95",
+          "rtype": "button"
+        },
+        {
+          "rid": "94414580-3d42-4c30-a8f8-3068bc785f53",
+          "rtype": "device_power"
+        },
+        {
+          "rid": "b63e0a2f-3124-4615-9919-e78a235be6f5",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "813abd15-605a-4a8c-b3ae-c60ee744a81b",
+      "identify": {},
+      "metadata": {
+        "archetype": "unknown_archetype",
+        "name": "Living room contact sensor 2"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-125",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "SOC001",
+        "product_archetype": "unknown_archetype",
+        "product_name": "Hue secure contact sensor",
+        "software_version": "2.85.1"
+      },
+      "services": [
+        {
+          "rid": "a909e30e-e3fe-42a8-9b44-7599ea5091ce",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "4d76e64b-1658-4c48-9ef8-cbfca55193ec",
+          "rtype": "contact"
+        },
+        {
+          "rid": "3e98751d-db76-4391-b7ff-05b74fb8db76",
+          "rtype": "tamper"
+        },
+        {
+          "rid": "1355488b-8985-4ade-9a4d-6b6368c25efc",
+          "rtype": "device_power"
+        },
+        {
+          "rid": "ddbaba24-1836-4928-ae50-ea1bed29963b",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "82d78339-63a6-49b3-838c-95cb7a774cff",
+      "id_v1": "/lights/17",
+      "identify": {},
+      "metadata": {
+        "archetype": "hue_signe",
+        "name": "Floor Lamp"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-118",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "915005987201",
+        "product_archetype": "hue_signe",
+        "product_name": "Signe gradient floor",
+        "software_version": "1.129.5"
+      },
+      "services": [
+        {
+          "rid": "a776a3fe-4f2a-47a5-8b10-594357336e6f",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "68915d5b-eb64-48f5-8ac6-ca608f1e4f12",
+          "rtype": "light"
+        },
+        {
+          "rid": "0e91044c-79a6-4d81-88b3-daf6365ac2e9",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "1e0c7d1e-1915-4ad2-899f-afdd8adc6c19",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "d54c5463-1508-4774-ab53-b055dca1d49c",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "83cad538-9cfc-4188-b805-2faa5ad0cba4",
+      "id_v1": "/lights/2",
+      "identify": {},
+      "metadata": {
+        "archetype": "wall_lantern",
+        "name": "Frontowe nad drzwiami wejciowymi"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-11f",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "1745630P7",
+        "product_archetype": "wall_lantern",
+        "product_name": "Hue outdoor wall",
+        "software_version": "1.145.2"
+      },
+      "services": [
+        {
+          "rid": "fbd28f10-b29b-4dce-8709-3675d1cacc46",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "67375adc-2259-4ab6-8bb1-0e29bc66e7f0",
+          "rtype": "light"
+        },
+        {
+          "rid": "aefe7721-7353-4786-9d90-36e8d329d9c1",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "93e0831f-adf8-491a-853c-846e13c121a1",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "1b89af16-b1ae-498b-9662-2cd6d3362c23",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "83e9ef74-5497-45c5-a5a2-60bbf3e92413",
+      "id_v1": "/lights/46",
+      "identify": {},
+      "metadata": {
+        "archetype": "pendant_round",
+        "name": "Hue color lamp 12"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-114",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "LCA008",
+        "product_archetype": "sultan_bulb",
+        "product_name": "Hue color lamp",
+        "software_version": "1.145.1"
+      },
+      "services": [
+        {
+          "rid": "ff21deef-7c78-4e0f-b5c3-bcb08cacd42d",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "a16c0dc1-ccc5-4b27-b53c-58b840e3ee7b",
+          "rtype": "light"
+        },
+        {
+          "rid": "5c97c2c9-525a-4b13-acca-3f861b8b3f89",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "8d1c75f6-8b93-4149-b939-5ad8532e01ae",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "53ce8fc6-bad6-4bf3-8e02-5861eecd0d46",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "84b4247f-dfb3-43fe-8fca-d3faa211b594",
+      "id_v1": "/lights/45",
+      "identify": {},
+      "metadata": {
+        "archetype": "pendant_round",
+        "name": "Hue color lamp 11"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-114",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "LCA008",
+        "product_archetype": "sultan_bulb",
+        "product_name": "Hue color lamp",
+        "software_version": "1.145.1"
+      },
+      "services": [
+        {
+          "rid": "a82658a9-782a-4132-b73e-4da3dab535df",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "7892f5ef-1ea5-4fc8-89fc-03cce416c702",
+          "rtype": "light"
+        },
+        {
+          "rid": "4125b70a-0a84-4d77-a441-b3d507cdc7ce",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "aed3d0d0-2cd7-434b-be6d-e6761dfb4b4d",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "3d19df36-96f9-48a5-bc20-a691a2b1ec6f",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "8b184992-5649-4824-bd56-ab935a4db5e1",
+      "id_v1": "/lights/33",
+      "identify": {},
+      "metadata": {
+        "archetype": "sultan_bulb",
+        "name": "Toplight"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-112",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "LCA001",
+        "product_archetype": "sultan_bulb",
+        "product_name": "Hue color lamp",
+        "software_version": "1.145.2"
+      },
+      "services": [
+        {
+          "rid": "4e499588-8e41-4f3f-841a-92d32561d3e7",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "e2573ed2-ac77-4d32-8da6-04cc467221b7",
+          "rtype": "light"
+        },
+        {
+          "rid": "15f77dd6-4fd2-438c-b4c7-be47a77080e9",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "83727a3b-6a51-46fb-98cd-9747c8f9e49f",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "7eb2bf86-fc52-48b2-b6cc-52d08d0006ef",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "8d815ddc-990f-42c5-b407-41b54d20da15",
+      "id_v1": "/lights/22",
+      "identify": {},
+      "metadata": {
+        "archetype": "wall_shade",
+        "name": "Lower Wall Lamp"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-112",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "LCA001",
+        "product_archetype": "sultan_bulb",
+        "product_name": "Hue color lamp",
+        "software_version": "1.145.2"
+      },
+      "services": [
+        {
+          "rid": "412f73fd-1f06-45cd-9719-c6d6987805f3",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "6510f292-fa93-46ef-a2a3-aaba969b0be9",
+          "rtype": "light"
+        },
+        {
+          "rid": "23b18e05-8da3-47f9-bd33-d9f54e897c96",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "84260206-cd49-4093-8238-03606cd23e70",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "d0c775f5-c094-44b5-9135-ea47584ff225",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "8e41c861-204d-472a-99f9-efa80171bb86",
+      "id_v1": "/sensors/45",
+      "identify": {},
+      "metadata": {
+        "archetype": "unknown_archetype",
+        "name": "Bathroom Motion Sensor"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-11b",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "SML003",
+        "product_archetype": "unknown_archetype",
+        "product_name": "Hue motion sensor",
+        "software_version": "2.85.1"
+      },
+      "services": [
+        {
+          "rid": "3bac33a5-b007-4ded-8d94-ba1f3e9060c3",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "427623f3-8689-417d-984e-00729c9873c2",
+          "rtype": "motion"
+        },
+        {
+          "rid": "91857faa-8456-427d-9aa7-4b21e1f38fc5",
+          "rtype": "device_power"
+        },
+        {
+          "rid": "13427a4f-3f48-4776-ab6e-79667a284208",
+          "rtype": "light_level"
+        },
+        {
+          "rid": "e60a1149-8f6b-4419-bbed-f1ae4f631552",
+          "rtype": "temperature"
+        },
+        {
+          "rid": "0c605e99-71c0-447a-b699-070fba7ab3b6",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device",
+      "usertest": {
+        "status": "set",
+        "usertest": false
+      }
+    },
+    {
+      "id": "914c5e25-4cd8-4194-bb10-bb8f169ba5c6",
+      "id_v1": "/lights/55",
+      "identify": {},
+      "metadata": {
+        "archetype": "wall_lantern",
+        "name": "Hue Impress outdoor wall 1"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-11f",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "1742930P7",
+        "product_archetype": "wall_lantern",
+        "product_name": "Hue Impress outdoor wall",
+        "software_version": "1.145.2"
+      },
+      "services": [
+        {
+          "rid": "ccec6e79-27f0-4466-986b-b61f064a4b53",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "63f0cbbf-2b6d-4e2a-97d0-c73314f3a5b0",
+          "rtype": "light"
+        },
+        {
+          "rid": "c382056a-fada-4c8d-9709-4570b5a038df",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "1b7542ec-1c83-4f85-87bc-f9e6f123b6f8",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "0ca1fe76-b23a-40ef-beb5-028f64631372",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "9611e01c-94fa-4eb1-8dd4-9802e6d66ec7",
+      "id_v1": "/lights/14",
+      "identify": {},
+      "metadata": {
+        "archetype": "single_spot",
+        "name": "Toplight 2"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-114",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "5060730P7_05",
+        "product_archetype": "hue_centris",
+        "product_name": "Hue Centris spot",
+        "software_version": "1.145.1"
+      },
+      "services": [
+        {
+          "rid": "db87e27e-5343-49fc-8806-4842026d0582",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "6013b855-56a9-423e-b839-92a6195bdda2",
+          "rtype": "light"
+        },
+        {
+          "rid": "4c713e86-cfd8-47ff-910d-daebb4d2c99d",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "e9538483-77ca-4d7a-8150-fd0fe832e6c8",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "a3a1c8b3-d183-422a-9eae-c16cbcfa5685",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "985bcbf3-27c0-4be5-95a1-761f58229df6",
+      "id_v1": "/sensors/40",
+      "identify": {},
+      "metadata": {
+        "archetype": "unknown_archetype",
+        "name": "Pantry Motion Sensor"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-11b",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "SML003",
+        "product_archetype": "unknown_archetype",
+        "product_name": "Hue motion sensor",
+        "software_version": "2.85.1"
+      },
+      "services": [
+        {
+          "rid": "eb996e81-6a4a-47ec-9d6d-8583f840f5bb",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "6f6c007f-8649-446f-be8e-505987cf9a89",
+          "rtype": "motion"
+        },
+        {
+          "rid": "75fabcd7-89ef-4bb7-ba71-5db1590d1592",
+          "rtype": "device_power"
+        },
+        {
+          "rid": "aa367371-7fce-47f6-be8a-4a36e582ec20",
+          "rtype": "light_level"
+        },
+        {
+          "rid": "e05247a7-1db0-4771-88dc-4754f4b08276",
+          "rtype": "temperature"
+        },
+        {
+          "rid": "60e08de5-6670-4cd6-9b95-78ef2cd831b8",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device",
+      "usertest": {
+        "status": "set",
+        "usertest": false
+      }
+    },
+    {
+      "id": "9f53455d-3265-46ee-a2cd-78cf81520332",
+      "identify": {},
+      "metadata": {
+        "archetype": "unknown_archetype",
+        "name": "Ania\u2019s Room Contact Sensor"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-125",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "SOC001",
+        "product_archetype": "unknown_archetype",
+        "product_name": "Hue secure contact sensor",
+        "software_version": "2.85.1"
+      },
+      "services": [
+        {
+          "rid": "131dc2da-b6b1-4e52-badd-3f20f3d4527b",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "80bd4003-255a-4f2a-8155-8363996a9aab",
+          "rtype": "contact"
+        },
+        {
+          "rid": "9716f727-5200-49db-b0b2-1b5dbb2e0c9b",
+          "rtype": "tamper"
+        },
+        {
+          "rid": "a508c07f-cb4a-4ad3-a64c-1940977bfa64",
+          "rtype": "device_power"
+        },
+        {
+          "rid": "4a8755d4-9040-4dbb-a1b7-dca03f69006a",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "aaf92e9e-9e63-4c5d-8a41-d133857ccb6a",
+      "id_v1": "/lights/10",
+      "identify": {},
+      "metadata": {
+        "archetype": "wall_shade",
+        "name": "Talerz"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-112",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "LCA001",
+        "product_archetype": "sultan_bulb",
+        "product_name": "Hue color lamp",
+        "software_version": "1.145.2"
+      },
+      "services": [
+        {
+          "rid": "7d7de3b9-00a7-4c2a-af08-80b1d74df381",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "637c1b05-a9bc-4df6-8295-7bf0b50abb9c",
+          "rtype": "light"
+        },
+        {
+          "rid": "6c5848ad-c7b6-4428-a6bf-99065baead8b",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "eeb4c330-0071-412d-875b-8294c3a9b023",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "2758e9d0-06e5-42ec-a542-0bc570be6127",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "adbce3a8-fe59-4bf6-931e-7b98304c70f6",
+      "id_v1": "/lights/16",
+      "identify": {},
+      "metadata": {
+        "archetype": "single_spot",
+        "name": "Toplight 4"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-114",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "5060730P7_02",
+        "product_archetype": "hue_centris",
+        "product_name": "Hue Centris spot",
+        "software_version": "1.145.1"
+      },
+      "services": [
+        {
+          "rid": "fa2fd645-8d91-40d3-ae3c-841623ee6213",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "59966ef0-7107-44ed-8712-b51fa903f936",
+          "rtype": "light"
+        },
+        {
+          "rid": "99eb6d49-001e-4a95-9705-beba178f416c",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "d5a7807d-49c2-4eb4-a19b-02a8858a8b57",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "587ad319-3593-49d6-9ade-d95636d204df",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "ae673869-df81-4021-b9cb-cbf661bf1015",
+      "identify": {},
+      "metadata": {
+        "archetype": "bridge_v2",
+        "name": "Hue Bridge"
+      },
+      "product_data": {
+        "certified": true,
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "BSB002",
+        "product_archetype": "bridge_v2",
+        "product_name": "Hue Bridge",
+        "software_version": "1.77.1977138000"
+      },
+      "services": [
+        {
+          "rid": "f15a4dee-a438-4fd7-b157-054f6d2c4744",
+          "rtype": "bridge"
+        },
+        {
+          "rid": "b065b390-acbf-4de8-a995-f9114ab0cce3",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "15250faf-9ab8-4821-8306-5c961a430233",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "8f01c723-d80f-4a52-9cd2-ffa97a2e5018",
+          "rtype": "zigbee_device_discovery"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "b4323922-baab-47f1-a3a8-9ae8a5e8c46b",
+      "id_v1": "/lights/26",
+      "identify": {},
+      "metadata": {
+        "archetype": "double_spot",
+        "name": "Hue Argenta color spot 1"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-114",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "5062448P7",
+        "product_archetype": "double_spot",
+        "product_name": "Hue Argenta color spot",
+        "software_version": "1.145.1"
+      },
+      "services": [
+        {
+          "rid": "0f4fbd84-7021-4422-84b8-7c0f2cb65e6a",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "5a5a4697-199b-4849-884e-47491c83cac4",
+          "rtype": "light"
+        },
+        {
+          "rid": "4e1e972f-61b5-4cdd-8d4e-b64bef4e4ca6",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "09ef8b14-9089-447f-a514-207b174690cb",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "05385656-9204-430d-b7e2-fb355b4ecd8b",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "b60e6cb6-36e2-40cb-b744-651269a98dbe",
+      "id_v1": "/lights/28",
+      "identify": {},
+      "metadata": {
+        "archetype": "double_spot",
+        "name": "Hue Argenta color spot 3"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-114",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "5062448P7",
+        "product_archetype": "double_spot",
+        "product_name": "Hue Argenta color spot",
+        "software_version": "1.145.1"
+      },
+      "services": [
+        {
+          "rid": "8ee8c47a-2101-4ecb-853a-140ef05607c7",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "7ef3a68f-6797-432d-a1eb-7022b54fe849",
+          "rtype": "light"
+        },
+        {
+          "rid": "23fef8cb-8c64-4e2f-ab19-6a1201cfed81",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "5225c785-416e-4f4b-940a-2e2bad299b0c",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "cfee93af-5982-4b30-83e3-560be08e8d9a",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "b6928d44-85b0-49ea-8b4d-569bfd00d5a3",
+      "id_v1": "/lights/5",
+      "identify": {},
+      "metadata": {
+        "archetype": "double_spot",
+        "name": "Toplight 1"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-114",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "5063330P7",
+        "product_archetype": "double_spot",
+        "product_name": "Hue Fugato color spot",
+        "software_version": "1.145.1"
+      },
+      "services": [
+        {
+          "rid": "fe3fc794-e7c9-475a-9f4c-9a3c9d13acae",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "0e229e08-0274-4ea7-8c0c-3f9a280ac11b",
+          "rtype": "light"
+        },
+        {
+          "rid": "045eb531-ba8e-475c-a0cb-0fe936d8dfdc",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "e9193d5c-4dcd-48b7-93e4-f023955463d7",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "3708598e-a658-4d6c-be0f-96d7ab19cf3a",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "bb700f92-f99b-4ec7-ba3a-187ee41f3e4e",
+      "id_v1": "/lights/31",
+      "identify": {},
+      "metadata": {
+        "archetype": "sultan_bulb",
+        "name": "Toplight 2"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-112",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "LCA001",
+        "product_archetype": "sultan_bulb",
+        "product_name": "Hue color lamp",
+        "software_version": "1.145.2"
+      },
+      "services": [
+        {
+          "rid": "78844308-b276-4f29-bf41-3d1b1fffaf9c",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "f797a6ec-96e1-40f5-84f6-74b53e6510ac",
+          "rtype": "light"
+        },
+        {
+          "rid": "3f742a96-b66a-4825-8784-bf14273daaee",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "606c7ce8-c975-48ce-8f86-11068e5cb9d4",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "b66a9956-ee60-4f3d-8010-92008aec77b2",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "bf3400de-047c-47b6-93e7-b31d878d41dd",
+      "id_v1": "/lights/52",
+      "identify": {},
+      "metadata": {
+        "archetype": "hue_tube",
+        "name": "Play gradient tube"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-118",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "915005987901",
+        "product_archetype": "hue_tube",
+        "product_name": "Play gradient tube",
+        "software_version": "1.129.5"
+      },
+      "services": [
+        {
+          "rid": "68168811-62c0-4a63-abc5-40c6ebd67b18",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "35cabd01-77c4-4eab-86b4-4c4d02c2cae3",
+          "rtype": "light"
+        },
+        {
+          "rid": "ac6719a3-963f-4c10-8a07-e7ad2dc9fa0f",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "73a0474d-6cd7-4d51-9e8f-7bbc273a7920",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "7ef97177-4637-4542-8170-10060f882048",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "c19dc66e-3daf-4913-8e09-01ae5a6088c4",
+      "identify": {},
+      "metadata": {
+        "archetype": "unknown_archetype",
+        "name": "Living room contact sensor 1"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-125",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "SOC001",
+        "product_archetype": "unknown_archetype",
+        "product_name": "Hue secure contact sensor",
+        "software_version": "2.85.1"
+      },
+      "services": [
+        {
+          "rid": "deba32b5-87f8-4eca-bbd2-5e20fe08c3a2",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "2c008b09-ff7c-43fa-93c1-f71340798672",
+          "rtype": "contact"
+        },
+        {
+          "rid": "7494c7e6-3f78-49b7-b2d8-40146847ec37",
+          "rtype": "tamper"
+        },
+        {
+          "rid": "7697e163-cbd1-4617-9e62-52a6e000fb59",
+          "rtype": "device_power"
+        },
+        {
+          "rid": "3059fef2-93b7-407a-b50d-2326f1172d01",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "c227cf2e-9b18-4e26-b40b-595b85044178",
+      "id_v1": "/lights/41",
+      "identify": {},
+      "metadata": {
+        "archetype": "sultan_bulb",
+        "name": "Hue color lamp 10"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-114",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "LCA008",
+        "product_archetype": "sultan_bulb",
+        "product_name": "Hue color lamp",
+        "software_version": "1.145.1"
+      },
+      "services": [
+        {
+          "rid": "13f8eda6-706a-42df-8976-1ff1ebd491cd",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "8b8e753e-2dda-434e-9717-84f78e521996",
+          "rtype": "light"
+        },
+        {
+          "rid": "36fd5f7f-42d5-4160-a2ca-2ab7d3c421a0",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "ecd05268-ee76-49eb-9d02-297113a38761",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "bf39d488-a136-4733-8b35-d0b88784dcf2",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "c59aa335-33fb-40c3-9be8-f85b4244b4c9",
+      "id_v1": "/sensors/10",
+      "metadata": {
+        "archetype": "unknown_archetype",
+        "name": "Hue tap dial switch 3"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-121",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "RDM002",
+        "product_archetype": "unknown_archetype",
+        "product_name": "Hue tap dial switch",
+        "software_version": "2.85.1"
+      },
+      "services": [
+        {
+          "rid": "2e0501a3-edfa-48b2-ad41-6113244086ba",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "990cd7c3-7c19-4314-8910-50c0aaf1ff5d",
+          "rtype": "relative_rotary"
+        },
+        {
+          "rid": "d081d770-dfbc-48cb-82b4-7db4ca4a6319",
+          "rtype": "device_power"
+        },
+        {
+          "rid": "97aa5039-a1d6-40dc-9c89-612a74e399c0",
+          "rtype": "button"
+        },
+        {
+          "rid": "4c75937e-d198-4e9c-885b-714ced32b577",
+          "rtype": "button"
+        },
+        {
+          "rid": "1c92d079-3f64-42c0-9c36-ac52dfb26850",
+          "rtype": "button"
+        },
+        {
+          "rid": "5bf6af23-5694-4f97-a986-c7f1c1ec3da7",
+          "rtype": "button"
+        },
+        {
+          "rid": "72d590f6-c755-4a71-8057-6ca34531db1f",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "c5e3d33e-352e-4163-a132-6bd547bc9d25",
+      "id_v1": "/lights/32",
+      "identify": {},
+      "metadata": {
+        "archetype": "christmas_tree",
+        "name": "Rice Paper Lamp"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-112",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "LCA001",
+        "product_archetype": "sultan_bulb",
+        "product_name": "Hue color lamp",
+        "software_version": "1.145.2"
+      },
+      "services": [
+        {
+          "rid": "5ce10783-609f-4986-b1ec-da627677d639",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "bf806ebd-74c3-4801-a960-3b481c6893b3",
+          "rtype": "light"
+        },
+        {
+          "rid": "f6bb9b35-fcc9-4b85-b135-9cf0784703eb",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "6cd4e188-e9aa-4838-851b-d41cea4ac270",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "af511cbb-0c8a-48c8-9c53-d2cb0b567dcc",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "c759c894-1b6e-4849-b759-775b19cb7ff1",
+      "id_v1": "/lights/62",
+      "identify": {},
+      "metadata": {
+        "archetype": "hue_lightstrip",
+        "name": "Hue gradient lightstrip 1"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-118",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "LCX004",
+        "product_archetype": "hue_lightstrip",
+        "product_name": "Hue gradient lightstrip",
+        "software_version": "1.129.5"
+      },
+      "services": [
+        {
+          "rid": "b25fd14c-5506-43e3-99f7-c2e795814521",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "642d0aa3-c4d2-4cc4-8205-38c6ab3a6dc1",
+          "rtype": "light"
+        },
+        {
+          "rid": "1e5cc708-1363-4c66-a18c-edeed516c910",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "c796c53d-4da2-4ff3-a318-a50276cac98c",
+      "id_v1": "/sensors/51",
+      "metadata": {
+        "archetype": "unknown_archetype",
+        "name": "Hue smart button 2"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-12b",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "RDM005",
+        "product_archetype": "unknown_archetype",
+        "product_name": "Hue smart button",
+        "software_version": "2.85.1"
+      },
+      "services": [
+        {
+          "rid": "061dc413-4c02-414a-9f0a-3308a0fe6dea",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "e7ef2808-1fba-452a-b8ef-db69567c64e8",
+          "rtype": "button"
+        },
+        {
+          "rid": "ef1ad69b-b90a-41c5-9df9-56db4c79a714",
+          "rtype": "device_power"
+        },
+        {
+          "rid": "0bdc5742-75d5-4b78-b28c-cc829d9f58d6",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "c94b2d59-f3fb-4848-91bf-78831b8329db",
+      "id_v1": "/lights/23",
+      "identify": {},
+      "metadata": {
+        "archetype": "pendant_round",
+        "name": "Chupachups"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-114",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "LCA008",
+        "product_archetype": "sultan_bulb",
+        "product_name": "Hue color lamp",
+        "software_version": "1.145.1"
+      },
+      "services": [
+        {
+          "rid": "210b4f91-900b-47a9-86e4-e401bf39b249",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "0e1f5fa0-7400-4290-9d7c-72aae1f077b0",
+          "rtype": "light"
+        },
+        {
+          "rid": "9a3d4df8-846b-47e3-bd5e-00d2acfcb27a",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "09bca0d7-42af-4e36-85b1-52bb4fd177d8",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "72105d36-5c23-467f-8efe-c6bc92eb2ddf",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "cd2e2432-755a-4e8f-a6d9-6dad33d66bc1",
+      "identify": {},
+      "metadata": {
+        "archetype": "unknown_archetype",
+        "name": "Bathroom Contact Sensor"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-125",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "SOC001",
+        "product_archetype": "unknown_archetype",
+        "product_name": "Hue secure contact sensor",
+        "software_version": "2.85.1"
+      },
+      "services": [
+        {
+          "rid": "6332d232-9c85-4604-a76d-364e76e0c417",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "56e6a4fe-6deb-4130-8ecf-7bf9297794b4",
+          "rtype": "contact"
+        },
+        {
+          "rid": "25792a25-a66f-47a2-be73-451e1041a8f9",
+          "rtype": "tamper"
+        },
+        {
+          "rid": "cfc72d8e-97e1-4815-b25f-6ecd2d660557",
+          "rtype": "device_power"
+        },
+        {
+          "rid": "1b901e22-e052-4789-8033-85f319f5fa0e",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "ce14e81d-0994-4b97-bc1c-1a1a0f3f5f1d",
+      "id_v1": "/lights/36",
+      "identify": {},
+      "metadata": {
+        "archetype": "ceiling_round",
+        "name": "Toplight"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-11f",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "929003598101",
+        "product_archetype": "ceiling_round",
+        "product_name": "Hue Surimu panel",
+        "software_version": "1.145.2"
+      },
+      "services": [
+        {
+          "rid": "2ee94c8e-ab57-4df5-a586-d9458478849b",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "943be8f4-daf5-4f8c-ba24-77709fda8703",
+          "rtype": "light"
+        },
+        {
+          "rid": "29b4ab2e-5791-410a-b8b9-bb4c77e26271",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "77904bf4-118d-4eec-9638-114cd5ff21f2",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "36b22771-837c-41b5-af79-4d9fd0829802",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "d3c91bd7-27d3-40e7-84d3-37729ac43067",
+      "id_v1": "/lights/7",
+      "identify": {},
+      "metadata": {
+        "archetype": "double_spot",
+        "name": "Toplight 3"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-114",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "5063330P7",
+        "product_archetype": "double_spot",
+        "product_name": "Hue Fugato color spot",
+        "software_version": "1.145.1"
+      },
+      "services": [
+        {
+          "rid": "75ee2878-caff-4f0b-9a6d-fc64ce58e324",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "0fdd1d86-467d-4977-b120-ffab34b9c35c",
+          "rtype": "light"
+        },
+        {
+          "rid": "73746f63-3d9f-4b7e-b07f-fb1ffcc5aabb",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "e36ae973-154a-4042-92ae-6c337c913462",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "cb5eb193-38cf-476d-a3a3-b4e6fe68aab4",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "e32e4a15-e702-42da-b9cd-0d74b82d8606",
+      "id_v1": "/sensors/12",
+      "metadata": {
+        "archetype": "unknown_archetype",
+        "name": "Smart Button"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-116",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "ROM001",
+        "product_archetype": "unknown_archetype",
+        "product_name": "Hue Smart button",
+        "software_version": "2.85.1"
+      },
+      "services": [
+        {
+          "rid": "c9a35bb8-b78b-4bd1-97bf-080e861f62fe",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "e8c9db1e-97e4-4943-a09c-4f043be952cc",
+          "rtype": "button"
+        },
+        {
+          "rid": "c51cd748-5174-413d-a5cd-17dd54b0dbd1",
+          "rtype": "device_power"
+        },
+        {
+          "rid": "9dcc8151-dbd7-4b7a-8b9e-894874f287f4",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "e4309c13-e801-475e-a389-c8213dce6ab4",
+      "id_v1": "/lights/12",
+      "identify": {},
+      "metadata": {
+        "archetype": "single_spot",
+        "name": "Toplight 1"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-114",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "5060730P7_04",
+        "product_archetype": "hue_centris",
+        "product_name": "Hue Centris spot",
+        "software_version": "1.145.1"
+      },
+      "services": [
+        {
+          "rid": "7300fda0-1d3b-4cbd-9475-f31be7579695",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "db4d6d52-937b-48df-907b-18c01b31e84f",
+          "rtype": "light"
+        },
+        {
+          "rid": "3e2476e7-475d-46f3-88a5-1d66ffc19705",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "a560d7bd-71e9-49d6-9d7a-4ab29eae0ec2",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "80669658-a882-45ce-aa17-d69fea2f2f94",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "e9de3149-b8d5-4d4e-aa00-f1222194273c",
+      "id_v1": "/sensors/7",
+      "identify": {},
+      "metadata": {
+        "archetype": "unknown_archetype",
+        "name": "Staircase Motion Sensor"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-11b",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "SML003",
+        "product_archetype": "unknown_archetype",
+        "product_name": "Hue motion sensor",
+        "software_version": "2.85.1"
+      },
+      "services": [
+        {
+          "rid": "4ddf5ebf-055e-450e-90a6-71147fb5a441",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "3476dc07-f4c9-46f1-9da4-3554d5431872",
+          "rtype": "motion"
+        },
+        {
+          "rid": "8ec266e4-6661-4456-81ed-cc162b5796f8",
+          "rtype": "device_power"
+        },
+        {
+          "rid": "c28c430a-e276-46b1-8a1a-6e2f81f5f32b",
+          "rtype": "light_level"
+        },
+        {
+          "rid": "cedba722-9083-4c5e-ba84-2d4b6da2c7c9",
+          "rtype": "temperature"
+        },
+        {
+          "rid": "47f53d42-b536-4b6a-9f99-2fed6d71f369",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device",
+      "usertest": {
+        "status": "set",
+        "usertest": false
+      }
+    },
+    {
+      "id": "eedc822d-dee1-4646-9df4-c67c275785f2",
+      "id_v1": "/lights/4",
+      "identify": {},
+      "metadata": {
+        "archetype": "table_shade",
+        "name": "Ania\u2019s Bedside Table Lamp"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-120",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "929003128501",
+        "product_archetype": "table_shade",
+        "product_name": "Go table lamp",
+        "software_version": "1.122.8"
+      },
+      "services": [
+        {
+          "rid": "7fe00d30-517c-4af5-9149-b577e6b0f2a2",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "0d72ad01-f5dd-44bf-ba8d-64907f0a89cb",
+          "rtype": "light"
+        },
+        {
+          "rid": "fff548ad-7cc0-42d4-9d3a-7c7ada98a272",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "8458db65-9a9a-49c9-aad2-35f63480462c",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "ef96fe1d-0ae2-4730-bd55-49534a9e922e",
+      "id_v1": "/lights/6",
+      "identify": {},
+      "metadata": {
+        "archetype": "double_spot",
+        "name": "Toplight 2"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-114",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "5063330P7",
+        "product_archetype": "double_spot",
+        "product_name": "Hue Fugato color spot",
+        "software_version": "1.145.1"
+      },
+      "services": [
+        {
+          "rid": "96087f3b-ad44-428e-8a0e-99c81d079ce8",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "a83e9804-ef02-4241-b0e2-65580208fc30",
+          "rtype": "light"
+        },
+        {
+          "rid": "124de7a0-f010-463a-9b60-f03e6cfb32a5",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "a27e7819-d9d6-453a-9bb2-30b2c3f7acc1",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "f32f66c4-a2cc-4b42-ae2d-6e74ae5cb413",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "f0eb51ce-af78-4441-b7fc-8709fb9c676a",
+      "id_v1": "/lights/9",
+      "identify": {},
+      "metadata": {
+        "archetype": "sultan_bulb",
+        "name": "Toplight 2"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-112",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "LCA001",
+        "product_archetype": "sultan_bulb",
+        "product_name": "Hue color lamp",
+        "software_version": "1.145.2"
+      },
+      "services": [
+        {
+          "rid": "6b31bcce-5a8b-4597-a064-291afe6c0863",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "cfbf3fb4-192c-47a0-b7e9-f4f68ade51c2",
+          "rtype": "light"
+        },
+        {
+          "rid": "f0bb3e83-6a6b-466e-a0c1-d2e3ca490f68",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "2ae430cd-43ed-4690-b00b-4e85cedca360",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "4699b074-9414-46a7-b386-6ba9193d241a",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "f1336456-aa15-4055-ad63-46e58bf3e146",
+      "id_v1": "/lights/39",
+      "identify": {},
+      "metadata": {
+        "archetype": "christmas_tree",
+        "name": "Snowman"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-114",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "LCU001",
+        "product_archetype": "luster_bulb",
+        "product_name": "Hue color luster",
+        "software_version": "1.145.1"
+      },
+      "services": [
+        {
+          "rid": "dfcd93c7-4fde-4ec2-bd86-18c18a9cb029",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "dc56f522-ddf0-4b5d-bc4c-1304539ee1fb",
+          "rtype": "light"
+        },
+        {
+          "rid": "b1f73c66-10b5-4caa-9b4d-e5169c398874",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "627d9817-67c7-411f-a95a-d4900f450e5c",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "18eeab73-59f8-47c9-9eb7-80674d401d17",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "f423dde9-1fa4-49cd-b6eb-1edcfec23460",
+      "id_v1": "/lights/47",
+      "identify": {},
+      "metadata": {
+        "archetype": "pendant_spot",
+        "name": "Nad Sztalug\u0105"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-114",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "LCA008",
+        "product_archetype": "sultan_bulb",
+        "product_name": "Hue color lamp",
+        "software_version": "1.145.1"
+      },
+      "services": [
+        {
+          "rid": "457eb22a-8d9d-4ef3-8602-890f58253e74",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "26cfebb3-53ff-4599-bfb3-721be9357004",
+          "rtype": "light"
+        },
+        {
+          "rid": "be4eb519-f422-4709-91fe-8b8e4384ba98",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "3a7d687b-4771-41e4-ad35-984190023364",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "c499e397-b333-49bd-8d45-e19706a5b29d",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "f80546ad-3327-4e26-8539-8d69245c7766",
+      "id_v1": "/lights/54",
+      "identify": {},
+      "metadata": {
+        "archetype": "wall_washer",
+        "name": "Bamboo wash 2"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-11f",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "1746630P7",
+        "product_archetype": "wall_washer",
+        "product_name": "Hue Amarant wall washer",
+        "software_version": "1.145.2"
+      },
+      "services": [
+        {
+          "rid": "d95ecaa3-a708-49bb-adab-c563746ae80b",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "42c63887-6cee-419b-a639-dcf9c61a964a",
+          "rtype": "light"
+        },
+        {
+          "rid": "b1dca71d-1aca-402d-bb14-2e3b1bd54886",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "5a3271ca-42ba-4321-8a52-91dccb200950",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "09e78567-076a-4b9f-82b3-4acd7489801e",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "fcceb8a6-a0e2-4df2-a075-d6192b40e9b0",
+      "id_v1": "/lights/53",
+      "identify": {},
+      "metadata": {
+        "archetype": "wall_washer",
+        "name": "Bamboo wash 1"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-11f",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "1746630P7",
+        "product_archetype": "wall_washer",
+        "product_name": "Hue Amarant wall washer",
+        "software_version": "1.145.2"
+      },
+      "services": [
+        {
+          "rid": "fb039514-dac7-486f-8141-821db928227a",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "a8d148e3-7092-4d0a-b639-36178d4b1246",
+          "rtype": "light"
+        },
+        {
+          "rid": "c385813c-c0bc-4928-985d-635ea9442847",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "9f6ed13d-9bab-4519-b16f-02d9a50aaf3c",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "9bb9f7c5-7d91-4bef-84d6-3ac7c1170223",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "fd43515c-bef4-4bb6-a50c-554d36452288",
+      "id_v1": "/lights/3",
+      "identify": {},
+      "metadata": {
+        "archetype": "table_shade",
+        "name": "Jakub\u2019s Bedside Table Lamp"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-120",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "929003128501",
+        "product_archetype": "table_shade",
+        "product_name": "Go table lamp",
+        "software_version": "1.122.8"
+      },
+      "services": [
+        {
+          "rid": "504843da-2ab7-42de-83dc-0468256c6a9b",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "f91fb8b4-5f8c-4eb1-8a30-65f981570b45",
+          "rtype": "light"
+        },
+        {
+          "rid": "27ba493e-6e2f-4d35-b711-b3075323aa2c",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "1d274f84-a295-4be5-acc6-3864262e9391",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    }
+  ],
+  "errors": []
+}
