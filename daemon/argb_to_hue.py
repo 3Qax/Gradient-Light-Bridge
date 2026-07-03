@@ -111,6 +111,69 @@ def apply_color(target: Target, color: RGBColor, set_direct_mode: bool) -> None:
         zone.set_color(color)
 
 
+def interpolate_color(a: RGBColor, b: RGBColor, t: float) -> RGBColor:
+    t = max(0.0, min(1.0, t))
+    return RGBColor(
+        int(round(a.r + (b.r - a.r) * t)),
+        int(round(a.g + (b.g - a.g) * t)),
+        int(round(a.b + (b.b - a.b) * t)),
+    )
+
+
+def apply_gradient(
+    target: Target,
+    colors: list[dict[str, int]],
+    segments: int,
+    on: bool,
+    set_direct_mode: bool,
+) -> None:
+    """Apply a Hue FC03 multiColor gradient to the mapped OpenRGB zone/device.
+
+    The firmware emits one RGB sample per gradient point; we linearly
+    interpolate between those samples across the LEDs in the target zone.
+    """
+    if target is None:
+        return
+    device, zone = target
+    if set_direct_mode:
+        ensure_direct_mode(device)
+
+    leds = zone.leds if zone else device.leds
+    led_count = len(leds)
+    if led_count == 0:
+        return
+
+    if not on:
+        off = [RGBColor(0, 0, 0)] * led_count
+        if zone is None:
+            device.set_colors(off)
+        else:
+            zone.set_colors(off)
+        return
+
+    sample_colors = [RGBColor(c["r"], c["g"], c["b"]) for c in colors]
+    sample_count = len(sample_colors)
+    if sample_count == 0:
+        return
+
+    if sample_count == 1 or led_count == 1:
+        led_colors = [sample_colors[0]] * led_count
+    else:
+        led_colors = []
+        for i in range(led_count):
+            pos = (i / (led_count - 1)) * (sample_count - 1)
+            idx = int(pos)
+            t = pos - idx
+            c1 = sample_colors[min(idx, sample_count - 1)]
+            c2 = sample_colors[min(idx + 1, sample_count - 1)]
+            led_colors.append(interpolate_color(c1, c2, t))
+
+    if zone is None:
+        device.set_colors(led_colors)
+    else:
+        zone.set_colors(led_colors)
+
+
 def resolve_target(client: OpenRGBClient, mapping: dict[str, Any]) -> Target:
     pattern = mapping.get("device")
     zone_idx = mapping.get("zone")
@@ -204,23 +267,28 @@ def run(config: dict[str, Any]) -> None:
 
             endpoint = data.get("endpoint")
             on = data.get("on", True)
-            r = data.get("r", 0)
-            g = data.get("g", 0)
-            b = data.get("b", 0)
-
-            logger.debug("RX endpoint=%s on=%s rgb=(%s,%s,%s)", endpoint, on, r, g, b)
-
             target = targets.get(endpoint)
             if target is None:
                 logger.debug("No mapping for endpoint %s", endpoint)
                 continue
 
-            if not on:
-                color = RGBColor(0, 0, 0)
+            if data.get("gradient"):
+                colors = data.get("colors", [])
+                segments = data.get("segments", len(colors))
+                logger.debug("RX endpoint=%s gradient n=%s segments=%s", endpoint, len(colors), segments)
+                apply_gradient(target, colors, segments, on, set_direct_mode)
             else:
-                color = RGBColor(r, g, b)
+                r = data.get("r", 0)
+                g = data.get("g", 0)
+                b = data.get("b", 0)
+                logger.debug("RX endpoint=%s on=%s rgb=(%s,%s,%s)", endpoint, on, r, g, b)
 
-            apply_color(target, color, set_direct_mode)
+                if not on:
+                    color = RGBColor(0, 0, 0)
+                else:
+                    color = RGBColor(r, g, b)
+
+                apply_color(target, color, set_direct_mode)
     finally:
         ser.close()
 

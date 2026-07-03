@@ -1,0 +1,8 @@
+[0;32mI (559) GRADIENT_PROBE: Serial command: read attr 0x0020 from cluster 0x0000 on 0x48ad[0m
+[0;32mI (559) GRADIENT_PROBE: tx read attr 0x0020 from cluster 0x0000 -> nwk=0x48ad ep=11 (manuf=0x100b)[0m
+PROBE: read_attr_resp cluster=0x0000 src_ep=11 dst_ep=11
+  attr=0x0020 status=0x00 type=0x42 size=10 data=PROBE: value (10 bytes): 09303a5057524f4e4031
+[0;32mI (5859) GRADIENT_PROBE: Serial command: read attr 0x0021 from cluster 0x0000 on 0x48ad[0m
+[0;32mI (5859) GRADIENT_PROBE: tx read attr 0x0021 from cluster 0x0000 -> nwk=0x48ad ep=11 (manuf=0x100b)[0m
+PROBE: read_attr_resp cluster=0x0000 src_ep=11 dst_ep=11
+  attr=0x0021 status=0x00 type=0x23 size=4 data=PROBE: value (4 bytes): ec171500

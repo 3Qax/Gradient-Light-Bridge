@@ -3,9 +3,12 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define ARGB_ENDPOINT_COUNT 4
+#define ARGB_ENDPOINT_COUNT 1
 
-#define HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE 1
+/* Hue gradient-capable lights expose their light endpoint as 11 (0x0B).
+ * This matches the uniqueid suffix (-0b) seen on real Signify gradient
+ * lights and is the endpoint ZHA/Home Assistant use for the FC03 cluster. */
+#define HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE 11
 
 /* The registry versions of esp-zigbee-lib do not ship the example-only
  * configuration macros, so define the ones we need locally. */

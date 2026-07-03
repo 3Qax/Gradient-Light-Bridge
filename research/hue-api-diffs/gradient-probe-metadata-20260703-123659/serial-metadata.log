@@ -1,0 +1,9 @@
+[0;32mI (549) GRADIENT_PROBE: Serial command: metadata scan[0m
+[0;32mI (549) GRADIENT_PROBE: Starting OTA/basic metadata scan of real LCX004 devices[0m
+[0;32mI (549) GRADIENT_PROBE: METADATA Headboard LCX004: resolving nwk_addr[0m
+[0;31mE (5559) GRADIENT_PROBE: METADATA Headboard LCX004: nwk_addr failed status=133[0m
+[0;32mI (7559) GRADIENT_PROBE: METADATA Floor LCX004: resolving nwk_addr[0m
+[0;32mI (11349) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;31mE (12569) GRADIENT_PROBE: METADATA Floor LCX004: nwk_addr failed status=133[0m
+[0;32mI (24459) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (27489) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m

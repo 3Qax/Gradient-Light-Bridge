@@ -1,0 +1,67 @@
+Build:Sep 19 2022
+rst:0x15 (USB_UART_HPSYS),boot:0xc (SPI_FAST_FLASH_BOOT)
+Saved PC:0x40805ebc
+SPIWP:0xee
+mode:DIO, clock div:2
+load:0x40875720,len:0x18ec
+load:0x4086c110,len:0xd9c
+load:0x4086e610,len:0x2f80
+entry 0x4086c11a
+[0;32mI (23) boot: ESP-IDF v5.3.2 2nd stage bootloader[0m
+[0;32mI (23) boot: compile time Jul  2 2026 16:11:53[0m
+[0;32mI (24) boot: chip revision: v0.1[0m
+[0;32mI (24) boot: efuse block revision: v0.3[0m
+[0;32mI (24) boot.esp32c6: SPI Speed      : 80MHz[0m
+[0;32mI (25) boot.esp32c6: SPI Mode       : DIO[0m
+[0;32mI (25) boot.esp32c6: SPI Flash Size : 4MB[0m
+[0;32mI (26) boot: Enabling RNG early entropy source...[0m
+[0;32mI (27) boot: Partition Table:[0m
+[0;32mI (27) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (28) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (29) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (30) boot:  2 factory          factory app      00 00 00010000 000e1000[0m
+[0;32mI (31) boot:  3 zb_storage       Unknown data     01 81 000f1000 00004000[0m
+[0;32mI (32) boot:  4 zb_fct           Unknown data     01 81 000f5000 00000400[0m
+[0;32mI (33) boot: End of partition table[0m
+[0;32mI (33) esp_image: segment 0: paddr=00010020 vaddr=42080020 size=0ddach ( 56748) map[0m
+[0;32mI (45) esp_image: segment 1: paddr=0001ddd4 vaddr=40800000 size=02244h (  8772) load[0m
+[0;32mI (48) esp_image: segment 2: paddr=00020020 vaddr=42000020 size=713dch (463836) map[0m
+[0;32mI (134) esp_image: segment 3: paddr=00091404 vaddr=40802244 size=0b464h ( 46180) load[0m
+[0;32mI (145) esp_image: segment 4: paddr=0009c870 vaddr=4080d6b0 size=022a8h (  8872) load[0m
+[0;32mI (151) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (152) boot: Disabling RNG early entropy source...[0m
+[0;32mI (153) cpu_start: Unicore app[0m
+[0;32mI (162) cpu_start: Pro cpu start user code[0m
+[0;32mI (162) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (162) app_init: Application information:[0m
+[0;32mI (163) app_init: Project name:     gradient_probe[0m
+[0;32mI (163) app_init: App version:      1[0m
+[0;32mI (164) app_init: Compile time:     Jul  2 2026 16:13:23[0m
+[0;32mI (165) app_init: ELF file SHA256:  5cd53b991...[0m
+[0;32mI (165) app_init: ESP-IDF:          v5.3.2[0m
+[0;32mI (166) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (166) efuse_init: Max chip rev:     v0.99 [0m
+[0;32mI (167) efuse_init: Chip rev:         v0.1[0m
+[0;32mI (167) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (168) heap_init: At 40814770 len 00067EA0 (415 KiB): RAM[0m
+[0;32mI (169) heap_init: At 4087C610 len 00002F54 (11 KiB): RAM[0m
+[0;32mI (170) heap_init: At 50000000 len 00003FE8 (15 KiB): RTCRAM[0m
+[0;32mI (172) spi_flash: detected chip: generic[0m
+[0;32mI (172) spi_flash: flash io: dio[0m
+[0;32mI (173) sleep: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (174) sleep: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (175) coexist: coex firmware version: cbb41d7[0m
+[0;32mI (175) coexist: coexist rom version 5b8dcfa[0m
+[0;32mI (176) main_task: Started on CPU0[0m
+[0;32mI (176) main_task: Calling app_main()[0m
+[0;32mI (176) GRADIENT_PROBE: Erasing NVS for fresh pairing[0m
+[0;32mI (446) phy_init: phy_version 320,348a293,Sep  3 2024,16:33:12[0m
+[0;33mW (446) phy_init: failed to load RF calibration data (0x1102), falling back to full calibration[0m
+[0;33mW (506) phy_init: saving new calibration data because of checksum failure, mode(2)[0m
+[0;32mI (516) phy: libbtbb version: 04952fd, Sep  3 2024, 16:33:30[0m
+[0;32mI (526) main_task: Returned from app_main()[0m
+[0;32mI (536) GRADIENT_PROBE: ZDO signal: ZDO Config Ready (0x17), status: ESP_FAIL[0m
+[0;32mI (536) GRADIENT_PROBE: Initialize Zigbee stack[0m
+[0;33mW (536) GRADIENT_PROBE: Network(0xfb2f) closed, devices joining not allowed.[0m
+[0;32mI (536) GRADIENT_PROBE: Device started up in non factory-reset mode[0m
+[0;32mI (536) GRADIENT_PROBE: Device rebooted[0m

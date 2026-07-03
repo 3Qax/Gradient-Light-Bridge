@@ -13,9 +13,16 @@ firmware/sdkconfig.old
 firmware/dependencies.lock
 firmware/managed_components/
 firmware/.cache/
+firmware/*/build/
+firmware/*/sdkconfig
+firmware/*/sdkconfig.old
+firmware/*/dependencies.lock
+firmware/*/managed_components/
+firmware/*/.cache/
 
 # User-supplied secret template (the .in file is committed)
 # If you prefer not to store the real key in git, copy .in to .h locally.
+firmware/*/main/trust_center_key.h
 
 # IDE
 .vscode/

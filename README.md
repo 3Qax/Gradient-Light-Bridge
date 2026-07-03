@@ -56,7 +56,8 @@ in [`research/hue-references.md`](research/hue-references.md).
 
 ## Build the firmware (Docker, no host ESP-IDF install)
 
-The build uses the official ESP-IDF Docker image so you do not need to install the toolchain on your Mac.
+The build uses `firmware/in-docker.sh`, which runs the official ESP-IDF Docker
+image. You do not need to install ESP-IDF on the host.
 
 ```bash
 cd firmware
@@ -66,6 +67,32 @@ chmod +x in-docker.sh
 ```
 
 The firmware binary is written to `firmware/build/argb_to_hue.bin`.
+
+Useful Docker helper details:
+
+- Run `./in-docker.sh ...` from `firmware/`; it mounts the current directory as
+  `/project` inside the container.
+- The default image is `docker.io/espressif/idf:v5.3.2`. Override it with
+  `IDFVER`, for example:
+
+  ```bash
+  IDFVER=v5.3.2 ./in-docker.sh idf.py build
+  ```
+
+- If your user is not in the `docker` group, run through `sg docker`:
+
+  ```bash
+  sg docker -c './in-docker.sh idf.py build'
+  ```
+
+- To build the gradient probe subproject, run the helper from that directory and
+  point it at the parent script:
+
+  ```bash
+  cd firmware/gradient_probe
+  ../in-docker.sh idf.py set-target esp32c6
+  ../in-docker.sh idf.py build
+  ```
 
 ## Flash the firmware
 
@@ -90,12 +117,21 @@ cd firmware
 PORT=/dev/ttyACM0 ./in-docker.sh idf.py -p /dev/ttyACM0 flash
 ```
 
+To erase Zigbee pairing state without wiping the full chip, erase the
+`zb_storage` partition from Linux:
+
+```bash
+cd firmware
+PORT=/dev/ttyACM0 ./in-docker.sh python3 -m esptool --chip esp32c6 \
+  -p /dev/ttyACM0 -b 460800 erase_region 0xf1000 0x4000
+```
+
 To watch the device logs:
 
 ```bash
 esptool.py --chip esp32c6 -p /dev/tty.usbmodem* monitor
 # or, on Linux:
-./in-docker.sh idf.py -p /dev/ttyACM0 monitor
+PORT=/dev/ttyACM0 ./in-docker.sh idf.py -p /dev/ttyACM0 monitor
 ```
 
 Leave monitoring running until you see the device join the network (next step).

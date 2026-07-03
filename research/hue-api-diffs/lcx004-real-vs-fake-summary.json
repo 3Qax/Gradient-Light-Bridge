@@ -1,0 +1,53 @@
+[
+  {
+    "certified": true,
+    "gamut": "C",
+    "id": "25",
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "LCX004",
+    "name": "Floor lamp",
+    "productid": "Philips-LCX004-1-GALSECLv1",
+    "productname": "Hue gradient lightstrip",
+    "streaming": {
+      "proxy": true,
+      "renderer": true
+    },
+    "swconfigid": "C4C1C739",
+    "swversion": "1.129.5",
+    "uniqueid": "00:17:88:01:0b:e4:38:82-0b"
+  },
+  {
+    "certified": true,
+    "gamut": "C",
+    "id": "37",
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "LCX004",
+    "name": "Headboard light strip",
+    "productid": "Philips-LCX004-1-GALSECLv1",
+    "productname": "Hue gradient lightstrip",
+    "streaming": {
+      "proxy": true,
+      "renderer": true
+    },
+    "swconfigid": "C4C1C739",
+    "swversion": "1.129.5",
+    "uniqueid": "00:17:88:01:0b:89:54:2f-0b"
+  },
+  {
+    "certified": false,
+    "gamut": "other",
+    "id": "57",
+    "manufacturername": "Signify Netherlands B.V.",
+    "modelid": "LCX004",
+    "name": "Extended color light 1",
+    "productid": null,
+    "productname": "Extended color light",
+    "streaming": {
+      "proxy": false,
+      "renderer": false
+    },
+    "swconfigid": null,
+    "swversion": "1.129.5",
+    "uniqueid": "00:17:88:01:0b:ff:fe:05-0b"
+  }
+]

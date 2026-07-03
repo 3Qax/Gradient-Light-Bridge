@@ -1,0 +1,125 @@
+[0;33mW (968) GRADIENT_PROBE: Receive Zigbee action(0x1f00) callback[0m
+[0;32mI (1058) GRADIENT_PROBE: Network(0xfb2f) is open for 40 seconds[0m
+[0;33mW (1448) GRADIENT_PROBE: Network(0xfb2f) closed, devices joining not allowed.[0m
+[0;32mI (1808) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (1858) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (1948) GRADIENT_PROBE: Network(0xfb2f) is open for 180 seconds[0m
+[0;32mI (1948) GRADIENT_PROBE: Joined network successfully (Extended PAN ID: dd:75:8b:a8:25:de:8f:9f, PAN ID: 0xfb2f, Channel:25, Short Address: 0x638b)[0m
+HOST: join
+[0;32mI (2248) GRADIENT_PROBE: Serial command: rejoin[0m
+[0;32mI (2778) GRADIENT_PROBE: Network(0xfb2f) is open for 180 seconds[0m
+[0;32mI (2778) GRADIENT_PROBE: Joined network successfully (Extended PAN ID: dd:75:8b:a8:25:de:8f:9f, PAN ID: 0xfb2f, Channel:25, Short Address: 0x638b)[0m
+[0;32mI (4998) GRADIENT_PROBE: Network(0xfb2f) is open for 35 seconds[0m
+[0;32mI (6958) GRADIENT_PROBE: Starting match-desc scan for FC01 cluster[0m
+PROBE: DISCOVER match nwk=0x0c67 ep=11
+[0;32mI (7008) GRADIENT_PROBE: Starting FC01 sweep on nwk=0x0c67 ep=11[0m
+[0;32mI (7048) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+PROBE: DISCOVER active_ep nwk=0x0c67 count=2 eps=[11,242]
+[0;32mI (7188) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (7208) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (7338) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (7398) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (7418) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (7508) GRADIENT_PROBE: FC01 tx read attr 0x0000 -> nwk=0x0c67 ep=11[0m
+[0;32mI (7678) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (7678) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (7718) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (7738) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (7778) GRADIENT_PROBE: Starting match-desc scan for FC01 cluster[0m
+[0;32mI (7808) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+PROBE: DISCOVER match nwk=0x48ad ep=11
+[0;32mI (7958) GRADIENT_PROBE: Starting FC01 sweep on nwk=0x48ad ep=11[0m
+[0;32mI (7978) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (8008) GRADIENT_PROBE: FC01 tx read attr 0x0000 -> nwk=0x48ad ep=11[0m
+[0;32mI (8058) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (8078) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (8088) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+PROBE: read_attr_resp cluster=0xfc01 src_ep=11 dst_ep=11
+  attr=0x0000 status=0x00 type=0x18 size=1 data=PROBE: value (1 bytes): 0f
+[0;32mI (8158) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+PROBE: DISCOVER active_ep nwk=0x48ad count=2 eps=[11,242]
+[0;32mI (8288) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (8328) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+PROBE: DISCOVER simple_desc nwk=0x48ad ep=11 profile=0x0104 device=0x010d ver=1 in=11 out=1 clusters=[0x0000,0x0003,0x0004,0x0005,0x0006,0x0008,0x1000,0xfc03,0x0300,0xfc01,0xfc04 | 0x0019]
+[0;32mI (8458) GRADIENT_PROBE: FC01 tx cmd 0x01 -> nwk=0x48ad ep=11 (0 bytes)[0m
+[0;32mI (8478) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (8518) GRADIENT_PROBE: FC01 tx cmd 0x02 -> nwk=0x48ad ep=11 (0 bytes)[0m
+[0;32mI (8698) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (8768) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (8968) GRADIENT_PROBE: FC01 tx cmd 0x03 -> nwk=0x48ad ep=11 (6 bytes)[0m
+[0;32mI (9018) GRADIENT_PROBE: FC01 tx cmd 0x04 -> nwk=0x48ad ep=11 (0 bytes)[0m
+[0;32mI (9348) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (9468) GRADIENT_PROBE: FC01 tx cmd 0x07 -> nwk=0x48ad ep=11 (0 bytes)[0m
+[0;32mI (9528) GRADIENT_PROBE: FC01 tx read attr 0x0001 -> nwk=0x48ad ep=11[0m
+[0;32mI (9548) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (9588) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (9718) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (9978) GRADIENT_PROBE: FC01 tx read attr 0x0002 -> nwk=0x48ad ep=11[0m
+[0;32mI (10008) GRADIENT_PROBE: Network(0xfb2f) is open for 30 seconds[0m
+[0;32mI (10028) GRADIENT_PROBE: FC01 tx read attr 0x0003 -> nwk=0x48ad ep=11[0m
+HOST: scan
+PROBE: DISCOVER simple_desc nwk=0x48ad ep=242 profile=0xa1e0 device=0x0061 ver=0 in=0 out=1 clusters=[ | 0x0021]
+[0;32mI (10048) GRADIENT_PROBE: Serial command: scan[0m
+[0;32mI (10048) GRADIENT_PROBE: Starting ZDO scan of 7 gradient-capable devices[0m
+[0;32mI (10048) GRADIENT_PROBE: SCAN Headboard LCX004: sending nwk_addr broadcast[0m
+[0;32mI (10048) GRADIENT_PROBE: SCAN Floor LCX004: sending nwk_addr broadcast[0m
+[0;32mI (10048) GRADIENT_PROBE: SCAN Play gradient tube: sending nwk_addr broadcast[0m
+[0;32mI (10058) GRADIENT_PROBE: SCAN Play gradient tube 2: sending nwk_addr broadcast[0m
+[0;32mI (10058) GRADIENT_PROBE: SCAN Signe gradient floor: sending nwk_addr broadcast[0m
+[0;32mI (10058) GRADIENT_PROBE: SCAN Signe gradient table 1: sending nwk_addr broadcast[0m
+[0;32mI (10058) GRADIENT_PROBE: SCAN Signe gradient table 2: sending nwk_addr broadcast[0m
+[0;32mI (10218) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (10268) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (10298) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (10348) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (10468) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (10488) GRADIENT_PROBE: FC01 sweep done for nwk=0x48ad ep=11[0m
+[0;32mI (10528) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (11098) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (11258) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+PROBE: DISCOVER simple_desc nwk=0x0c67 ep=11 profile=0x0104 device=0x010d ver=1 in=11 out=1 clusters=[0x0000,0x0003,0x0004,0x0005,0x0006,0x0008,0x1000,0xfc03,0xfc04,0xfc01,0x0300 | 0x0019]
+[0;32mI (12298) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (13288) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+PROBE: DISCOVER simple_desc nwk=0x0c67 ep=242 profile=0xa1e0 device=0x0061 ver=0 in=0 out=1 clusters=[ | 0x0021]
+[0;32mI (13538) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+PROBE: read_attr_resp cluster=0xfc01 src_ep=11 dst_ep=11
+  attr=0x0000 status=0x00 type=0x18 size=1 data=PROBE: value (1 bytes): 0f
+PROBE: default_resp cluster=0xfc01 resp_to_cmd=0x01 status=0x80 (128)
+PROBE: default_resp cluster=0xfc01 resp_to_cmd=0x02 status=0x81 (129)
+[0;32mI (14808) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (14998) GRADIENT_PROBE: Network(0xfb2f) is open for 25 seconds[0m
+[0;31mE (15048) GRADIENT_PROBE: SCAN Headboard LCX004: nwk_addr failed status=133[0m
+[0;31mE (15048) GRADIENT_PROBE: SCAN Floor LCX004: nwk_addr failed status=133[0m
+[0;31mE (15058) GRADIENT_PROBE: SCAN Play gradient tube: nwk_addr failed status=133[0m
+[0;31mE (15058) GRADIENT_PROBE: SCAN Play gradient tube 2: nwk_addr failed status=133[0m
+[0;31mE (15058) GRADIENT_PROBE: SCAN Signe gradient floor: nwk_addr failed status=133[0m
+[0;31mE (15058) GRADIENT_PROBE: SCAN Signe gradient table 1: nwk_addr failed status=133[0m
+[0;31mE (15058) GRADIENT_PROBE: SCAN Signe gradient table 2: nwk_addr failed status=133[0m
+PROBE: custom_cluster endpoint=11 cluster=0xfc01 cmd=0x04 manuf=0x100b fc=0x00 size=2 data=PROBE: payload (2 bytes): 80ff
+PROBE: default_resp cluster=0xfc01 resp_to_cmd=0x03 status=0x00 (0)
+PROBE: custom_cluster endpoint=11 cluster=0xfc01 cmd=0x07 manuf=0x100b fc=0x00 size=2 data=PROBE: payload (2 bytes): 80ff
+PROBE: read_attr_resp cluster=0xfc01 src_ep=11 dst_ep=11
+  attr=0x0001 status=0x00 type=0x30 size=1 data=PROBE: value (1 bytes): 00
+PROBE: read_attr_resp cluster=0xfc01 src_ep=11 dst_ep=11
+  attr=0x0002 status=0x00 type=0x20 size=1 data=PROBE: value (1 bytes): 0a
+PROBE: read_attr_resp cluster=0xfc01 src_ep=11 dst_ep=11
+  attr=0x0003 status=0x00 type=0x20 size=1 data=PROBE: value (1 bytes): 04
+PROBE: read_attr_resp cluster=0xfc01 src_ep=11 dst_ep=11
+  attr=0x0000 status=0x00 type=0x18 size=1 data=PROBE: value (1 bytes): 0b
+[0;32mI (18328) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (19998) GRADIENT_PROBE: Network(0xfb2f) is open for 20 seconds[0m
+[0;32mI (22368) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (25018) GRADIENT_PROBE: Network(0xfb2f) is open for 15 seconds[0m
+[0;32mI (30008) GRADIENT_PROBE: Network(0xfb2f) is open for 10 seconds[0m
+[0;32mI (35008) GRADIENT_PROBE: Network(0xfb2f) is open for 5 seconds[0m
+[0;32mI (35478) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;33mW (40008) GRADIENT_PROBE: Network(0xfb2f) closed, devices joining not allowed.[0m
+[0;33mW (40008) GRADIENT_PROBE: Network(0xfb2f) closed, devices joining not allowed.[0m
+[0;32mI (50078) GRADIENT_PROBE: ZDO signal: ZDO Device Unavailable (0x3c), status: ESP_OK[0m
+[0;32mI (50608) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (55078) GRADIENT_PROBE: ZDO signal: ZDO Device Unavailable (0x3c), status: ESP_OK[0m
+[0;32mI (60088) GRADIENT_PROBE: ZDO signal: ZDO Device Unavailable (0x3c), status: ESP_OK[0m
+[0;32mI (65088) GRADIENT_PROBE: ZDO signal: ZDO Device Unavailable (0x3c), status: ESP_OK[0m
+[0;32mI (65748) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (70098) GRADIENT_PROBE: ZDO signal: ZDO Device Unavailable (0x3c), status: ESP_OK[0m
+[0;32mI (70098) GRADIENT_PROBE: ZDO signal: ZDO Device Unavailable (0x3c), status: ESP_OK[0m

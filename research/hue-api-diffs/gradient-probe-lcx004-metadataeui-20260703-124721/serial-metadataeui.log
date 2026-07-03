@@ -1,0 +1,54 @@
+[0;32mI (2049) GRADIENT_PROBE: Serial command: metadata scan[0m
+[0;32mI (2049) GRADIENT_PROBE: Starting OTA/basic metadata scan of real LCX004 devices[0m
+[0;32mI (2049) GRADIENT_PROBE: METADATA Headboard LCX004: resolving nwk_addr[0m
+[0;31mE (7059) GRADIENT_PROBE: METADATA Headboard LCX004: nwk_addr failed status=133[0m
+[0;32mI (9059) GRADIENT_PROBE: METADATA Floor LCX004: resolving nwk_addr[0m
+[0;31mE (14069) GRADIENT_PROBE: METADATA Floor LCX004: nwk_addr failed status=133[0m
+[0;32mI (15269) GRADIENT_PROBE: ZDO signal: NWK No Active Links Left (0x18), status: ESP_OK[0m
+[0;32mI (16349) GRADIENT_PROBE: Serial command: metadata scan[0m
+[0;32mI (16349) GRADIENT_PROBE: Starting OTA/basic metadata scan of real LCX004 devices[0m
+[0;32mI (16349) GRADIENT_PROBE: METADATA Headboard LCX004: resolving nwk_addr[0m
+PROBE: METADATA target=Headboard LCX004 nwk=0x48ad ep=11
+[0;32mI (16639) GRADIENT_PROBE: Starting OTA/basic metadata sweep on nwk=0x48ad ep=11[0m
+PROBE: metadata_read label=basic.manufacturer_name nwk=0x48ad ep=11 cluster=0x0000 attr=0x0004 manuf=0x0000 dir=to_srv
+PROBE: read_attr_resp cluster=0x0000 src_ep=11 dst_ep=11
+  attr=0x0004 status=0x00 type=0x42 size=25 data=PROBE: value (25 bytes): 185369676e696679204e65746865726c616e647320422e562e
+PROBE: metadata_read label=basic.model_identifier nwk=0x48ad ep=11 cluster=0x0000 attr=0x0005 manuf=0x0000 dir=to_srv
+PROBE: read_attr_resp cluster=0x0000 src_ep=11 dst_ep=11
+  attr=0x0005 status=0x00 type=0x42 size=7 data=PROBE: value (7 bytes): 064c4358303034
+[0;32mI (17149) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+PROBE: metadata_read label=basic.product_code nwk=0x48ad ep=11 cluster=0x0000 attr=0x000a manuf=0x0000 dir=to_srv
+[0;32mI (17589) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+PROBE: read_attr_resp cluster=0x0000 src_ep=11 dst_ep=11
+  attr=0x000a status=0x00 type=0x41 size=1 data=PROBE: value (1 bytes): 00
+PROBE: metadata_read label=basic.manufacturer_version_details nwk=0x48ad ep=11 cluster=0x0000 attr=0x000c manuf=0x0000 dir=to_srv
+PROBE: read_attr_resp cluster=0x0000 src_ep=11 dst_ep=11
+  attr=0x000c status=0x86 type=0x00 size=0 data=(nil)
+PROBE: metadata_read label=basic.product_label nwk=0x48ad ep=11 cluster=0x0000 attr=0x000e manuf=0x0000 dir=to_srv
+PROBE: read_attr_resp cluster=0x0000 src_ep=11 dst_ep=11
+  attr=0x000e status=0x86 type=0x00 size=0 data=(nil)
+PROBE: metadata_read label=basic.sw_build_id nwk=0x48ad ep=11 cluster=0x0000 attr=0x4000 manuf=0x0000 dir=to_srv
+PROBE: read_attr_resp cluster=0x0000 src_ep=11 dst_ep=11
+  attr=0x4000 status=0x00 type=0x42 size=8 data=PROBE: value (8 bytes): 07312e3132392e35
+PROBE: metadata_read label=ota.file_version nwk=0x48ad ep=11 cluster=0x0019 attr=0x0002 manuf=0x0000 dir=to_cli
+PROBE: read_attr_resp cluster=0x0019 src_ep=11 dst_ep=11
+  attr=0x0002 status=0x00 type=0x23 size=4 data=PROBE: value (4 bytes): 00200001
+PROBE: metadata_read label=ota.manufacturer_id nwk=0x48ad ep=11 cluster=0x0019 attr=0x0007 manuf=0x0000 dir=to_cli
+PROBE: read_attr_resp cluster=0x0019 src_ep=11 dst_ep=11
+  attr=0x0007 status=0x00 type=0x21 size=2 data=PROBE: value (2 bytes): 0b10
+PROBE: metadata_read label=ota.image_type nwk=0x48ad ep=11 cluster=0x0019 attr=0x0008 manuf=0x0000 dir=to_cli
+PROBE: read_attr_resp cluster=0x0019 src_ep=11 dst_ep=11
+  attr=0x0008 status=0x00 type=0x21 size=2 data=PROBE: value (2 bytes): ffff
+PROBE: metadata_read label=ota.image_stamp nwk=0x48ad ep=11 cluster=0x0019 attr=0x000a manuf=0x0000 dir=to_cli
+PROBE: read_attr_resp cluster=0x0019 src_ep=11 dst_ep=11
+  attr=0x000a status=0x86 type=0x00 size=0 data=(nil)
+PROBE: metadata_read label=ota.hue_attr_6400 nwk=0x48ad ep=11 cluster=0x0019 attr=0x6400 manuf=0x0000 dir=to_cli
+PROBE: read_attr_resp cluster=0x0019 src_ep=11 dst_ep=11
+  attr=0x6400 status=0x86 type=0x00 size=0 data=(nil)
+PROBE: metadata_read label=ota.hue_attr_6400_signify nwk=0x48ad ep=11 cluster=0x0019 attr=0x6400 manuf=0x100b dir=to_cli
+PROBE: read_attr_resp cluster=0x0019 src_ep=11 dst_ep=11
+  attr=0x6400 status=0x86 type=0x00 size=0 data=(nil)
+[0;32mI (20929) GRADIENT_PROBE: Metadata sweep done for nwk=0x48ad ep=11[0m
+[0;32mI (23359) GRADIENT_PROBE: METADATA Floor LCX004: resolving nwk_addr[0m
+[0;32mI (27459) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;31mE (28369) GRADIENT_PROBE: METADATA Floor LCX004: nwk_addr failed status=133[0m

@@ -1,0 +1,831 @@
+{
+  "v1_lights": {
+    "25": {
+      "capabilities": {
+        "certified": true,
+        "control": {
+          "colorgamut": [
+            [
+              0.6915,
+              0.3083
+            ],
+            [
+              0.17,
+              0.7
+            ],
+            [
+              0.1532,
+              0.0475
+            ]
+          ],
+          "colorgamuttype": "C",
+          "ct": {
+            "max": 500,
+            "min": 153
+          },
+          "maxlumen": 1200,
+          "mindimlevel": 10
+        },
+        "streaming": {
+          "proxy": true,
+          "renderer": true
+        }
+      },
+      "config": {
+        "archetype": "huesigne",
+        "direction": "omnidirectional",
+        "function": "decorative",
+        "startup": {
+          "configured": true,
+          "mode": "powerfail"
+        }
+      },
+      "manufacturername": "Signify Netherlands B.V.",
+      "modelid": "LCX004",
+      "name": "Floor lamp",
+      "productid": "Philips-LCX004-1-GALSECLv1",
+      "productname": "Hue gradient lightstrip",
+      "state": {
+        "alert": "select",
+        "bri": 82,
+        "colormode": "xy",
+        "ct": 447,
+        "effect": "none",
+        "hue": 6291,
+        "mode": "homeautomation",
+        "on": false,
+        "reachable": false,
+        "sat": 251,
+        "xy": [
+          0.561,
+          0.4042
+        ]
+      },
+      "swconfigid": "C4C1C739",
+      "swupdate": {
+        "lastinstall": "2026-02-03T13:12:19",
+        "state": "noupdates"
+      },
+      "swversion": "1.129.5",
+      "type": "Extended color light",
+      "uniqueid": "00:17:88:01:0b:e4:38:82-0b"
+    },
+    "37": {
+      "capabilities": {
+        "certified": true,
+        "control": {
+          "colorgamut": [
+            [
+              0.6915,
+              0.3083
+            ],
+            [
+              0.17,
+              0.7
+            ],
+            [
+              0.1532,
+              0.0475
+            ]
+          ],
+          "colorgamuttype": "C",
+          "ct": {
+            "max": 500,
+            "min": 153
+          },
+          "maxlumen": 1200,
+          "mindimlevel": 10
+        },
+        "streaming": {
+          "proxy": true,
+          "renderer": true
+        }
+      },
+      "config": {
+        "archetype": "huelightstrip",
+        "direction": "omnidirectional",
+        "function": "decorative",
+        "startup": {
+          "configured": true,
+          "mode": "powerfail"
+        }
+      },
+      "manufacturername": "Signify Netherlands B.V.",
+      "modelid": "LCX004",
+      "name": "Headboard light strip",
+      "productid": "Philips-LCX004-1-GALSECLv1",
+      "productname": "Hue gradient lightstrip",
+      "state": {
+        "alert": "select",
+        "bri": 254,
+        "colormode": "xy",
+        "ct": 500,
+        "effect": "none",
+        "hue": 3344,
+        "mode": "homeautomation",
+        "on": false,
+        "reachable": true,
+        "sat": 254,
+        "xy": [
+          0.6233,
+          0.3595
+        ]
+      },
+      "swconfigid": "C4C1C739",
+      "swupdate": {
+        "lastinstall": "2025-12-18T13:51:32",
+        "state": "noupdates"
+      },
+      "swversion": "1.129.5",
+      "type": "Extended color light",
+      "uniqueid": "00:17:88:01:0b:89:54:2f-0b"
+    },
+    "57": {
+      "capabilities": {
+        "certified": false,
+        "control": {
+          "colorgamuttype": "other",
+          "ct": {
+            "max": 500,
+            "min": 153
+          }
+        },
+        "streaming": {
+          "proxy": false,
+          "renderer": false
+        }
+      },
+      "config": {
+        "archetype": "classicbulb",
+        "direction": "omnidirectional",
+        "function": "mixed"
+      },
+      "manufacturername": "Signify Netherlands B.V.",
+      "modelid": "LCX004",
+      "name": "Extended color light 1",
+      "productname": "Extended color light",
+      "state": {
+        "alert": "none",
+        "bri": 255,
+        "colormode": "xy",
+        "ct": 367,
+        "effect": "none",
+        "hue": 0,
+        "mode": "homeautomation",
+        "on": false,
+        "reachable": true,
+        "sat": 141,
+        "xy": [
+          0.3805,
+          0.3769
+        ]
+      },
+      "swupdate": {
+        "lastinstall": null,
+        "state": "notupdatable"
+      },
+      "swversion": "1.129.5",
+      "type": "Extended color light",
+      "uniqueid": "00:17:88:01:0b:ff:fe:05-0b"
+    }
+  },
+  "v2_devices": [
+    {
+      "id": "7f55f929-841e-4aec-a7ce-e07c003df678",
+      "id_v1": "/lights/57",
+      "identify": {},
+      "metadata": {
+        "archetype": "classic_bulb",
+        "name": "Extended color light 1"
+      },
+      "product_data": {
+        "certified": false,
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "LCX004",
+        "product_archetype": "classic_bulb",
+        "product_name": "Extended color light",
+        "software_version": "1.129.5"
+      },
+      "services": [
+        {
+          "rid": "4e95c612-2157-4e00-a8ef-6791ddb60ac3",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "ae06e603-66dd-4dc0-929a-dc0d1156ce52",
+          "rtype": "light"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "bc826f9c-9071-4eab-96f2-c88d776409dc",
+      "id_v1": "/lights/25",
+      "identify": {},
+      "metadata": {
+        "archetype": "hue_signe",
+        "name": "Floor lamp"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-118",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "LCX004",
+        "product_archetype": "hue_lightstrip",
+        "product_name": "Hue gradient lightstrip",
+        "software_version": "1.129.5"
+      },
+      "services": [
+        {
+          "rid": "118e5c2c-3c50-4530-aaa5-f1bfd31dde76",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "a0246a5f-6cd4-4aa0-ab0c-fcabdf64defa",
+          "rtype": "light"
+        },
+        {
+          "rid": "92c1c11c-46a3-4364-87fe-f039d086e29f",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "9fb286b9-6b16-4cde-b26a-a11c336510f7",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "bc0ac8ba-c39a-46fa-8090-f4d306af7e82",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    },
+    {
+      "id": "db8ad5fc-a896-43d7-9ce8-35bdd8c82944",
+      "id_v1": "/lights/37",
+      "identify": {},
+      "metadata": {
+        "archetype": "hue_lightstrip",
+        "name": "Headboard light strip"
+      },
+      "product_data": {
+        "certified": true,
+        "hardware_platform_type": "100b-118",
+        "manufacturer_name": "Signify Netherlands B.V.",
+        "model_id": "LCX004",
+        "product_archetype": "hue_lightstrip",
+        "product_name": "Hue gradient lightstrip",
+        "software_version": "1.129.5"
+      },
+      "services": [
+        {
+          "rid": "9bd0681b-a6b9-40e6-9db7-b6da4d5d46a6",
+          "rtype": "zigbee_connectivity"
+        },
+        {
+          "rid": "4fc36eed-cca2-47b9-9706-dffe9897611e",
+          "rtype": "light"
+        },
+        {
+          "rid": "29656eda-407b-4bd6-890a-1e31f704aed8",
+          "rtype": "entertainment"
+        },
+        {
+          "rid": "d1af527d-851a-4ac7-8137-f434c6d1f42f",
+          "rtype": "motion_area_candidate"
+        },
+        {
+          "rid": "1eb8d391-7d21-49c5-ad18-991ae0fe7fe8",
+          "rtype": "device_software_update"
+        }
+      ],
+      "type": "device"
+    }
+  ],
+  "v2_lights": [
+    {
+      "alert": {
+        "action_values": [
+          "breathe"
+        ]
+      },
+      "color": {
+        "gamut": {
+          "blue": {
+            "x": 0.1532,
+            "y": 0.0475
+          },
+          "green": {
+            "x": 0.17,
+            "y": 0.7
+          },
+          "red": {
+            "x": 0.6915,
+            "y": 0.3083
+          }
+        },
+        "gamut_type": "C",
+        "xy": {
+          "x": 0.6233,
+          "y": 0.3595
+        }
+      },
+      "color_temperature": {
+        "mirek": null,
+        "mirek_schema": {
+          "mirek_maximum": 500,
+          "mirek_minimum": 153
+        },
+        "mirek_valid": false
+      },
+      "color_temperature_delta": {},
+      "content_configuration": {
+        "association": {
+          "association": "not_associated"
+        },
+        "order": {
+          "configurable": true,
+          "order": "forward",
+          "status": "set"
+        },
+        "orientation": {
+          "configurable": true,
+          "orientation": "horizontal",
+          "status": "set"
+        }
+      },
+      "dimming": {
+        "brightness": 100.0,
+        "min_dim_level": 0.01
+      },
+      "dimming_delta": {},
+      "dynamics": {
+        "speed": 0.0,
+        "speed_valid": false,
+        "status": "none",
+        "status_values": [
+          "none",
+          "dynamic_palette"
+        ]
+      },
+      "effects": {
+        "effect_values": [
+          "no_effect",
+          "candle",
+          "fire",
+          "prism",
+          "sparkle",
+          "opal",
+          "glisten",
+          "underwater",
+          "cosmos",
+          "sunbeam",
+          "enchant"
+        ],
+        "status": "no_effect",
+        "status_values": [
+          "no_effect",
+          "candle",
+          "fire",
+          "prism",
+          "sparkle",
+          "opal",
+          "glisten",
+          "underwater",
+          "cosmos",
+          "sunbeam",
+          "enchant"
+        ]
+      },
+      "effects_v2": {
+        "action": {
+          "effect_values": [
+            "no_effect",
+            "candle",
+            "fire",
+            "prism",
+            "sparkle",
+            "opal",
+            "glisten",
+            "underwater",
+            "cosmos",
+            "sunbeam",
+            "enchant"
+          ]
+        },
+        "status": {
+          "effect": "no_effect",
+          "effect_values": [
+            "no_effect",
+            "candle",
+            "fire",
+            "prism",
+            "sparkle",
+            "opal",
+            "glisten",
+            "underwater",
+            "cosmos",
+            "sunbeam",
+            "enchant"
+          ]
+        }
+      },
+      "gradient": {
+        "mode": "interpolated_palette",
+        "mode_values": [
+          "interpolated_palette",
+          "interpolated_palette_mirrored",
+          "random_pixelated",
+          "segmented_palette"
+        ],
+        "pixel_count": 10,
+        "points": [
+          {
+            "color": {
+              "xy": {
+                "x": 0.6233,
+                "y": 0.3595
+              }
+            }
+          },
+          {
+            "color": {
+              "xy": {
+                "x": 0.6233,
+                "y": 0.3595
+              }
+            }
+          },
+          {
+            "color": {
+              "xy": {
+                "x": 0.6233,
+                "y": 0.3595
+              }
+            }
+          },
+          {
+            "color": {
+              "xy": {
+                "x": 0.6233,
+                "y": 0.3595
+              }
+            }
+          },
+          {
+            "color": {
+              "xy": {
+                "x": 0.6233,
+                "y": 0.3595
+              }
+            }
+          }
+        ],
+        "points_capable": 5
+      },
+      "id": "4fc36eed-cca2-47b9-9706-dffe9897611e",
+      "id_v1": "/lights/37",
+      "identify": {},
+      "metadata": {
+        "archetype": "hue_lightstrip",
+        "function": "decorative",
+        "name": "Headboard light strip"
+      },
+      "mode": "normal",
+      "on": {
+        "on": false
+      },
+      "owner": {
+        "rid": "db8ad5fc-a896-43d7-9ce8-35bdd8c82944",
+        "rtype": "device"
+      },
+      "powerup": {
+        "color": {
+          "mode": "previous"
+        },
+        "configured": true,
+        "dimming": {
+          "mode": "previous"
+        },
+        "on": {
+          "mode": "previous"
+        },
+        "preset": "powerfail"
+      },
+      "product_data": {
+        "function": "mixed"
+      },
+      "service_id": 0,
+      "signaling": {
+        "signal_values": [
+          "no_signal",
+          "on_off",
+          "on_off_color",
+          "alternating"
+        ]
+      },
+      "timed_effects": {
+        "effect_values": [
+          "no_effect",
+          "sunrise",
+          "sunset"
+        ],
+        "status": "no_effect",
+        "status_values": [
+          "no_effect",
+          "sunrise",
+          "sunset"
+        ]
+      },
+      "type": "light"
+    },
+    {
+      "alert": {
+        "action_values": [
+          "breathe"
+        ]
+      },
+      "color": {
+        "gamut": {
+          "blue": {
+            "x": 0.1532,
+            "y": 0.0475
+          },
+          "green": {
+            "x": 0.17,
+            "y": 0.7
+          },
+          "red": {
+            "x": 0.6915,
+            "y": 0.3083
+          }
+        },
+        "gamut_type": "C",
+        "xy": {
+          "x": 0.561,
+          "y": 0.4042
+        }
+      },
+      "color_temperature": {
+        "mirek": null,
+        "mirek_schema": {
+          "mirek_maximum": 500,
+          "mirek_minimum": 153
+        },
+        "mirek_valid": false
+      },
+      "color_temperature_delta": {},
+      "content_configuration": {
+        "order": {
+          "configurable": true,
+          "order": "forward",
+          "status": "set"
+        },
+        "orientation": {
+          "configurable": true,
+          "orientation": "horizontal",
+          "status": "set"
+        }
+      },
+      "dimming": {
+        "brightness": 32.02,
+        "min_dim_level": 0.01
+      },
+      "dimming_delta": {},
+      "dynamics": {
+        "speed": 0.0,
+        "speed_valid": false,
+        "status": "none",
+        "status_values": [
+          "none",
+          "dynamic_palette"
+        ]
+      },
+      "effects": {
+        "effect_values": [
+          "no_effect",
+          "candle",
+          "fire",
+          "prism",
+          "sparkle",
+          "opal",
+          "glisten",
+          "underwater",
+          "cosmos",
+          "sunbeam",
+          "enchant"
+        ],
+        "status": "no_effect",
+        "status_values": [
+          "no_effect",
+          "candle",
+          "fire",
+          "prism",
+          "sparkle",
+          "opal",
+          "glisten",
+          "underwater",
+          "cosmos",
+          "sunbeam",
+          "enchant"
+        ]
+      },
+      "effects_v2": {
+        "action": {
+          "effect_values": [
+            "no_effect",
+            "candle",
+            "fire",
+            "prism",
+            "sparkle",
+            "opal",
+            "glisten",
+            "underwater",
+            "cosmos",
+            "sunbeam",
+            "enchant"
+          ]
+        },
+        "status": {
+          "effect": "no_effect",
+          "effect_values": [
+            "no_effect",
+            "candle",
+            "fire",
+            "prism",
+            "sparkle",
+            "opal",
+            "glisten",
+            "underwater",
+            "cosmos",
+            "sunbeam",
+            "enchant"
+          ]
+        }
+      },
+      "gradient": {
+        "mode": "interpolated_palette",
+        "mode_values": [
+          "interpolated_palette",
+          "interpolated_palette_mirrored",
+          "random_pixelated",
+          "segmented_palette"
+        ],
+        "pixel_count": 12,
+        "points": [],
+        "points_capable": 5
+      },
+      "id": "a0246a5f-6cd4-4aa0-ab0c-fcabdf64defa",
+      "id_v1": "/lights/25",
+      "identify": {},
+      "metadata": {
+        "archetype": "hue_signe",
+        "function": "decorative",
+        "name": "Floor lamp"
+      },
+      "mode": "normal",
+      "on": {
+        "on": false
+      },
+      "owner": {
+        "rid": "bc826f9c-9071-4eab-96f2-c88d776409dc",
+        "rtype": "device"
+      },
+      "powerup": {
+        "color": {
+          "mode": "previous"
+        },
+        "configured": true,
+        "dimming": {
+          "mode": "previous"
+        },
+        "on": {
+          "mode": "previous"
+        },
+        "preset": "powerfail"
+      },
+      "product_data": {
+        "function": "mixed"
+      },
+      "service_id": 0,
+      "signaling": {
+        "signal_values": [
+          "no_signal",
+          "on_off",
+          "on_off_color",
+          "alternating"
+        ]
+      },
+      "timed_effects": {
+        "effect_values": [
+          "no_effect",
+          "sunrise",
+          "sunset"
+        ],
+        "status": "no_effect",
+        "status_values": [
+          "no_effect",
+          "sunrise",
+          "sunset"
+        ]
+      },
+      "type": "light"
+    },
+    {
+      "alert": {
+        "action_values": [
+          "breathe"
+        ]
+      },
+      "color": {
+        "gamut_type": "other",
+        "xy": {
+          "x": 0.3805,
+          "y": 0.3769
+        }
+      },
+      "color_temperature": {
+        "mirek": null,
+        "mirek_schema": {
+          "mirek_maximum": 500,
+          "mirek_minimum": 153
+        },
+        "mirek_valid": false
+      },
+      "color_temperature_delta": {},
+      "dimming": {
+        "brightness": 100.0
+      },
+      "dimming_delta": {},
+      "dynamics": {
+        "speed": 0.0,
+        "speed_valid": false,
+        "status": "none",
+        "status_values": [
+          "none"
+        ]
+      },
+      "id": "ae06e603-66dd-4dc0-929a-dc0d1156ce52",
+      "id_v1": "/lights/57",
+      "identify": {},
+      "metadata": {
+        "archetype": "classic_bulb",
+        "function": "mixed",
+        "name": "Extended color light 1"
+      },
+      "mode": "normal",
+      "on": {
+        "on": false
+      },
+      "owner": {
+        "rid": "7f55f929-841e-4aec-a7ce-e07c003df678",
+        "rtype": "device"
+      },
+      "product_data": {
+        "function": "mixed"
+      },
+      "service_id": 0,
+      "signaling": {
+        "signal_values": [
+          "no_signal",
+          "on_off"
+        ]
+      },
+      "type": "light"
+    }
+  ],
+  "v2_zigbee_connectivity": [
+    {
+      "id": "118e5c2c-3c50-4530-aaa5-f1bfd31dde76",
+      "id_v1": "/lights/25",
+      "mac_address": "00:17:88:01:0b:e4:38:82",
+      "owner": {
+        "rid": "bc826f9c-9071-4eab-96f2-c88d776409dc",
+        "rtype": "device"
+      },
+      "status": "connectivity_issue",
+      "type": "zigbee_connectivity"
+    },
+    {
+      "id": "4e95c612-2157-4e00-a8ef-6791ddb60ac3",
+      "id_v1": "/lights/57",
+      "mac_address": "00:17:88:01:0b:ff:fe:05",
+      "owner": {
+        "rid": "7f55f929-841e-4aec-a7ce-e07c003df678",
+        "rtype": "device"
+      },
+      "status": "connected",
+      "type": "zigbee_connectivity"
+    },
+    {
+      "id": "9bd0681b-a6b9-40e6-9db7-b6da4d5d46a6",
+      "id_v1": "/lights/37",
+      "mac_address": "00:17:88:01:0b:89:54:2f",
+      "owner": {
+        "rid": "db8ad5fc-a896-43d7-9ce8-35bdd8c82944",
+        "rtype": "device"
+      },
+      "status": "connected",
+      "type": "zigbee_connectivity"
+    }
+  ]
+}

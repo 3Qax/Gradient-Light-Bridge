@@ -1,0 +1,108 @@
+[0;32mI (2048) GRADIENT_PROBE: Serial command: metadata sweep on 0x48ad ep=11[0m
+[0;32mI (2048) GRADIENT_PROBE: Starting OTA/basic metadata sweep on nwk=0x48ad ep=11[0m
+PROBE: metadata_read label=basic.manufacturer_name nwk=0x48ad ep=11 cluster=0x0000 attr=0x0004 manuf=0x0000 dir=to_srv
+[0;32mI (2108) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+PROBE: metadata_read label=basic.model_identifier nwk=0x48ad ep=11 cluster=0x0000 attr=0x0005 manuf=0x0000 dir=to_srv
+PROBE: read_attr_resp cluster=0x0000 src_ep=11 dst_ep=11
+  attr=0x0005 status=0x00 type=0x42 size=7 data=PROBE: value (7 bytes): 064c4358303034
+PROBE: metadata_read label=basic.product_code nwk=0x48ad ep=11 cluster=0x0000 attr=0x000a manuf=0x0000 dir=to_srv
+PROBE: read_attr_resp cluster=0x0000 src_ep=11 dst_ep=11
+  attr=0x000a status=0x00 type=0x41 size=1 data=PROBE: value (1 bytes): 00
+[0;32mI (3058) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+PROBE: metadata_read label=basic.manufacturer_version_details nwk=0x48ad ep=11 cluster=0x0000 attr=0x000c manuf=0x0000 dir=to_srv
+[0;32mI (3128) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (3238) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+PROBE: metadata_read label=basic.product_label nwk=0x48ad ep=11 cluster=0x0000 attr=0x000e manuf=0x0000 dir=to_srv
+PROBE: read_attr_resp cluster=0x0000 src_ep=11 dst_ep=11
+  attr=0x000e status=0x86 type=0x00 size=0 data=(nil)
+PROBE: metadata_read label=basic.signify_attr_0020 nwk=0x48ad ep=11 cluster=0x0000 attr=0x0020 manuf=0x100b dir=to_srv
+PROBE: read_attr_resp cluster=0x0000 src_ep=11 dst_ep=11
+  attr=0x0020 status=0x00 type=0x42 size=10 data=PROBE: value (10 bytes): 09303a5057524f4e4031
+PROBE: metadata_read label=basic.signify_attr_0021 nwk=0x48ad ep=11 cluster=0x0000 attr=0x0021 manuf=0x100b dir=to_srv
+PROBE: read_attr_resp cluster=0x0000 src_ep=11 dst_ep=11
+  attr=0x0021 status=0x00 type=0x23 size=4 data=PROBE: value (4 bytes): 2c1a1500
+PROBE: metadata_read label=basic.sw_build_id nwk=0x48ad ep=11 cluster=0x0000 attr=0x4000 manuf=0x0000 dir=to_srv
+PROBE: read_attr_resp cluster=0x0000 src_ep=11 dst_ep=11
+  attr=0x4000 status=0x00 type=0x42 size=8 data=PROBE: value (8 bytes): 07312e3132392e35
+PROBE: metadata_read label=basic.power_source nwk=0x48ad ep=11 cluster=0x0000 attr=0x0007 manuf=0x0000 dir=to_srv
+PROBE: read_attr_resp cluster=0x0000 src_ep=11 dst_ep=11
+  attr=0x0007 status=0x00 type=0x30 size=1 data=PROBE: value (1 bytes): 01
+PROBE: metadata_read label=onoff.on_off nwk=0x48ad ep=11 cluster=0x0006 attr=0x0000 manuf=0x0000 dir=to_srv
+PROBE: read_attr_resp cluster=0x0006 src_ep=11 dst_ep=11
+  attr=0x0000 status=0x00 type=0x10 size=1 data=PROBE: value (1 bytes): 00
+PROBE: metadata_read label=level.current_level nwk=0x48ad ep=11 cluster=0x0008 attr=0x0000 manuf=0x0000 dir=to_srv
+PROBE: read_attr_resp cluster=0x0008 src_ep=11 dst_ep=11
+  attr=0x0000 status=0x00 type=0x20 size=1 data=PROBE: value (1 bytes): fe
+PROBE: metadata_read label=color.color_capabilities nwk=0x48ad ep=11 cluster=0x0300 attr=0x400b manuf=0x0000 dir=to_srv
+PROBE: read_attr_resp cluster=0x0300 src_ep=11 dst_ep=11
+  attr=0x400b status=0x00 type=0x21 size=2 data=PROBE: value (2 bytes): 9900
+PROBE: read_attr_resp cluster=0x0000 src_ep=11 dst_ep=11
+  attr=0x000c status=0x86 type=0x00 size=0 data=(nil)
+PROBE: metadata_read label=color.color_temp_startup nwk=0x48ad ep=11 cluster=0x0300 attr=0x400c manuf=0x0000 dir=to_srv
+PROBE: read_attr_resp cluster=0x0300 src_ep=11 dst_ep=11
+  attr=0x400c status=0x00 type=0x21 size=2 data=PROBE: value (2 bytes): f401
+PROBE: metadata_read label=color.color_temperature nwk=0x48ad ep=11 cluster=0x0300 attr=0x0007 manuf=0x0000 dir=to_srv
+PROBE: read_attr_resp cluster=0x0300 src_ep=11 dst_ep=11
+  attr=0x0007 status=0x00 type=0x21 size=2 data=PROBE: value (2 bytes): f401
+PROBE: metadata_read label=color.point_rx nwk=0x48ad ep=11 cluster=0x0300 attr=0x0032 manuf=0x0000 dir=to_srv
+PROBE: read_attr_resp cluster=0x0300 src_ep=11 dst_ep=11
+  attr=0x0032 status=0x00 type=0x21 size=2 data=PROBE: value (2 bytes): 05b1
+PROBE: metadata_read label=color.point_ry nwk=0x48ad ep=11 cluster=0x0300 attr=0x0033 manuf=0x0000 dir=to_srv
+PROBE: read_attr_resp cluster=0x0300 src_ep=11 dst_ep=11
+  attr=0x0033 status=0x00 type=0x21 size=2 data=PROBE: value (2 bytes): ec4e
+PROBE: metadata_read label=color.point_gx nwk=0x48ad ep=11 cluster=0x0300 attr=0x0036 manuf=0x0000 dir=to_srv
+PROBE: read_attr_resp cluster=0x0300 src_ep=11 dst_ep=11
+  attr=0x0036 status=0x00 type=0x21 size=2 data=PROBE: value (2 bytes): 852b
+PROBE: metadata_read label=color.point_gy nwk=0x48ad ep=11 cluster=0x0300 attr=0x0037 manuf=0x0000 dir=to_srv
+PROBE: read_attr_resp cluster=0x0300 src_ep=11 dst_ep=11
+  attr=0x0037 status=0x00 type=0x21 size=2 data=PROBE: value (2 bytes): 33b3
+PROBE: metadata_read label=color.point_bx nwk=0x48ad ep=11 cluster=0x0300 attr=0x003a manuf=0x0000 dir=to_srv
+PROBE: read_attr_resp cluster=0x0300 src_ep=11 dst_ep=11
+  attr=0x003a status=0x00 type=0x21 size=2 data=PROBE: value (2 bytes): 3827
+PROBE: metadata_read label=color.point_by nwk=0x48ad ep=11 cluster=0x0300 attr=0x003b manuf=0x0000 dir=to_srv
+PROBE: read_attr_resp cluster=0x0300 src_ep=11 dst_ep=11
+  attr=0x003b status=0x00 type=0x21 size=2 data=PROBE: value (2 bytes): 2c0c
+PROBE: metadata_read label=color.current_x nwk=0x48ad ep=11 cluster=0x0300 attr=0x0003 manuf=0x0000 dir=to_srv
+PROBE: read_attr_resp cluster=0x0300 src_ep=11 dst_ep=11
+  attr=0x0003 status=0x00 type=0x21 size=2 data=PROBE: value (2 bytes): 8f9f
+PROBE: metadata_read label=color.current_y nwk=0x48ad ep=11 cluster=0x0300 attr=0x0004 manuf=0x0000 dir=to_srv
+PROBE: read_attr_resp cluster=0x0300 src_ep=11 dst_ep=11
+  attr=0x0004 status=0x00 type=0x21 size=2 data=PROBE: value (2 bytes): 065c
+PROBE: metadata_read label=color.enhanced_current_hue nwk=0x48ad ep=11 cluster=0x0300 attr=0x4000 manuf=0x0000 dir=to_srv
+PROBE: read_attr_resp cluster=0x0300 src_ep=11 dst_ep=11
+  attr=0x4000 status=0x00 type=0x21 size=2 data=PROBE: value (2 bytes): 100d
+PROBE: metadata_read label=color.current_saturation nwk=0x48ad ep=11 cluster=0x0300 attr=0x0001 manuf=0x0000 dir=to_srv
+PROBE: read_attr_resp cluster=0x0300 src_ep=11 dst_ep=11
+  attr=0x0001 status=0x00 type=0x20 size=1 data=PROBE: value (1 bytes): fe
+PROBE: metadata_read label=color.color_mode nwk=0x48ad ep=11 cluster=0x0300 attr=0x0008 manuf=0x0000 dir=to_srv
+PROBE: read_attr_resp cluster=0x0300 src_ep=11 dst_ep=11
+  attr=0x0008 status=0x00 type=0x30 size=1 data=PROBE: value (1 bytes): 01
+PROBE: metadata_read label=color.enhanced_color_mode nwk=0x48ad ep=11 cluster=0x0300 attr=0x4002 manuf=0x0000 dir=to_srv
+PROBE: read_attr_resp cluster=0x0300 src_ep=11 dst_ep=11
+  attr=0x4002 status=0x00 type=0x20 size=1 data=PROBE: value (1 bytes): 00
+PROBE: metadata_read label=groups.bridge_attr_e9d5 nwk=0x48ad ep=11 cluster=0x0004 attr=0xe9d5 manuf=0x0000 dir=to_srv
+PROBE: read_attr_resp cluster=0x0004 src_ep=11 dst_ep=11
+  attr=0xe9d5 status=0x86 type=0x00 size=0 data=(nil)
+PROBE: metadata_read label=ota.file_version nwk=0x48ad ep=11 cluster=0x0019 attr=0x0002 manuf=0x0000 dir=to_cli
+PROBE: read_attr_resp cluster=0x0019 src_ep=11 dst_ep=11
+  attr=0x0002 status=0x00 type=0x23 size=4 data=PROBE: value (4 bytes): 00200001
+PROBE: read_attr_resp cluster=0x0000 src_ep=11 dst_ep=11
+  attr=0x0004 status=0x00 type=0x42 size=25 data=PROBE: value (25 bytes): 185369676e696679204e65746865726c616e647320422e562e
+PROBE: metadata_read label=ota.manufacturer_id nwk=0x48ad ep=11 cluster=0x0019 attr=0x0007 manuf=0x0000 dir=to_cli
+PROBE: read_attr_resp cluster=0x0019 src_ep=11 dst_ep=11
+  attr=0x0007 status=0x00 type=0x21 size=2 data=PROBE: value (2 bytes): 0b10
+PROBE: metadata_read label=ota.image_type nwk=0x48ad ep=11 cluster=0x0019 attr=0x0008 manuf=0x0000 dir=to_cli
+PROBE: read_attr_resp cluster=0x0019 src_ep=11 dst_ep=11
+  attr=0x0008 status=0x00 type=0x21 size=2 data=PROBE: value (2 bytes): ffff
+PROBE: metadata_read label=ota.image_stamp nwk=0x48ad ep=11 cluster=0x0019 attr=0x000a manuf=0x0000 dir=to_cli
+PROBE: read_attr_resp cluster=0x0019 src_ep=11 dst_ep=11
+  attr=0x000a status=0x86 type=0x00 size=0 data=(nil)
+PROBE: metadata_read label=ota.hue_attr_6400 nwk=0x48ad ep=11 cluster=0x0019 attr=0x6400 manuf=0x0000 dir=to_cli
+PROBE: read_attr_resp cluster=0x0019 src_ep=11 dst_ep=11
+  attr=0x6400 status=0x86 type=0x00 size=0 data=(nil)
+[0;32mI (13318) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+PROBE: metadata_read label=ota.hue_attr_6400_signify nwk=0x48ad ep=11 cluster=0x0019 attr=0x6400 manuf=0x100b dir=to_cli
+PROBE: read_attr_resp cluster=0x0019 src_ep=11 dst_ep=11
+  attr=0x6400 status=0x86 type=0x00 size=0 data=(nil)
+[0;32mI (13888) GRADIENT_PROBE: Metadata sweep done for nwk=0x48ad ep=11[0m
+[0;32mI (34518) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m

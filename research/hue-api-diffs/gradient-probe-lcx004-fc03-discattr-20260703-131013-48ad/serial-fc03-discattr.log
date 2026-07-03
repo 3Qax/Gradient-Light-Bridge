@@ -1,0 +1,6 @@
+[0;32mI (2048) GRADIENT_PROBE: Serial command: discover attrs cluster 0xfc03 start 0x0032 on 0x48ad[0m
+[0;32mI (2048) GRADIENT_PROBE: tx discover attr start=0x0032 max=3 cluster 0xfc03 -> nwk=0x48ad ep=11 (manuf=0x100b)[0m
+[0;32mI (10148) GRADIENT_PROBE: Serial command: discover attrs cluster 0xfc03 start 0x0000 on 0x48ad[0m
+[0;32mI (10148) GRADIENT_PROBE: tx discover attr start=0x0000 max=8 cluster 0xfc03 -> nwk=0x48ad ep=11 (manuf=0x100b)[0m
+[0;32mI (12338) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (16378) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m

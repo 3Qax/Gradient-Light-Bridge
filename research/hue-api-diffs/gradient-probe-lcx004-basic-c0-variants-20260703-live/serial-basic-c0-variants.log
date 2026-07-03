@@ -1,0 +1,23 @@
+HOST_CMD: nodedesc 48ad
+[0;32mI (137) esp_image: segment 3: paddr=00094ea4 vaddr=408005[0;32mI (26902) GRADIENT_PROBE: Serial command: node desc on 0x48ad[0m
+[0;32mI (26902) GRADIENT_PROBE: tx node desc req -> nwk=0x48ad[0m
+[0;32mI (27202) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (27312) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+PROBE: NODE_DESC nwk=0x48ad flags=0x4001 mac=0x8e manufacturer=0x100b max_buf=82 max_in=128 server_mask=0x2c00 max_out=128 desc_cap=0x00
+HOST_CMD: customcmd 48ad 0000 c0 100b 000000000040
+[0;32mI (29502) GRADIENT_PROBE: Serial command: custom cmd 0xc0 cluster=0x0000 to 0x48ad manuf=0x100b (6 bytes)[0m
+[0;32mI (29502) GRADIENT_PROBE: tx custom cmd 0xc0 cluster=0x0000 -> nwk=0x48ad ep=11 manuf=0x100b (6 bytes)[0m
+[0;32mI (29512) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (29692) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0000 profile=0x0104 cmd=0xc1/other dir=to_cli manuf=0x100b common=0 payload_len=64[0m
+PROBE: zcl_raw_payload (64 bytes): 00000000000055000000350a530801156604033e1a4a0a064c435830303412185369676e696679204e65746865726c616e647320422e562e4217487565206772
+[0;32mI (29952) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+HOST_CMD: customcmd 48ad 0000 c0 100b 003500000040
+[0;32mI (32202) GRADIENT_PROBE: Serial command: custom cmd 0xc0 cluster=0x0000 to 0x48ad manuf=0x100b (6 bytes)[0m
+[0;32mI (32202) GRADIENT_PROBE: tx custom cmd 0xc0 cluster=0x0000 -> nwk=0x48ad ep=11 manuf=0x100b (6 bytes)[0m
+[0;32mI (32262) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0000 profile=0x0104 cmd=0xc1/other dir=to_cli manuf=0x100b common=0 payload_len=43[0m
+PROBE: zcl_raw_payload (43 bytes): 0000350000005500000020616469656e74206c6967687473747269704866520b080b120708b00910031801
+HOST_CMD: customcmd 48ad 0000 c0 100b 003500000040
+[0;32mI (34702) GRADIENT_PROBE: Serial command: custom cmd 0xc0 cluster=0x0000 to 0x48ad manuf=0x100b (6 bytes)[0m
+[0;32mI (34702) GRADIENT_PROBE: tx custom cmd 0xc0 cluster=0x0000 -> nwk=0x48ad ep=11 manuf=0x100b (6 bytes)[0m
+[0;32mI (34762) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0000 profile=0x0104 cmd=0xc1/other dir=to_cli manuf=0x100b common=0 payload_len=43[0m
+PROBE: zcl_raw_payload (43 bytes): 0000350000005500000020616469656e74206c6967687473747269704866520b080b120708b00910031801

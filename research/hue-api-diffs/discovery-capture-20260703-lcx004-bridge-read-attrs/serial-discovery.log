@@ -1,0 +1,93 @@
+DATA: {"event":"factory_reset"}
+ESP-ROM:esp32c6-20220919
+Build:Sep 19 2022
+rst:0xc (SW_CPU),boot:0xc (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4001975a
+SPIWP:0xee
+mode:DIO, clock div:2
+load:0x40875720,len:0x18ec
+load:0x4086c110,len:0xd9c
+load:0x4086e610,len:0x2f80
+entry 0x4086c11a
+[0;32mI (22) boot: ESP-IDF v5.3.2 2nd stage bootloader[0m
+[0;32mI (22) boot: compile time Jul  2 2026 21:46:20[0m
+[0;32mI (23) boot: chip revision: v0.1[0m
+[0;32mI (24) boot: efuse block revision: v0.3[0m
+[0;32mI (24) boot.esp32c6: SPI Speed      : 80MHz[0m
+[0;32mI (25) boot.esp32c6: SPI Mode       : DIO[0m
+[0;32mI (26) boot.esp32c6: SPI Flash Size : 4MB[0m
+[0;32mI (27) boot: Enabling RNG early entropy source...[0m
+[0;32mI (29) boot: Partition Table:[0m
+[0;32mI (29) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (31) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (33) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (34) boot:  2 factory          factory app      00 00 00010000 000e1000[0m
+[0;32mI (35) boot:  3 zb_storage       Unknown data     01 81 000f1000 00004000[0m
+[0;32mI (36) boot:  4 zb_fct           Unknown data     01 81 000f5000 00000400[0m
+[0;32mI (37) boot: End of partition table[0m
+[0;32mI (38) esp_image: segment 0: paddr=00010020 vaddr=42080020 size=0ee18h ( 60952) map[0m
+[0;32mI (62) esp_image: segment 1: paddr=0001ee40 vaddr=40800000 size=011d8h (  4568) load[0m
+[0;32mI (65) esp_image: segment 2: paddr=00020020 vaddr=42000020 size=743e8h (476136) map[0m
+[0;32mI (240) esp_image: segment 3: paddr=00094410 vaddr=408011d8 size=0c4d0h ( 50384) load[0m
+[0;32mI (262) esp_image: segment 4: paddr=000a08e8 vaddr=4080d6b0 size=02328h (  9000) load[0m
+[0;32mI (274) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (274) boot: Disabling RNG early entropy source...[0m
+[0;32mI (277) cpu_start: Unicore app[0m
+[0;32mI (286) cpu_start: Pro cpu start user code[0m
+[0;32mI (286) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (286) app_init: Application information:[0m
+[0;32mI (287) app_init: Project name:     argb_to_hue[0m
+[0;32mI (287) app_init: App version:      1[0m
+[0;32mI (288) app_init: Compile time:     Jul  2 2026 21:46:16[0m
+[0;32mI (289) app_init: ELF file SHA256:  732dd278d...[0m
+[0;32mI (289) app_init: ESP-IDF:          v5.3.2[0m
+[0;32mI (290) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (290) efuse_init: Max chip rev:     v0.99 [0m
+[0;32mI (291) efuse_init: Chip rev:         v0.1[0m
+[0;32mI (291) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (292) heap_init: At 40814810 len 00067E00 (415 KiB): RAM[0m
+[0;32mI (293) heap_init: At 4087C610 len 00002F54 (11 KiB): RAM[0m
+[0;32mI (294) heap_init: At 50000000 len 00003FE8 (15 KiB): RTCRAM[0m
+[0;32mI (296) spi_flash: detected chip: generic[0m
+[0;32mI (296) spi_flash: flash io: dio[0m
+[0;32mI (297) sleep: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (298) sleep: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (298) coexist: coex firmware version: cbb41d7[0m
+[0;32mI (299) coexist: coexist rom version 5b8dcfa[0m
+[0;32mI (300) main_task: Started on CPU0[0m
+[0;32mI (300) main_task: Calling app_main()[0m
+[0;32mI (300) phy_init: phy_version 320,348a293,Sep  3 2024,16:33:12[0m
+[0;32mI (360) phy: libbtbb version: 04952fd, Sep  3 2024, 16:33:30[0m
+[0;32mI (360) ARGB_TO_HUE: Node descriptor manufacturer code set to 0x100b[0m
+FAKE_DESCRIPTOR: endpoint=11 profile=0x0104 device=0x010d version=1 server_clusters=[0x0000,0x0003,0x0004,0x0005,0x0006,0x0008,0x1000,0xfc03,0x0300,0xfc01,0xfc04] client_clusters=[0x0019]
+[0;32mI (370) ARGB_TO_HUE: ZDO descriptor override enabled: endpoint list will advertise [11,242][0m
+[0;32mI (370) main_task: Returned from app_main()[0m
+[0;32mI (380) ARGB_TO_HUE: ZDO signal: ZDO Config Ready (0x17), status: ESP_FAIL[0m
+[0;32mI (380) ARGB_TO_HUE: Initialize Zigbee stack[0m
+[0;32mI (380) ARGB_TO_HUE: Deferred driver initialization successful[0m
+[0;32mI (380) ARGB_TO_HUE: Device started up in  factory-reset mode[0m
+[0;32mI (380) ARGB_TO_HUE: Start network steering[0m
+[0;33mW (3690) ARGB_TO_HUE: Network(0xfb2f) closed, devices joining not allowed.[0m
+[0;32mI (3890) ARGB_TO_HUE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (4210) ARGB_TO_HUE: Network(0xfb2f) is open for 180 seconds[0m
+[0;32mI (4210) ARGB_TO_HUE: Joined network successfully (Extended PAN ID: dd:75:8b:a8:25:de:8f:9f, PAN ID: 0xfb2f, Channel:25, Short Address: 0x43b7)[0m
+[0;32mI (4280) ARGB_TO_HUE: Network(0xfb2f) is open for 35 seconds[0m
+[0;32mI (6890) ARGB_TO_HUE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (9300) ARGB_TO_HUE: Network(0xfb2f) is open for 30 seconds[0m
+[0;32mI (9900) ARGB_TO_HUE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (10020) ARGB_TO_HUE: ZDO override: Active_EP_req nwk=0x43b7 from=0x0001[0m
+[0;32mI (10020) ARGB_TO_HUE: ZDO override: Active_EP_rsp nwk=0x43b7 eps=[11,242] to=0x0001[0m
+[0;32mI (10040) ARGB_TO_HUE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (14260) ARGB_TO_HUE: Network(0xfb2f) is open for 25 seconds[0m
+[0;32mI (14450) ARGB_TO_HUE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (15900) ARGB_TO_HUE: ZDO signal: ZDO Device Unavailable (0x3c), status: ESP_OK[0m
+[0;32mI (16160) ARGB_TO_HUE: ZDO override: Active_EP_req nwk=0x43b7 from=0x0001[0m
+[0;32mI (16160) ARGB_TO_HUE: ZDO override: Active_EP_rsp nwk=0x43b7 eps=[11,242] to=0x0001[0m
+[0;32mI (16190) ARGB_TO_HUE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (19260) ARGB_TO_HUE: Network(0xfb2f) is open for 20 seconds[0m
+[0;32mI (24280) ARGB_TO_HUE: Network(0xfb2f) is open for 15 seconds[0m
+[0;32mI (26560) ARGB_TO_HUE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (29260) ARGB_TO_HUE: Network(0xfb2f) is open for 10 seconds[0m
+[0;32mI (34260) ARGB_TO_HUE: Network(0xfb2f) is open for 5 seconds[0m
+[0;33mW (39260) ARGB_TO_HUE: Network(0xfb2f) closed, devices joining not allowed.[0m
+[0;32mI (77010) ARGB_TO_HUE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m

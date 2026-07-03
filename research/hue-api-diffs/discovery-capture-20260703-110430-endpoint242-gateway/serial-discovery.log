@@ -1,0 +1,193 @@
+0 0x4081fa98 0x00000001 0x4200c992 0x00000000 0x4081fa98 0x00000001 0x4200c9a8
+40819970: 0x00000000 0x4081fa98 0x00000001 0x4200a8ec 0x00000001 0x00000000 0x0000000a 0x00000000
+40819990: 0x00000000 0x00000000 0x00000000 0x408081a4 0x00000000 0x00000000 0x00000000 0x00000000
+408199b0: 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0xa5a5a5a5 0xa5a5a5a5 0xa5a5a5a5
+408199d0: 0xa5a5a5a5 0xa5a5a5a5 0xa5a5a5a5 0x00000150 0x408197b0 0x0000001d 0x4080fd9c 0x4080fd9c
+408199f0: 0x408199e0 0x4080fd94 0x00000014 0x4081fac4 0x4081fac4 0x408199e0 0x00000000 0x00000005
+40819a10: 0x408189dc 0x6267695a 0x6d5f6565 0x006e6961 0x00000000 0x408199d0 0x00000005 0x00000001
+40819a30: 0x00000000 0x00000000 0x00000000 0x40815388 0x408153f0 0x40815458 0x00000000 0x00000000
+40819a50: 0x00000001 0x00000000 0x00000000 0x00000000 0x420071fc 0x00000000 0x00000000 0x00000000
+40819a70: 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000
+40819a90: 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000
+40819ab0: 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000
+40819ad0: 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000
+40819af0: 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000
+40819b10: 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000
+40819b30: 0x00000014 0xd3d2d1d0 0xd7d6d5d4 0xdbdad9d8 0xdfdedddc 0x00000000 0x00000014 0x4267695a
+40819b50: 0x6c416565 0x6e61696c 0x39306563 0x00000000 0x00003480 0x00000000 0x00000000 0x00000001
+40819b70: 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000
+40819b90: 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000
+40819bb0: 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000
+40819bd0: 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000
+40819bf0: 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000
+40819c10: 0x00000000 0x00010001 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000
+40819c30: 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x61000000 0x2fcc8841
+40819c50: 0xadfffffb 0xfc120948 0x1a0001ff 0x4f59f410 0x17880105 0x59392d00 0x542f00f5 0x88010b89
+40819c70: 0x01000017 0x227dc800 0x2a856202 0x7dbb38ce 0x00000722 0x00000000 0x00000000 0x00000000
+40819c90: 0x00000000 0x00000000 0x00000000 0x0000227d 0x00000000 0x00003000 0x30ae0000 0x48adffff
+40819cb0: 0x0000bb38 0x00000000 0x00000000 0x00010001 0x00000000 0x00000000 0x00000000 0x00000000
+40819cd0: 0x00000000 0x00000000 0x00000000 0x2f6b8841 0x7dfffffb 0xfc120822 0x1e227dff 0xfffe0500
+
+
+
+ELF file SHA256: 2c3c7dbb9
+
+Rebooting...
+ESP-ROM:esp32c6-20220919
+Build:Sep 19 2022
+rst:0xc (SW_CPU),boot:0xc (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4001975a
+SPIWP:0xee
+mode:DIO, clock div:2
+load:0x40875720,len:0x18ec
+load:0x4086c110,len:0xd9c
+load:0x4086e610,len:0x2f80
+entry 0x4086c11a
+[0;32mI (22) boot: ESP-IDF v5.3.2 2nd stage bootloader[0m
+[0;32mI (22) boot: compile time Jul  2 2026 21:46:20[0m
+[0;32mI (23) boot: chip revision: v0.1[0m
+[0;32mI (23) boot: efuse block revision: v0.3[0m
+[0;32mI (24) boot.esp32c6: SPI Speed      : 80MHz[0m
+[0;32mI (24) boot.esp32c6: SPI Mode       : DIO[0m
+[0;32mI (25) boot.esp32c6: SPI Flash Size : 4MB[0m
+[0;32mI (26) boot: Enabling RNG early entropy source...[0m
+[0;32mI (27) boot: Partition Table:[0m
+[0;32mI (27) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (29) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (30) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (31) boot:  2 factory          factory app      00 00 00010000 000e1000[0m
+[0;32mI (33) boot:  3 zb_storage       Unknown data     01 81 000f1000 00004000[0m
+[0;32mI (34) boot:  4 zb_fct           Unknown data     01 81 000f5000 00000400[0m
+[0;32mI (36) boot: End of partition table[0m
+[0;32mI (36) esp_image: segment 0: paddr=00010020 vaddr=42080020 size=0ebd0h ( 60368) map[0m
+[0;32mI (60) esp_image: segment 1: paddr=0001ebf8 vaddr=40800000 size=01420h (  5152) load[0m
+[0;32mI (64) esp_image: segment 2: paddr=00020020 vaddr=42000020 size=76248h (483912) map[0m
+[0;32mI (241) esp_image: segment 3: paddr=00096270 vaddr=40801420 size=0c338h ( 49976) load[0m
+[0;32mI (263) esp_image: segment 4: paddr=000a25b0 vaddr=4080d760 size=023c0h (  9152) load[0m
+[0;32mI (275) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (276) boot: Disabling RNG early entropy source...[0m
+[0;32mI (278) cpu_start: Unicore app[0m
+[0;32mI (287) cpu_start: Pro cpu start user code[0m
+[0;32mI (287) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (288) app_init: Application information:[0m
+[0;32mI (289) app_init: Project name:     argb_to_hue[0m
+[0;32mI (289) app_init: App version:      1[0m
+[0;32mI (290) app_init: Compile time:     Jul  2 2026 21:46:16[0m
+[0;32mI (290) app_init: ELF file SHA256:  2c3c7dbb9...[0m
+[0;32mI (291) app_init: ESP-IDF:          v5.3.2[0m
+[0;32mI (292) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (292) efuse_init: Max chip rev:     v0.99 [0m
+[0;32mI (293) efuse_init: Chip rev:         v0.1[0m
+[0;32mI (293) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (294) heap_init: At 40814950 len 00067CC0 (415 KiB): RAM[0m
+[0;32mI (295) heap_init: At 4087C610 len 00002F54 (11 KiB): RAM[0m
+[0;32mI (296) heap_init: At 50000000 len 00003FE8 (15 KiB): RTCRAM[0m
+[0;32mI (297) spi_flash: detected chip: generic[0m
+[0;32mI (297) spi_flash: flash io: dio[0m
+[0;32mI (298) sleep: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (299) sleep: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (300) coexist: coex firmware version: cbb41d7[0m
+[0;32mI (301) coexist: coexist rom version 5b8dcfa[0m
+[0;32mI (302) main_task: Started on CPU0[0m
+[0;32mI (302) main_task: Calling app_main()[0m
+[0;32mI (302) phy_init: phy_version 320,348a293,Sep  3 2024,16:33:12[0m
+[0;32mI (362) phy: libbtbb version: 04952fd, Sep  3 2024, 16:33:30[0m
+[0;32mI (372) ARGB_TO_HUE: Node descriptor manufacturer code set to 0x100b[0m
+FAKE_DESCRIPTOR: endpoint=11 profile=0x0104 device=0x010d version=1 server_clusters=[0x0000,0x0003,0x0004,0x0005,0x0006,0x0008,0x1000,0xfc03,0x0300,0xfc01,0xfc04] client_clusters=[0x0019]
+FAKE_DESCRIPTOR: endpoint=242 profile=0xa1e0 device=0x0061 version=0 server_clusters=[] client_clusters=[0x0021]
+DATA: {"event":"factory_reset"}
+[0;32mI (382) main_task: Returned from app_main()[0m
+[0;32mI (392) ARGB_TO_HUE: ZDO signal: ZDO Config Ready (0x17), status: ESP_FAIL[0m
+[0;32mI (392) ARGB_TO_HUE: Initialize Zigbee stack[0m
+[0;33mW (392) ARGB_TO_HUE: Network(0xfb2f) closed, devices joining not allowed.[0m
+[0;32mI (392) ARGB_TO_HUE: Deferred driver initialization successful[0m
+[0;32mI (392) ARGB_TO_HUE: Device started up in non factory-reset mode[0m
+[0;32mI (392) ARGB_TO_HUE: Start network steering[0m
+[0;32mI (522) ARGB_TO_HUE: Network(0xfb2f) is open for 40 seconds[0m
+ESP-ROM:esp32c6-20220919
+Build:Sep 19 2022
+rst:0xc (SW_CPU),boot:0xc (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4001975a
+SPIWP:0xee
+mode:DIO, clock div:2
+load:0x40875720,len:0x18ec
+load:0x4086c110,len:0xd9c
+load:0x4086e610,len:0x2f80
+entry 0x4086c11a
+[0;32mI (22) boot: ESP-IDF v5.3.2 2nd stage bootloader[0m
+[0;32mI (22) boot: compile time Jul  2 2026 21:46:20[0m
+[0;32mI (23) boot: chip revision: v0.1[0m
+[0;32mI (24) boot: efuse block revision: v0.3[0m
+[0;32mI (25) boot.esp32c6: SPI Speed      : 80MHz[0m
+[0;32mI (26) boot.esp32c6: SPI Mode       : DIO[0m
+[0;32mI (27) boot.esp32c6: SPI Flash Size : 4MB[0m
+[0;32mI (28) boot: Enabling RNG early entropy source...[0m
+[0;32mI (29) boot: Partition Table:[0m
+[0;32mI (30) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (30) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (32) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (33) boot:  2 factory          factory app      00 00 00010000 000e1000[0m
+[0;32mI (34) boot:  3 zb_storage       Unknown data     01 81 000f1000 00004000[0m
+[0;32mI (35) boot:  4 zb_fct           Unknown data     01 81 000f5000 00000400[0m
+[0;32mI (37) boot: End of partition table[0m
+[0;32mI (37) esp_image: segment 0: paddr=00010020 vaddr=42080020 size=0ebd0h ( 60368) map[0m
+[0;32mI (61) esp_image: segment 1: paddr=0001ebf8 vaddr=40800000 size=01420h (  5152) load[0m
+[0;32mI (64) esp_image: segment 2: paddr=00020020 vaddr=42000020 size=76248h (483912) map[0m
+[0;32mI (241) esp_image: segment 3: paddr=00096270 vaddr=40801420 size=0c338h ( 49976) load[0m
+[0;32mI (264) esp_image: segment 4: paddr=000a25b0 vaddr=4080d760 size=023c0h (  9152) load[0m
+[0;32mI (276) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (276) boot: Disabling RNG early entropy source...[0m
+[0;32mI (279) cpu_start: Unicore app[0m
+[0;32mI (288) cpu_start: Pro cpu start user code[0m
+[0;32mI (288) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (288) app_init: Application information:[0m
+[0;32mI (289) app_init: Project name:     argb_to_hue[0m
+[0;32mI (289) app_init: App version:      1[0m
+[0;32mI (290) app_init: Compile time:     Jul  2 2026 21:46:16[0m
+[0;32mI (291) app_init: ELF file SHA256:  2c3c7dbb9...[0m
+[0;32mI (291) app_init: ESP-IDF:          v5.3.2[0m
+[0;32mI (292) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (292) efuse_init: Max chip rev:     v0.99 [0m
+[0;32mI (293) efuse_init: Chip rev:         v0.1[0m
+[0;32mI (294) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (294) heap_init: At 40814950 len 00067CC0 (415 KiB): RAM[0m
+[0;32mI (295) heap_init: At 4087C610 len 00002F54 (11 KiB): RAM[0m
+[0;32mI (296) heap_init: At 50000000 len 00003FE8 (15 KiB): RTCRAM[0m
+[0;32mI (298) spi_flash: detected chip: generic[0m
+[0;32mI (298) spi_flash: flash io: dio[0m
+[0;32mI (299) sleep: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (300) sleep: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (301) coexist: coex firmware version: cbb41d7[0m
+[0;32mI (301) coexist: coexist rom version 5b8dcfa[0m
+[0;32mI (302) main_task: Started on CPU0[0m
+[0;32mI (302) main_task: Calling app_main()[0m
+[0;32mI (302) phy_init: phy_version 320,348a293,Sep  3 2024,16:33:12[0m
+[0;32mI (362) phy: libbtbb version: 04952fd, Sep  3 2024, 16:33:30[0m
+[0;32mI (362) ARGB_TO_HUE: Node descriptor manufacturer code set to 0x100b[0m
+FAKE_DESCRIPTOR: endpoint=11 profile=0x0104 device=0x010d version=1 server_clusters=[0x0000,0x0003,0x0004,0x0005,0x0006,0x0008,0x1000,0xfc03,0x0300,0xfc01,0xfc04] client_clusters=[0x0019]
+FAKE_DESCRIPTOR: endpoint=242 profile=0xa1e0 device=0x0061 version=0 server_clusters=[] client_clusters=[0x0021]
+[0;32mI (372) main_task: Returned from app_main()[0m
+[0;32mI (382) ARGB_TO_HUE: ZDO signal: ZDO Config Ready (0x17), status: ESP_FAIL[0m
+[0;32mI (382) ARGB_TO_HUE: Initialize Zigbee stack[0m
+[0;32mI (382) ARGB_TO_HUE: Deferred driver initialization successful[0m
+[0;32mI (382) ARGB_TO_HUE: Device started up in  factory-reset mode[0m
+[0;32mI (382) ARGB_TO_HUE: Start network steering[0m
+[0;33mW (3732) ARGB_TO_HUE: Network(0xfb2f) closed, devices joining not allowed.[0m
+[0;32mI (3902) ARGB_TO_HUE: Network(0xfb2f) is open for 35 seconds[0m
+[0;32mI (4292) ARGB_TO_HUE: Network(0xfb2f) is open for 180 seconds[0m
+[0;32mI (4292) ARGB_TO_HUE: Joined network successfully (Extended PAN ID: dd:75:8b:a8:25:de:8f:9f, PAN ID: 0xfb2f, Channel:25, Short Address: 0x3d6e)[0m
+[0;32mI (5392) ARGB_TO_HUE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (5482) ARGB_TO_HUE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (8892) ARGB_TO_HUE: Network(0xfb2f) is open for 30 seconds[0m
+[0;32mI (13882) ARGB_TO_HUE: Network(0xfb2f) is open for 25 seconds[0m
+[0;32mI (15472) ARGB_TO_HUE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (18882) ARGB_TO_HUE: Network(0xfb2f) is open for 20 seconds[0m
+[0;32mI (23892) ARGB_TO_HUE: Network(0xfb2f) is open for 15 seconds[0m
+[0;32mI (28892) ARGB_TO_HUE: Network(0xfb2f) is open for 10 seconds[0m
+[0;32mI (33892) ARGB_TO_HUE: Network(0xfb2f) is open for 5 seconds[0m
+[0;33mW (38892) ARGB_TO_HUE: Network(0xfb2f) closed, devices joining not allowed.[0m
+[0;33mW (38892) ARGB_TO_HUE: Network(0xfb2f) closed, devices joining not allowed.[0m
+[0;32mI (84082) ARGB_TO_HUE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (116392) ARGB_TO_HUE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (125482) ARGB_TO_HUE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (159792) ARGB_TO_HUE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m

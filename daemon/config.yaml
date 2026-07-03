@@ -18,32 +18,13 @@ serial:
 
 endpoints:
   # endpoint number -> OpenRGB mapping
-  # The MSI MYSTIC LIGHT controller exposes four zones:
-  #   0: JAF
-  #   1: JARGB 1  -> bottom intake fans (2x Fractal Aspect 12)
-  #   2: JARGB 2  -> radiator + VRM fans (3x ARCTIC P12 + 1x ARCTIC P12)
-  #   3: JARGB 3  -> side intake fans (2x Fractal Aspect 12)
-  # Adjust these to match your physical wiring.
-  1:
+  # The firmware now exposes a single Hue gradient endpoint (11).
+  # Adjust zone/leds to match your physical wiring.
+  11:
     name: "PC Case"
     device: "MSI MYSTIC LIGHT"
     zone: 1
     leds: 12
-  2:
-    name: "PC Fans"
-    device: "MSI MYSTIC LIGHT"
-    zone: 2
-    leds: 48
-  3:
-    name: "PC RAM"
-    device: "MSI MYSTIC LIGHT"
-    zone: 3
-    leds: 12
-  4:
-    name: "PC Motherboard"
-    device: "MSI MYSTIC LIGHT"
-    zone: 0
-    leds: 0
 
 # If true, attempt to switch matched devices into Direct/Custom mode before
 # setting colors.

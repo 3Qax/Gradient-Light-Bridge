@@ -1,0 +1,51 @@
+[0;32mI (549) GRADIENT_PROBE: Serial command: discover[0m
+[0;32mI (549) GRADIENT_PROBE: Starting broadcast discovery of color dimmable lights[0m
+[0;32mI (639) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (769) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+PROBE: DISCOVER match nwk=0xd938 ep=11
+[0;32mI (849) GRADIENT_PROBE: Starting FC01 sweep on nwk=0xd938 ep=11[0m
+[0;32mI (919) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+PROBE: DISCOVER active_ep nwk=0xd938 count=2 eps=[11,242]
+[0;32mI (1029) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (1069) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+PROBE: DISCOVER simple_desc nwk=0xd938 ep=11 profile=0x0104 device=0x010d ver=1 in=11 out=1 clusters=[0x0000,0x0003,0x0004,0x0005,0x0006,0x0008,0x1000,0xfc03,0x0300,0xfc01,0xfc04 | 0x0019]
+PROBE: DISCOVER simple_desc nwk=0xd938 ep=242 profile=0xa1e0 device=0x0061 ver=0 in=0 out=1 clusters=[ | 0x0021]
+[0;32mI (1279) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (1349) GRADIENT_PROBE: FC01 tx read attr 0x0000 -> nwk=0xd938 ep=11[0m
+[0;32mI (1489) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+PROBE: read_attr_resp cluster=0xfc01 src_ep=11 dst_ep=11
+  attr=0x0000 status=0x00 type=0x18 size=1 data=PROBE: value (1 bytes): 0f
+[0;32mI (1769) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (1799) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (1849) GRADIENT_PROBE: FC01 tx cmd 0x01 -> nwk=0xd938 ep=11 (0 bytes)[0m
+[0;32mI (1879) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (2029) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (2229) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (2309) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (2359) GRADIENT_PROBE: FC01 tx cmd 0x02 -> nwk=0xd938 ep=11 (0 bytes)[0m
+PROBE: default_resp cluster=0xfc01 resp_to_cmd=0x02 status=0x81 (129)
+[0;32mI (2869) GRADIENT_PROBE: FC01 tx cmd 0x03 -> nwk=0xd938 ep=11 (6 bytes)[0m
+PROBE: default_resp cluster=0xfc01 resp_to_cmd=0x03 status=0x00 (0)
+[0;32mI (3379) GRADIENT_PROBE: FC01 tx cmd 0x04 -> nwk=0xd938 ep=11 (0 bytes)[0m
+PROBE: custom_cluster endpoint=11 cluster=0xfc01 cmd=0x04 manuf=0x100b fc=0x00 size=2 data=PROBE: payload (2 bytes): 80ff
+[0;32mI (3809) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (3879) GRADIENT_PROBE: FC01 tx cmd 0x07 -> nwk=0xd938 ep=11 (0 bytes)[0m
+PROBE: custom_cluster endpoint=11 cluster=0xfc01 cmd=0x07 manuf=0x100b fc=0x00 size=2 data=PROBE: payload (2 bytes): 80ff
+[0;32mI (4389) GRADIENT_PROBE: FC01 tx read attr 0x0001 -> nwk=0xd938 ep=11[0m
+PROBE: read_attr_resp cluster=0xfc01 src_ep=11 dst_ep=11
+  attr=0x0001 status=0x00 type=0x30 size=1 data=PROBE: value (1 bytes): 00
+[0;32mI (4899) GRADIENT_PROBE: FC01 tx read attr 0x0002 -> nwk=0xd938 ep=11[0m
+[0;32mI (4919) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+PROBE: default_resp cluster=0xfc01 resp_to_cmd=0x01 status=0x80 (128)
+[0;32mI (5409) GRADIENT_PROBE: FC01 tx read attr 0x0003 -> nwk=0xd938 ep=11[0m
+PROBE: read_attr_resp cluster=0xfc01 src_ep=11 dst_ep=11
+  attr=0x0003 status=0x00 type=0x20 size=1 data=PROBE: value (1 bytes): 04
+[0;32mI (5909) GRADIENT_PROBE: FC01 sweep done for nwk=0xd938 ep=11[0m
+PROBE: DISCOVER simple_desc nwk=0xd938 ep=11 profile=0x0104 device=0x010d ver=1 in=11 out=1 clusters=[0x0000,0x0003,0x0004,0x0005,0x0006,0x0008,0x1000,0xfc03,0x0300,0xfc01,0xfc04 | 0x0019]
+PROBE: DISCOVER simple_desc nwk=0xd938 ep=11 profile=0x0104 device=0x010d ver=1 in=11 out=1 clusters=[0x0000,0x0003,0x0004,0x0005,0x0006,0x0008,0x1000,0xfc03,0x0300,0xfc01,0xfc04 | 0x0019]
+PROBE: DISCOVER simple_desc nwk=0xd938 ep=242 profile=0xa1e0 device=0x0061 ver=0 in=0 out=1 clusters=[ | 0x0021]
+[0;32mI (6619) GRADIENT_PROBE: DISCOVER complete: 3 endpoints[0m
+PROBE: read_attr_resp cluster=0xfc01 src_ep=11 dst_ep=11
+  attr=0x0002 status=0x00 type=0x20 size=1 data=PROBE: value (1 bytes): 0a
+[0;32mI (11319) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (13329) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m

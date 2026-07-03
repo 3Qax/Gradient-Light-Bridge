@@ -1,0 +1,186 @@
+HOST: join
+[0;32mI (4559) GRADIENT_PROBE: Serial command: rejoin[0m
+[0;32mI (5139) GRADIENT_PROBE: Network(0xfb2f) is open for 180 seconds[0m
+[0;32mI (5139) GRADIENT_PROBE: Joined network successfully (Extended PAN ID: dd:75:8b:a8:25:de:8f:9f, PAN ID: 0xfb2f, Channel:25, Short Address: 0xee4a)[0m
+[0;32mI (10149) GRADIENT_PROBE: Starting OTA/basic metadata scan of real LCX004 devices[0m
+[0;32mI (10149) GRADIENT_PROBE: METADATA Headboard LCX004: resolving nwk_addr[0m
+PROBE: METADATA target=Headboard LCX004 nwk=0x48ad ep=11
+[0;32mI (10499) GRADIENT_PROBE: Starting OTA/basic metadata sweep on nwk=0x48ad ep=11[0m
+HOST: discext 48ad fc03 0032 03 100b 0b
+PROBE: metadata_read label=basic.manufacturer_name nwk=0x48ad ep=11 cluster=0x0000 attr=0x0004 manuf=0x0000 dir=to_srv
+[0;32mI (10519) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0000 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x0000 common=1 payload_len=29[0m
+PROBE: zcl_raw_payload (29 bytes): 04000042185369676e696679204e65746865726c616e647320422e562e
+PROBE: read_attr_resp cluster=0x0000 src_ep=11 dst_ep=11
+  attr=0x0004 status=0x00 type=0x42 size=25 data=PROBE: value (25 bytes): 185369676e696679204e65746865726c616e647320422e562e
+[0;32mI (10559) GRADIENT_PROBE: Serial command: discover attrs EXT cluster 0xfc03 start 0x0032 on 0x48ad ep=11[0m
+[0;32mI (10559) GRADIENT_PROBE: tx discover attr EXT start=0x0032 max=3 cluster 0xfc03 -> nwk=0x48ad ep=11 (manuf=0x100b)[0m
+[0;32mI (10569) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0xfc03 profile=0x0104 cmd=0x16/discover_attr_ext_resp dir=to_cli manuf=0x100b common=1 payload_len=13[0m
+PROBE: disc_attr_ext_resp cluster=0xfc03 completed=0 raw=00320020073300200734002007
+  ext_attr=0x0032 type=0x20 access=0x07
+  ext_attr=0x0033 type=0x20 access=0x07
+  ext_attr=0x0034 type=0x20 access=0x07
+E (10579) ESP_ZIGBEE_ZCL_GENERAL: Unsupported ZCL common command(0x16)
+PROBE: metadata_read label=basic.model_identifier nwk=0x48ad ep=11 cluster=0x0000 attr=0x0005 manuf=0x0000 dir=to_srv
+[0;32mI (10879) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0000 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x0000 common=1 payload_len=11[0m
+PROBE: zcl_raw_payload (11 bytes): 05000042064c4358303034
+PROBE: read_attr_resp cluster=0x0000 src_ep=11 dst_ep=11
+  attr=0x0005 status=0x00 type=0x42 size=7 data=PROBE: value (7 bytes): 064c4358303034
+PROBE: metadata_read label=basic.product_code nwk=0x48ad ep=11 cluster=0x0000 attr=0x000a manuf=0x0000 dir=to_srv
+[0;32mI (11229) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0000 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x0000 common=1 payload_len=5[0m
+PROBE: zcl_raw_payload (5 bytes): 0a00004100
+PROBE: read_attr_resp cluster=0x0000 src_ep=11 dst_ep=11
+  attr=0x000a status=0x00 type=0x41 size=1 data=PROBE: value (1 bytes): 00
+PROBE: metadata_read label=basic.manufacturer_version_details nwk=0x48ad ep=11 cluster=0x0000 attr=0x000c manuf=0x0000 dir=to_srv
+[0;32mI (11589) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0000 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x0000 common=1 payload_len=3[0m
+PROBE: zcl_raw_payload (3 bytes): 0c0086
+PROBE: read_attr_resp cluster=0x0000 src_ep=11 dst_ep=11
+  attr=0x000c status=0x86 type=0x00 size=0 data=(nil)
+PROBE: metadata_read label=basic.product_label nwk=0x48ad ep=11 cluster=0x0000 attr=0x000e manuf=0x0000 dir=to_srv
+[0;32mI (11949) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0000 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x0000 common=1 payload_len=3[0m
+PROBE: zcl_raw_payload (3 bytes): 0e0086
+PROBE: read_attr_resp cluster=0x0000 src_ep=11 dst_ep=11
+  attr=0x000e status=0x86 type=0x00 size=0 data=(nil)
+PROBE: metadata_read label=basic.signify_attr_0020 nwk=0x48ad ep=11 cluster=0x0000 attr=0x0020 manuf=0x100b dir=to_srv
+[0;32mI (12319) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0000 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x100b common=1 payload_len=14[0m
+PROBE: zcl_raw_payload (14 bytes): 2000004209303a5057524f4e4031
+PROBE: read_attr_resp cluster=0x0000 src_ep=11 dst_ep=11
+  attr=0x0020 status=0x00 type=0x42 size=10 data=PROBE: value (10 bytes): 09303a5057524f4e4031
+PROBE: metadata_read label=basic.signify_attr_0021 nwk=0x48ad ep=11 cluster=0x0000 attr=0x0021 manuf=0x100b dir=to_srv
+[0;32mI (12669) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0000 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x100b common=1 payload_len=8[0m
+PROBE: zcl_raw_payload (8 bytes): 210000237e2b1500
+PROBE: read_attr_resp cluster=0x0000 src_ep=11 dst_ep=11
+  attr=0x0021 status=0x00 type=0x23 size=4 data=PROBE: value (4 bytes): 7e2b1500
+PROBE: metadata_read label=basic.sw_build_id nwk=0x48ad ep=11 cluster=0x0000 attr=0x4000 manuf=0x0000 dir=to_srv
+[0;32mI (13029) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0000 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x0000 common=1 payload_len=12[0m
+PROBE: zcl_raw_payload (12 bytes): 0040004207312e3132392e35
+PROBE: read_attr_resp cluster=0x0000 src_ep=11 dst_ep=11
+  attr=0x4000 status=0x00 type=0x42 size=8 data=PROBE: value (8 bytes): 07312e3132392e35
+PROBE: metadata_read label=basic.power_source nwk=0x48ad ep=11 cluster=0x0000 attr=0x0007 manuf=0x0000 dir=to_srv
+[0;32mI (13399) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0000 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x0000 common=1 payload_len=5[0m
+PROBE: zcl_raw_payload (5 bytes): 0700003001
+PROBE: read_attr_resp cluster=0x0000 src_ep=11 dst_ep=11
+  attr=0x0007 status=0x00 type=0x30 size=1 data=PROBE: value (1 bytes): 01
+PROBE: metadata_read label=onoff.on_off nwk=0x48ad ep=11 cluster=0x0006 attr=0x0000 manuf=0x0000 dir=to_srv
+[0;32mI (13749) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0006 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x0000 common=1 payload_len=5[0m
+PROBE: zcl_raw_payload (5 bytes): 0000001000
+PROBE: read_attr_resp cluster=0x0006 src_ep=11 dst_ep=11
+  attr=0x0000 status=0x00 type=0x10 size=1 data=PROBE: value (1 bytes): 00
+PROBE: metadata_read label=level.current_level nwk=0x48ad ep=11 cluster=0x0008 attr=0x0000 manuf=0x0000 dir=to_srv
+[0;32mI (14119) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0008 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x0000 common=1 payload_len=5[0m
+PROBE: zcl_raw_payload (5 bytes): 00000020fe
+PROBE: read_attr_resp cluster=0x0008 src_ep=11 dst_ep=11
+  attr=0x0000 status=0x00 type=0x20 size=1 data=PROBE: value (1 bytes): fe
+PROBE: metadata_read label=color.color_capabilities nwk=0x48ad ep=11 cluster=0x0300 attr=0x400b manuf=0x0000 dir=to_srv
+[0;32mI (14469) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0300 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x0000 common=1 payload_len=6[0m
+PROBE: zcl_raw_payload (6 bytes): 0b4000219900
+PROBE: read_attr_resp cluster=0x0300 src_ep=11 dst_ep=11
+  attr=0x400b status=0x00 type=0x21 size=2 data=PROBE: value (2 bytes): 9900
+PROBE: metadata_read label=color.color_temp_startup nwk=0x48ad ep=11 cluster=0x0300 attr=0x400c manuf=0x0000 dir=to_srv
+[0;32mI (14829) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0300 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x0000 common=1 payload_len=6[0m
+PROBE: zcl_raw_payload (6 bytes): 0c400021f401
+PROBE: read_attr_resp cluster=0x0300 src_ep=11 dst_ep=11
+  attr=0x400c status=0x00 type=0x21 size=2 data=PROBE: value (2 bytes): f401
+PROBE: metadata_read label=color.color_temperature nwk=0x48ad ep=11 cluster=0x0300 attr=0x0007 manuf=0x0000 dir=to_srv
+[0;32mI (15189) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0300 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x0000 common=1 payload_len=6[0m
+PROBE: zcl_raw_payload (6 bytes): 07000021f401
+PROBE: read_attr_resp cluster=0x0300 src_ep=11 dst_ep=11
+  attr=0x0007 status=0x00 type=0x21 size=2 data=PROBE: value (2 bytes): f401
+PROBE: metadata_read label=color.point_rx nwk=0x48ad ep=11 cluster=0x0300 attr=0x0032 manuf=0x0000 dir=to_srv
+[0;32mI (15549) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0300 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x0000 common=1 payload_len=6[0m
+PROBE: zcl_raw_payload (6 bytes): 3200002105b1
+PROBE: read_attr_resp cluster=0x0300 src_ep=11 dst_ep=11
+  attr=0x0032 status=0x00 type=0x21 size=2 data=PROBE: value (2 bytes): 05b1
+PROBE: metadata_read label=color.point_ry nwk=0x48ad ep=11 cluster=0x0300 attr=0x0033 manuf=0x0000 dir=to_srv
+[0;32mI (15909) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0300 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x0000 common=1 payload_len=6[0m
+PROBE: zcl_raw_payload (6 bytes): 33000021ec4e
+PROBE: read_attr_resp cluster=0x0300 src_ep=11 dst_ep=11
+  attr=0x0033 status=0x00 type=0x21 size=2 data=PROBE: value (2 bytes): ec4e
+PROBE: metadata_read label=color.point_gx nwk=0x48ad ep=11 cluster=0x0300 attr=0x0036 manuf=0x0000 dir=to_srv
+[0;32mI (16279) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0300 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x0000 common=1 payload_len=6[0m
+PROBE: zcl_raw_payload (6 bytes): 36000021852b
+PROBE: read_attr_resp cluster=0x0300 src_ep=11 dst_ep=11
+  attr=0x0036 status=0x00 type=0x21 size=2 data=PROBE: value (2 bytes): 852b
+PROBE: metadata_read label=color.point_gy nwk=0x48ad ep=11 cluster=0x0300 attr=0x0037 manuf=0x0000 dir=to_srv
+[0;32mI (16629) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0300 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x0000 common=1 payload_len=6[0m
+PROBE: zcl_raw_payload (6 bytes): 3700002133b3
+PROBE: read_attr_resp cluster=0x0300 src_ep=11 dst_ep=11
+  attr=0x0037 status=0x00 type=0x21 size=2 data=PROBE: value (2 bytes): 33b3
+PROBE: metadata_read label=color.point_bx nwk=0x48ad ep=11 cluster=0x0300 attr=0x003a manuf=0x0000 dir=to_srv
+[0;32mI (16989) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0300 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x0000 common=1 payload_len=6[0m
+PROBE: zcl_raw_payload (6 bytes): 3a0000213827
+PROBE: read_attr_resp cluster=0x0300 src_ep=11 dst_ep=11
+  attr=0x003a status=0x00 type=0x21 size=2 data=PROBE: value (2 bytes): 3827
+[0;32mI (17159) GRADIENT_PROBE: METADATA Floor LCX004: resolving nwk_addr[0m
+PROBE: metadata_read label=color.point_by nwk=0x48ad ep=11 cluster=0x0300 attr=0x003b manuf=0x0000 dir=to_srv
+[0;32mI (17349) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0300 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x0000 common=1 payload_len=6[0m
+PROBE: zcl_raw_payload (6 bytes): 3b0000212c0c
+PROBE: read_attr_resp cluster=0x0300 src_ep=11 dst_ep=11
+  attr=0x003b status=0x00 type=0x21 size=2 data=PROBE: value (2 bytes): 2c0c
+PROBE: metadata_read label=color.current_x nwk=0x48ad ep=11 cluster=0x0300 attr=0x0003 manuf=0x0000 dir=to_srv
+[0;32mI (17719) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0300 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x0000 common=1 payload_len=6[0m
+PROBE: zcl_raw_payload (6 bytes): 030000218f9f
+PROBE: read_attr_resp cluster=0x0300 src_ep=11 dst_ep=11
+  attr=0x0003 status=0x00 type=0x21 size=2 data=PROBE: value (2 bytes): 8f9f
+PROBE: metadata_read label=color.current_y nwk=0x48ad ep=11 cluster=0x0300 attr=0x0004 manuf=0x0000 dir=to_srv
+[0;32mI (18069) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0300 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x0000 common=1 payload_len=6[0m
+PROBE: zcl_raw_payload (6 bytes): 04000021065c
+PROBE: read_attr_resp cluster=0x0300 src_ep=11 dst_ep=11
+  attr=0x0004 status=0x00 type=0x21 size=2 data=PROBE: value (2 bytes): 065c
+PROBE: metadata_read label=color.enhanced_current_hue nwk=0x48ad ep=11 cluster=0x0300 attr=0x4000 manuf=0x0000 dir=to_srv
+[0;32mI (18429) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0300 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x0000 common=1 payload_len=6[0m
+PROBE: zcl_raw_payload (6 bytes): 00400021100d
+PROBE: read_attr_resp cluster=0x0300 src_ep=11 dst_ep=11
+  attr=0x4000 status=0x00 type=0x21 size=2 data=PROBE: value (2 bytes): 100d
+PROBE: metadata_read label=color.current_saturation nwk=0x48ad ep=11 cluster=0x0300 attr=0x0001 manuf=0x0000 dir=to_srv
+[0;32mI (18789) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0300 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x0000 common=1 payload_len=5[0m
+PROBE: zcl_raw_payload (5 bytes): 01000020fe
+PROBE: read_attr_resp cluster=0x0300 src_ep=11 dst_ep=11
+  attr=0x0001 status=0x00 type=0x20 size=1 data=PROBE: value (1 bytes): fe
+PROBE: metadata_read label=color.color_mode nwk=0x48ad ep=11 cluster=0x0300 attr=0x0008 manuf=0x0000 dir=to_srv
+[0;32mI (19149) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0300 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x0000 common=1 payload_len=5[0m
+PROBE: zcl_raw_payload (5 bytes): 0800003001
+PROBE: read_attr_resp cluster=0x0300 src_ep=11 dst_ep=11
+  attr=0x0008 status=0x00 type=0x30 size=1 data=PROBE: value (1 bytes): 01
+PROBE: metadata_read label=color.enhanced_color_mode nwk=0x48ad ep=11 cluster=0x0300 attr=0x4002 manuf=0x0000 dir=to_srv
+[0;32mI (19509) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0300 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x0000 common=1 payload_len=5[0m
+PROBE: zcl_raw_payload (5 bytes): 0240002000
+PROBE: read_attr_resp cluster=0x0300 src_ep=11 dst_ep=11
+  attr=0x4002 status=0x00 type=0x20 size=1 data=PROBE: value (1 bytes): 00
+PROBE: metadata_read label=groups.bridge_attr_e9d5 nwk=0x48ad ep=11 cluster=0x0004 attr=0xe9d5 manuf=0x0000 dir=to_srv
+[0;32mI (19869) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0004 profile=0x0104 cmd=0x01/read_attr_resp dir=to_cli manuf=0x0000 common=1 payload_len=3[0m
+PROBE: zcl_raw_payload (3 bytes): d5e986
+PROBE: read_attr_resp cluster=0x0004 src_ep=11 dst_ep=11
+  attr=0xe9d5 status=0x86 type=0x00 size=0 data=(nil)
+PROBE: metadata_read label=ota.file_version nwk=0x48ad ep=11 cluster=0x0019 attr=0x0002 manuf=0x0000 dir=to_cli
+[0;32mI (20239) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0019 profile=0x0104 cmd=0x01/read_attr_resp dir=to_srv manuf=0x0000 common=1 payload_len=8[0m
+PROBE: zcl_raw_payload (8 bytes): 0200002300200001
+PROBE: read_attr_resp cluster=0x0019 src_ep=11 dst_ep=11
+  attr=0x0002 status=0x00 type=0x23 size=4 data=PROBE: value (4 bytes): 00200001
+[0;32mI (20409) GRADIENT_PROBE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+PROBE: metadata_read label=ota.manufacturer_id nwk=0x48ad ep=11 cluster=0x0019 attr=0x0007 manuf=0x0000 dir=to_cli
+[0;32mI (20589) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0019 profile=0x0104 cmd=0x01/read_attr_resp dir=to_srv manuf=0x0000 common=1 payload_len=6[0m
+PROBE: zcl_raw_payload (6 bytes): 070000210b10
+PROBE: read_attr_resp cluster=0x0019 src_ep=11 dst_ep=11
+  attr=0x0007 status=0x00 type=0x21 size=2 data=PROBE: value (2 bytes): 0b10
+PROBE: metadata_read label=ota.image_type nwk=0x48ad ep=11 cluster=0x0019 attr=0x0008 manuf=0x0000 dir=to_cli
+[0;32mI (20939) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0019 profile=0x0104 cmd=0x01/read_attr_resp dir=to_srv manuf=0x0000 common=1 payload_len=6[0m
+PROBE: zcl_raw_payload (6 bytes): 08000021ffff
+PROBE: read_attr_resp cluster=0x0019 src_ep=11 dst_ep=11
+  attr=0x0008 status=0x00 type=0x21 size=2 data=PROBE: value (2 bytes): ffff
+PROBE: metadata_read label=ota.image_stamp nwk=0x48ad ep=11 cluster=0x0019 attr=0x000a manuf=0x0000 dir=to_cli
+[0;32mI (21309) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0019 profile=0x0104 cmd=0x01/read_attr_resp dir=to_srv manuf=0x0000 common=1 payload_len=3[0m
+PROBE: zcl_raw_payload (3 bytes): 0a0086
+PROBE: read_attr_resp cluster=0x0019 src_ep=11 dst_ep=11
+  attr=0x000a status=0x86 type=0x00 size=0 data=(nil)
+PROBE: metadata_read label=ota.hue_attr_6400 nwk=0x48ad ep=11 cluster=0x0019 attr=0x6400 manuf=0x0000 dir=to_cli
+[0;32mI (21659) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0019 profile=0x0104 cmd=0x01/read_attr_resp dir=to_srv manuf=0x0000 common=1 payload_len=3[0m
+PROBE: zcl_raw_payload (3 bytes): 006486
+PROBE: read_attr_resp cluster=0x0019 src_ep=11 dst_ep=11
+  attr=0x6400 status=0x86 type=0x00 size=0 data=(nil)
+PROBE: metadata_read label=ota.hue_attr_6400_signify nwk=0x48ad ep=11 cluster=0x0019 attr=0x6400 manuf=0x100b dir=to_cli
+[0;32mI (22019) GRADIENT_PROBE: ZCL_RAW ep=11->11 cluster=0x0019 profile=0x0104 cmd=0x01/read_attr_resp dir=to_srv manuf=0x100b common=1 payload_len=3[0m
+PROBE: zcl_raw_payload (3 bytes): 006486
+PROBE: read_attr_resp cluster=0x0019 src_ep=11 dst_ep=11
+  attr=0x6400 status=0x86 type=0x00 size=0 data=(nil)
+[0;31mE (22169) GRADIENT_PROBE: METADATA Floor LCX004: nwk_addr failed status=133[0m
+[0;32mI (22369) GRADIENT_PROBE: Metadata sweep done for nwk=0x48ad ep=11[0m

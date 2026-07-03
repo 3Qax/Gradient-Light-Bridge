@@ -1,0 +1,149 @@
+[
+  {
+    "id": "25",
+    "name": "Floor lamp",
+    "uniqueid": "00:17:88:01:0b:e4:38:82-0b",
+    "v1_certified": true,
+    "v1_productid": "Philips-LCX004-1-GALSECLv1",
+    "v1_productname": "Hue gradient lightstrip",
+    "v1_streaming": {
+      "proxy": true,
+      "renderer": true
+    },
+    "v1_swconfigid": "C4C1C739",
+    "v2_certified": true,
+    "v2_gradient": {
+      "mode": "interpolated_palette",
+      "mode_values": [
+        "interpolated_palette",
+        "interpolated_palette_mirrored",
+        "random_pixelated",
+        "segmented_palette"
+      ],
+      "pixel_count": 12,
+      "points": [],
+      "points_capable": 5
+    },
+    "v2_hardware_platform_type": "100b-118",
+    "v2_has_effects": true,
+    "v2_has_gradient": true,
+    "v2_light_archetype": "hue_signe",
+    "v2_light_function": "decorative",
+    "v2_product_archetype": "hue_lightstrip",
+    "v2_product_name": "Hue gradient lightstrip",
+    "v2_services": [
+      "zigbee_connectivity",
+      "light",
+      "entertainment",
+      "motion_area_candidate",
+      "device_software_update"
+    ]
+  },
+  {
+    "id": "37",
+    "name": "Headboard light strip",
+    "uniqueid": "00:17:88:01:0b:89:54:2f-0b",
+    "v1_certified": true,
+    "v1_productid": "Philips-LCX004-1-GALSECLv1",
+    "v1_productname": "Hue gradient lightstrip",
+    "v1_streaming": {
+      "proxy": true,
+      "renderer": true
+    },
+    "v1_swconfigid": "C4C1C739",
+    "v2_certified": true,
+    "v2_gradient": {
+      "mode": "interpolated_palette",
+      "mode_values": [
+        "interpolated_palette",
+        "interpolated_palette_mirrored",
+        "random_pixelated",
+        "segmented_palette"
+      ],
+      "pixel_count": 10,
+      "points": [
+        {
+          "color": {
+            "xy": {
+              "x": 0.6233,
+              "y": 0.3595
+            }
+          }
+        },
+        {
+          "color": {
+            "xy": {
+              "x": 0.6233,
+              "y": 0.3595
+            }
+          }
+        },
+        {
+          "color": {
+            "xy": {
+              "x": 0.6233,
+              "y": 0.3595
+            }
+          }
+        },
+        {
+          "color": {
+            "xy": {
+              "x": 0.6233,
+              "y": 0.3595
+            }
+          }
+        },
+        {
+          "color": {
+            "xy": {
+              "x": 0.6233,
+              "y": 0.3595
+            }
+          }
+        }
+      ],
+      "points_capable": 5
+    },
+    "v2_hardware_platform_type": "100b-118",
+    "v2_has_effects": true,
+    "v2_has_gradient": true,
+    "v2_light_archetype": "hue_lightstrip",
+    "v2_light_function": "decorative",
+    "v2_product_archetype": "hue_lightstrip",
+    "v2_product_name": "Hue gradient lightstrip",
+    "v2_services": [
+      "zigbee_connectivity",
+      "light",
+      "entertainment",
+      "motion_area_candidate",
+      "device_software_update"
+    ]
+  },
+  {
+    "id": "62",
+    "name": "Extended color light 1",
+    "uniqueid": "00:17:88:01:0b:ff:fe:05-0b",
+    "v1_certified": false,
+    "v1_productid": null,
+    "v1_productname": "Extended color light",
+    "v1_streaming": {
+      "proxy": false,
+      "renderer": false
+    },
+    "v1_swconfigid": null,
+    "v2_certified": false,
+    "v2_gradient": null,
+    "v2_hardware_platform_type": null,
+    "v2_has_effects": false,
+    "v2_has_gradient": false,
+    "v2_light_archetype": "classic_bulb",
+    "v2_light_function": "mixed",
+    "v2_product_archetype": "classic_bulb",
+    "v2_product_name": "Extended color light",
+    "v2_services": [
+      "zigbee_connectivity",
+      "light"
+    ]
+  }
+]
