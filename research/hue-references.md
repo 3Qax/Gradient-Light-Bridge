@@ -339,6 +339,13 @@ tracked files; keep it only in local `trust_center_key.h` files.
     light now exposes `gradient`, `effects`, `effects_v2`, and
     `content_configuration`. v1 streaming remains false, so Entertainment
     streaming is likely a separate classifier.
+  - `research/hue-api-diffs/20260703-hue-app-gradient-action-summary.md`
+    documents post-classification Hue app control. Manual gradient point edits
+    are sent as FC03 cluster-specific command `0x00` to endpoint 11. The Hue app
+    uses a `0x51 0x01` payload prefix, while the Koenkk/Zigbee2MQTT encoder uses
+    `0x50 0x01`; both share the same 3-byte scaled-XY color encoding. The
+    firmware now parses both layouts and emits `DATA` gradient JSON from live
+    Hue app packets.
 - `research/hue-api-diffs/sniffer-capture-20260703-real-headboard-factory-reset-zll-key/`
   captures a true dimmer-switch factory reset and Hue re-add of the same real
   LCX004. Hue created new v1 id `37`, certified true, with streaming

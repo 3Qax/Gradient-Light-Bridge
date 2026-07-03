@@ -1,0 +1,149 @@
+CAPTURE_READY seconds=75; change the Hue light in the app now.
+[0;32mI (230) phy: libbtbb version: 04952fd, Sep  3 2024, 16:33:30[0m
+[0;32mI (240) ARGB_TO_HUE: Node descriptor manufacturer code set to 0x100b[0m
+FAKE_DESCRIPTOR: endpoint=11 profile=0x0104 device=0x010d version=1 server_clusters=[0x0000,0x0003,0x0004,0x0005,0x0006,0x0008,0x1000,0xfc03,0x0300,0xfc01,0xfc04] client_clusters=[0x0019]
+[0;32mI (240) ARGB_TO_HUE: ZDO descriptor override enabled: endpoint list will advertise [11,242][0m
+[0;32mI (250) main_task: Returned from app_main()[0m
+[0;32mI (260) ARGB_TO_HUE: ZDO signal: ZDO Config Ready (0x17), status: ESP_FAIL[0m
+[0;32mI (260) ARGB_TO_HUE: Initialize Zigbee stack[0m
+[0;33mW (260) ARGB_TO_HUE: Network(0xfb2f) closed, devices joining not allowed.[0m
+[0;32mI (260) ARGB_TO_HUE: Deferred driver initialization successful[0m
+[0;32mI (260) ARGB_TO_HUE: Device started up in non factory-reset mode[0m
+[0;32mI (260) ARGB_TO_HUE: Start network steering[0m
+[0;32mI (270) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+[0;32mI (810) ARGB_TO_HUE: Network(0xfb2f) is open for 180 seconds[0m
+[0;32mI (810) ARGB_TO_HUE: Joined network successfully (Extended PAN ID: dd:75:8b:a8:25:de:8f:9f, PAN ID: 0xfb2f, Channel:25, Short Address: 0x1d20)[0m
+[0;32mI (1520) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+[0;32mI (3090) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=11[0m
+[0;32mI (4560) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=11[0m
+[0;32mI (4590) ARGB_TO_HUE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (6050) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=13[0m
+[0;32mI (7560) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+[0;32mI (9060) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+[0;32mI (9450) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0300 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x0000 common=1 payload_len=8[0m
+ZCL_READ_ATTRS: cluster=0x0300 attrs=[0x4000,0x0001,0x0008,0x4002]
+ZCL_PAYLOAD_HEX: 0040010008000240
+[0;32mI (9480) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=1 payload_len=6[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0002,0x0030,0x0038]
+ZCL_PAYLOAD_HEX: 020030003800
+[0;32mI (9480) ARGB_TO_HUE: FC03_READ_ATTR_RESP_RAW: tsn=0xa2 to=0x0001 ep=11 attrs=3[0m
+[0;32mI (10560) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+[0;32mI (12270) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+[0;32mI (13580) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+[0;32mI (14360) ARGB_TO_HUE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (15180) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+[0;32mI (16630) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=11[0m
+[0;32mI (18120) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=11[0m
+[0;32mI (19620) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=13[0m
+[0;32mI (21120) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+[0;32mI (22420) ARGB_TO_HUE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (22630) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+[0;32mI (24130) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+[0;32mI (25630) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+[0;32mI (27130) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+[0;32mI (28630) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+[0;32mI (30160) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=11[0m
+[0;32mI (31690) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=11[0m
+[0;32mI (33160) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=13[0m
+[0;32mI (34680) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+[0;32mI (36200) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+[0;32mI (37670) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+[0;32mI (39180) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+[0;32mI (40670) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+[0;32mI (42180) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+[0;32mI (43730) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=11[0m
+[0;32mI (45220) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=11[0m
+[0;32mI (46720) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=13[0m
+[0;32mI (48230) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+[0;32mI (49730) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+[0;32mI (51230) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+[0;32mI (52730) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+[0;32mI (54230) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+[0;32mI (55740) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+[0;32mI (57270) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=11[0m
+[0;32mI (58770) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=11[0m
+[0;32mI (60270) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=13[0m
+[0;32mI (61780) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+[0;32mI (63280) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+[0;32mI (64780) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+[0;32mI (66280) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+[0;32mI (67780) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+[0;32mI (69280) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+[0;32mI (70750) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/multi_color dir=to_srv manuf=0x100b common=0 payload_len=5[0m
+FC03_MULTICOLOR_HEX: 1100010400
+[0;32mI (70750) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(5)[0m
+[0;33mW (70750) ARGB_TO_HUE: FC03 multiColor unexpected header 0x11 0x00[0m
+[0;32mI (70810) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=11[0m
+[0;32mI (72280) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/multi_color dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+FC03_MULTICOLOR_HEX: 51010104001350000000a63b81ff3a42a79310675334d715be2800
+[0;32mI (72280) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;32mI (72280) ARGB_TO_HUE: FC03 multiColor: format=0x51 5 colors, style 0, segments 5, offset 0[0m
+DATA: {"endpoint":11,"gradient":true,"n":5,"segments":5,"offset":0,"colors":[{"x":0.5350,"y":0.4247,"r":255,"g":212,"b":0},{"x":0.5051,"y":0.2176,"r":255,"g":0,"b":255},{"x":0.1678,"y":0.0544,"r":255,"g":0,"b":255},{"x":0.1563,"y":0.1720,"r":0,"g":255,"b":255},{"x":0.2682,"y":0.6248,"r":0,"g":255,"b":3}]}
+[0;32mI (72320) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=11[0m
+[0;32mI (72410) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/multi_color dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+FC03_MULTICOLOR_HEX: 51010104001350000000a63b81ff3a42a79310672333b385bf2800
+[0;32mI (72410) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;32mI (72410) ARGB_TO_HUE: FC03 multiColor: format=0x51 5 colors, style 0, segments 5, offset 0[0m
+DATA: {"endpoint":11,"gradient":true,"n":5,"segments":5,"offset":0,"colors":[{"x":0.5350,"y":0.4247,"r":255,"g":212,"b":0},{"x":0.5051,"y":0.2176,"r":255,"g":0,"b":255},{"x":0.1678,"y":0.0544,"r":255,"g":0,"b":255},{"x":0.1563,"y":0.1681,"r":0,"g":255,"b":255},{"x":0.2618,"y":0.6295,"r":0,"g":255,"b":6}]}
+[0;32mI (72550) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/multi_color dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+FC03_MULTICOLOR_HEX: 51010104001350000000a63b81ff3a42a7931065d32e1415c62800
+[0;32mI (72550) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;32mI (72550) ARGB_TO_HUE: FC03 multiColor: format=0x51 5 colors, style 0, segments 5, offset 0[0m
+DATA: {"endpoint":11,"gradient":true,"n":5,"segments":5,"offset":0,"colors":[{"x":0.5350,"y":0.4247,"r":255,"g":212,"b":0},{"x":0.5051,"y":0.2176,"r":255,"g":0,"b":255},{"x":0.1678,"y":0.0544,"r":255,"g":0,"b":255},{"x":0.1559,"y":0.1539,"r":0,"g":255,"b":255},{"x":0.2332,"y":0.6511,"r":0,"g":255,"b":12}]}
+[0;32mI (72720) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/multi_color dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+FC03_MULTICOLOR_HEX: 51010104001350000000a63b81ff3a42a7931064332cac33c62800
+[0;32mI (72720) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;32mI (72720) ARGB_TO_HUE: FC03 multiColor: format=0x51 5 colors, style 0, segments 5, offset 0[0m
+DATA: {"endpoint":11,"gradient":true,"n":5,"segments":5,"offset":0,"colors":[{"x":0.5350,"y":0.4247,"r":255,"g":212,"b":0},{"x":0.5051,"y":0.2176,"r":255,"g":0,"b":255},{"x":0.1678,"y":0.0544,"r":255,"g":0,"b":255},{"x":0.1557,"y":0.1453,"r":0,"g":255,"b":255},{"x":0.1686,"y":0.6515,"r":0,"g":255,"b":90}]}
+[0;32mI (72930) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/multi_color dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+FC03_MULTICOLOR_HEX: 51010104001350000000a63b81ff3a42a7931063a32ba7a3ba2800
+[0;32mI (72930) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;32mI (72930) ARGB_TO_HUE: FC03 multiColor: format=0x51 5 colors, style 0, segments 5, offset 0[0m
+DATA: {"endpoint":11,"gradient":true,"n":5,"segments":5,"offset":0,"colors":[{"x":0.5350,"y":0.4247,"r":255,"g":212,"b":0},{"x":0.5051,"y":0.2176,"r":255,"g":0,"b":255},{"x":0.1678,"y":0.0544,"r":255,"g":0,"b":255},{"x":0.1556,"y":0.1434,"r":0,"g":255,"b":255},{"x":0.1678,"y":0.6135,"r":0,"g":255,"b":120}]}
+[0;32mI (73170) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/multi_color dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+FC03_MULTICOLOR_HEX: 51010104001350000000a63b81ff3a42a7931063932ba6c3b92800
+[0;32mI (73180) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;32mI (73180) ARGB_TO_HUE: FC03 multiColor: format=0x51 5 colors, style 0, segments 5, offset 0[0m
+DATA: {"endpoint":11,"gradient":true,"n":5,"segments":5,"offset":0,"colors":[{"x":0.5350,"y":0.4247,"r":255,"g":212,"b":0},{"x":0.5051,"y":0.2176,"r":255,"g":0,"b":255},{"x":0.1678,"y":0.0544,"r":255,"g":0,"b":255},{"x":0.1556,"y":0.1432,"r":0,"g":255,"b":255},{"x":0.1676,"y":0.6106,"r":0,"g":255,"b":122}]}
+[0;32mI (73470) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/multi_color dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+FC03_MULTICOLOR_HEX: 51010104001350000000a63b81edfa41b0031165032ca6c3b92800
+[0;32mI (73470) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;32mI (73470) ARGB_TO_HUE: FC03 multiColor: format=0x51 5 colors, style 0, segments 5, offset 0[0m
+DATA: {"endpoint":11,"gradient":true,"n":5,"segments":5,"offset":0,"colors":[{"x":0.5350,"y":0.4247,"r":255,"g":212,"b":0},{"x":0.5018,"y":0.2167,"r":255,"g":0,"b":255},{"x":0.1694,"y":0.0559,"r":255,"g":0,"b":255},{"x":0.1559,"y":0.1446,"r":0,"g":255,"b":255},{"x":0.1676,"y":0.6106,"r":0,"g":255,"b":122}]}
+[0;32mI (73570) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/multi_color dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+FC03_MULTICOLOR_HEX: 51010104001350000000a63b81e0b9413d8418824332a6c3b92800
+[0;32mI (73570) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;32mI (73570) ARGB_TO_HUE: FC03 multiColor: format=0x51 5 colors, style 0, segments 5, offset 0[0m
+DATA: {"endpoint":11,"gradient":true,"n":5,"segments":5,"offset":0,"colors":[{"x":0.5350,"y":0.4247,"r":255,"g":212,"b":0},{"x":0.4536,"y":0.2159,"r":255,"g":0,"b":255},{"x":0.1947,"y":0.0805,"r":255,"g":0,"b":255},{"x":0.1611,"y":0.1652,"r":0,"g":255,"b":255},{"x":0.1676,"y":0.6106,"r":0,"g":255,"b":122}]}
+[0;32mI (73750) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/multi_color dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+FC03_MULTICOLOR_HEX: 51010104001350000000a63b81d53849cfb426d0c33ba6c3b92800
+[0;32mI (73750) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;32mI (73750) ARGB_TO_HUE: FC03 multiColor: format=0x51 5 colors, style 0, segments 5, offset 0[0m
+DATA: {"endpoint":11,"gradient":true,"n":5,"segments":5,"offset":0,"colors":[{"x":0.5350,"y":0.4247,"r":255,"g":212,"b":0},{"x":0.4057,"y":0.2406,"r":255,"g":150,"b":255},{"x":0.2209,"y":0.1272,"r":255,"g":171,"b":255},{"x":0.1751,"y":0.1964,"r":0,"g":255,"b":255},{"x":0.1676,"y":0.6106,"r":0,"g":255,"b":122}]}
+[0;32mI (73820) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=13[0m
+[0;32mI (73940) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/multi_color dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+FC03_MULTICOLOR_HEX: 51010104001350000000a63b817e784becc42ae5433ea6c3b92800
+[0;32mI (73940) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;32mI (73940) ARGB_TO_HUE: FC03 multiColor: format=0x51 5 colors, style 0, segments 5, offset 0[0m
+DATA: {"endpoint":11,"gradient":true,"n":5,"segments":5,"offset":0,"colors":[{"x":0.5350,"y":0.4247,"r":255,"g":212,"b":0},{"x":0.3900,"y":0.2480,"r":255,"g":172,"b":255},{"x":0.2261,"y":0.1405,"r":255,"g":189,"b":255},{"x":0.1789,"y":0.2046,"r":0,"g":255,"b":255},{"x":0.1676,"y":0.6106,"r":0,"g":255,"b":122}]}
+[0;32mI (74190) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/multi_color dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+FC03_MULTICOLOR_HEX: 51010104001350000000a63b818ee84ae5d429e1c33da6c3b92800
+[0;32mI (74190) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;32mI (74200) ARGB_TO_HUE: FC03 multiColor: format=0x51 5 colors, style 0, segments 5, offset 0[0m
+DATA: {"endpoint":11,"gradient":true,"n":5,"segments":5,"offset":0,"colors":[{"x":0.5350,"y":0.4247,"r":255,"g":212,"b":0},{"x":0.3929,"y":0.2461,"r":255,"g":168,"b":255},{"x":0.2248,"y":0.1374,"r":255,"g":185,"b":255},{"x":0.1782,"y":0.2030,"r":0,"g":255,"b":255},{"x":0.1676,"y":0.6106,"r":0,"g":255,"b":122}]}
+[0;32mI (74810) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/multi_color dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+FC03_MULTICOLOR_HEX: 51010104001350000000b08b8080c849e5d429e1c33da6c3b92800
+[0;32mI (74810) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;32mI (74820) ARGB_TO_HUE: FC03 multiColor: format=0x51 5 colors, style 0, segments 5, offset 0[0m
+DATA: {"endpoint":11,"gradient":true,"n":5,"segments":5,"offset":0,"colors":[{"x":0.5368,"y":0.4224,"r":255,"g":211,"b":0},{"x":0.3904,"y":0.2424,"r":255,"g":166,"b":255},{"x":0.2248,"y":0.1374,"r":255,"g":185,"b":255},{"x":0.1782,"y":0.2030,"r":0,"g":255,"b":255},{"x":0.1676,"y":0.6106,"r":0,"g":255,"b":122}]}
+[0;32mI (74920) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/multi_color dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+FC03_MULTICOLOR_HEX: 51010104001350000000338c76e9f73fe5d429e1c33da6c3b92800
+[0;32mI (74920) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;32mI (74920) ARGB_TO_HUE: FC03 multiColor: format=0x51 5 colors, style 0, segments 5, offset 0[0m
+DATA: {"endpoint":11,"gradient":true,"n":5,"segments":5,"offset":0,"colors":[{"x":0.5603,"y":0.3895,"r":255,"g":186,"b":29},{"x":0.3633,"y":0.2102,"r":255,"g":146,"b":255},{"x":0.2248,"y":0.1374,"r":255,"g":185,"b":255},{"x":0.1782,"y":0.2030,"r":0,"g":255,"b":255},{"x":0.1676,"y":0.6106,"r":0,"g":255,"b":122}]}
+[0;32mI (75180) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/multi_color dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+FC03_MULTICOLOR_HEX: 51010104001350000000450e60659737e5d429e1c33da6c3b92800
+[0;32mI (75180) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;32mI (75180) ARGB_TO_HUE: FC03 multiColor: format=0x51 5 colors, style 0, segments 5, offset 0[0m
+DATA: {"endpoint":11,"gradient":true,"n":5,"segments":5,"offset":0,"colors":[{"x":0.6554,"y":0.3156,"r":255,"g":0,"b":24},{"x":0.3396,"y":0.1826,"r":255,"g":119,"b":255},{"x":0.2248,"y":0.1374,"r":255,"g":185,"b":255},{"x":0.1782,"y":0.2030,"r":0,"g":255,"b":255},{"x":0.1676,"y":0.6106,"r":0,"g":255,"b":122}]}
+[0;32mI (75280) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/multi_color dir=to_srv manuf=0x100b common=0 payload_len=27[0m

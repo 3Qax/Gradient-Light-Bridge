@@ -1,0 +1,510 @@
+CAPTURE_READY seconds=90; change the Hue light in the app now.
+[0;32mI (240) phy: libbtbb version: 04952fd, Sep  3 2024, 16:33:30[0m
+[0;32mI (240) ARGB_TO_HUE: Node descriptor manufacturer code set to 0x100b[0m
+FAKE_DESCRIPTOR: endpoint=11 profile=0x0104 device=0x010d version=1 server_clusters=[0x0000,0x0003,0x0004,0x0005,0x0006,0x0008,0x1000,0xfc03,0x0300,0xfc01,0xfc04] client_clusters=[0x0019]
+[0;32mI (240) ARGB_TO_HUE: ZDO descriptor override enabled: endpoint list will advertise [11,242][0m
+[0;32mI (250) main_task: Returned from app_main()[0m
+[0;32mI (260) ARGB_TO_HUE: ZDO signal: ZDO Config Ready (0x17), status: ESP_FAIL[0m
+[0;32mI (260) ARGB_TO_HUE: Initialize Zigbee stack[0m
+[0;33mW (260) ARGB_TO_HUE: Network(0xfb2f) closed, devices joining not allowed.[0m
+[0;32mI (260) ARGB_TO_HUE: Deferred driver initialization successful[0m
+[0;32mI (260) ARGB_TO_HUE: Device started up in non factory-reset mode[0m
+[0;32mI (260) ARGB_TO_HUE: Start network steering[0m
+[0;32mI (320) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=13[0m
+ZCL_PAYLOAD_HEX: d5e9261b00015a9d8f79670400
+[0;32mI (810) ARGB_TO_HUE: Network(0xfb2f) is open for 180 seconds[0m
+[0;32mI (810) ARGB_TO_HUE: Joined network successfully (Extended PAN ID: dd:75:8b:a8:25:de:8f:9f, PAN ID: 0xfb2f, Channel:25, Short Address: 0x1d20)[0m
+[0;32mI (1830) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e9295301017804001350000000d1c311665331d3451fd59c4e393c7b2800
+[0;32mI (3310) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e92a530101a204001350000000dbfd59866c6387cc6c49bc765c0a822800
+[0;32mI (4810) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e92b530101ea040013500000002f2a86b6db7adc4c70fecd6412e4272800
+[0;32mI (6310) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e92d5301016604001350000000a6cb638b2a4f94fa549bb9549ff73a2800
+[0;32mI (7820) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e9325301013e040013500000008d897134a9653ec854d2963ed1d4282800
+[0;32mI (9320) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e933530101cb04001350000000d0aa7d787a7daf197590154d6c14472800
+[0;32mI (10850) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=11[0m
+ZCL_PAYLOAD_HEX: d5e923170001fee9000400
+[0;32mI (12360) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=11[0m
+ZCL_PAYLOAD_HEX: d5e9251700018fbf010400
+[0;32mI (13860) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=13[0m
+ZCL_PAYLOAD_HEX: d5e9261b00015a9d8f79670400
+[0;32mI (15360) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e9295301017804001350000000d1c311665331d3451fd59c4e393c7b2800
+[0;32mI (16860) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e92a530101a204001350000000dbfd59866c6387cc6c49bc765c0a822800
+[0;32mI (18360) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e92b530101ea040013500000002f2a86b6db7adc4c70fecd6412e4272800
+[0;32mI (19860) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e92d5301016604001350000000a6cb638b2a4f94fa549bb9549ff73a2800
+[0;32mI (21380) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e9325301013e040013500000008d897134a9653ec854d2963ed1d4282800
+[0;32mI (22870) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e933530101cb04001350000000d0aa7d787a7daf197590154d6c14472800
+[0;32mI (24400) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=11[0m
+ZCL_PAYLOAD_HEX: d5e923170001fee9000400
+[0;32mI (25900) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=11[0m
+ZCL_PAYLOAD_HEX: d5e9251700018fbf010400
+[0;32mI (27400) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=13[0m
+ZCL_PAYLOAD_HEX: d5e9261b00015a9d8f79670400
+[0;32mI (28910) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e9295301017804001350000000d1c311665331d3451fd59c4e393c7b2800
+[0;32mI (30410) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e92a530101a204001350000000dbfd59866c6387cc6c49bc765c0a822800
+[0;32mI (31910) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e92b530101ea040013500000002f2a86b6db7adc4c70fecd6412e4272800
+[0;32mI (33410) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e92d5301016604001350000000a6cb638b2a4f94fa549bb9549ff73a2800
+[0;32mI (34910) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e9325301013e040013500000008d897134a9653ec854d2963ed1d4282800
+[0;32mI (36420) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e933530101cb04001350000000d0aa7d787a7daf197590154d6c14472800
+[0;32mI (37950) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=11[0m
+ZCL_PAYLOAD_HEX: d5e923170001fee9000400
+[0;32mI (39450) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=11[0m
+ZCL_PAYLOAD_HEX: d5e9251700018fbf010400
+[0;32mI (40950) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=13[0m
+ZCL_PAYLOAD_HEX: d5e9261b00015a9d8f79670400
+[0;32mI (42450) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e9295301017804001350000000d1c311665331d3451fd59c4e393c7b2800
+[0;32mI (43960) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e92a530101a204001350000000dbfd59866c6387cc6c49bc765c0a822800
+[0;32mI (45460) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e92b530101ea040013500000002f2a86b6db7adc4c70fecd6412e4272800
+[0;32mI (46530) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=5[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0011,0x0401]
+ZCL_PAYLOAD_HEX: 1100010400
+[0;32mI (46540) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(5)[0m
+[0;33mW (46540) ARGB_TO_HUE: FC03 multiColor payload too short (5 bytes)[0m
+[0;32mI (46960) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e92d5301016604001350000000a6cb638b2a4f94fa549bb9549ff73a2800
+[0;32mI (48460) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e9325301013e040013500000008d897134a9653ec854d2963ed1d4282800
+[0;32mI (49560) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x0d6f,0x6f6e,0x6e0d,0x0d6f,0x6f6e,0x6e0d,0x0d6f,0x286e]
+ZCL_PAYLOAD_HEX: 510101040013500000006f0d6e6f0d6e6f0d6e6f0d6e6f0d6e2800
+[0;32mI (49560) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (49560) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (49660) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x0c2b,0x2b6e,0x6e0c,0x0c2b,0x2b6e,0x6e0c,0x0c2b,0x286e]
+ZCL_PAYLOAD_HEX: 510101040013500000002b0c6e2b0c6e2b0c6e2b0c6e2b0c6e2800
+[0;32mI (49660) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (49660) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (49840) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x995e,0x5e5d,0x5d99,0x995e,0x5e5d,0x5d99,0x995e,0x285d]
+ZCL_PAYLOAD_HEX: 510101040013500000005e995d5e995d5e995d5e995d5e995d2800
+[0;32mI (49850) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (49850) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (49960) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e933530101cb04001350000000d0aa7d787a7daf197590154d6c14472800
+[0;32mI (50090) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x25ee,0xee3e,0x3e25,0x25ee,0xee3e,0x3e25,0x25ee,0x283e]
+ZCL_PAYLOAD_HEX: 51010104001350000000ee253eee253eee253eee253eee253e2800
+[0;32mI (50100) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (50100) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (50260) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x24cd,0xcd26,0x2624,0x24cd,0xcd26,0x2624,0x24cd,0x2826]
+ZCL_PAYLOAD_HEX: 51010104001350000000cd2426cd2426cd2426cd2426cd24262800
+[0;32mI (50270) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (50270) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (50430) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x6356,0x560f,0x0f63,0x6356,0x560f,0x0f63,0x6356,0x280f]
+ZCL_PAYLOAD_HEX: 5101010400135000000056630f56630f56630f56630f56630f2800
+[0;32mI (50430) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (50430) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (50600) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x2356,0x5610,0x1023,0x2356,0x5610,0x1023,0x2356,0x2810]
+ZCL_PAYLOAD_HEX: 510101040013500000005623105623105623105623105623102800
+[0;32mI (50610) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (50610) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (50780) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x3356,0x5610,0x1033,0x3356,0x5610,0x1033,0x3356,0x2810]
+ZCL_PAYLOAD_HEX: 510101040013500000005633105633105633105633105633102800
+[0;32mI (50780) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (50780) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (51500) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=11[0m
+ZCL_PAYLOAD_HEX: d5e923170001fee9000400
+[0;32mI (51890) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x635e,0x5e12,0x1263,0x635e,0x5e12,0x1263,0x635e,0x2812]
+ZCL_PAYLOAD_HEX: 510101040013500000005e63125e63125e63125e63125e63122800
+[0;32mI (51890) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (51890) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (52000) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x24e9,0xe94c,0x4c24,0x24e9,0xe94c,0x4c24,0x24e9,0x284c]
+ZCL_PAYLOAD_HEX: 51010104001350000000e9244ce9244ce9244ce9244ce9244c2800
+[0;32mI (52000) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (52000) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (52180) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x756c,0x6cc2,0xc275,0x756c,0x6cc2,0xc275,0x756c,0x28c2]
+ZCL_PAYLOAD_HEX: 510101040013500000006c75c26c75c26c75c26c75c26c75c22800
+[0;32mI (52190) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (52190) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (52440) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x3573,0x73c2,0xc235,0x3573,0x73c2,0xc235,0x3573,0x28c2]
+ZCL_PAYLOAD_HEX: 510101040013500000007335c27335c27335c27335c27335c22800
+[0;32mI (52450) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (52450) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (52590) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x556e,0x6ec2,0xc255,0x556e,0x6ec2,0xc255,0x556e,0x28c2]
+ZCL_PAYLOAD_HEX: 510101040013500000006e55c26e55c26e55c26e55c26e55c22800
+[0;32mI (52600) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (52600) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (53000) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=11[0m
+ZCL_PAYLOAD_HEX: d5e9251700018fbf010400
+[0;32mI (53500) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x8570,0x70c1,0xc185,0x8570,0x70c1,0xc185,0x8570,0x28c1]
+ZCL_PAYLOAD_HEX: 510101040013500000007085c17085c17085c17085c17085c12800
+[0;32mI (53500) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (53500) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (53590) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0xb66e,0x6e6d,0x6db6,0xb66e,0x6e6d,0x6db6,0xb66e,0x286d]
+ZCL_PAYLOAD_HEX: 510101040013500000006eb66d6eb66d6eb66d6eb66d6eb66d2800
+[0;32mI (53600) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (53600) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (53800) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x7b4a,0x4a50,0x507b,0x7b4a,0x4a50,0x507b,0x7b4a,0x2850]
+ZCL_PAYLOAD_HEX: 510101040013500000004a7b504a7b504a7b504a7b504a7b502800
+[0;32mI (53810) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (53810) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (53960) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0xadb7,0xb756,0x56ad,0xadb7,0xb756,0x56ad,0xadb7,0x2856]
+ZCL_PAYLOAD_HEX: 51010104001350000000b7ad56b7ad56b7ad56b7ad56b7ad562800
+[0;32mI (53960) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (53960) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (54140) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x6dce,0xce57,0x576d,0x6dce,0xce57,0x576d,0x6dce,0x2857]
+ZCL_PAYLOAD_HEX: 51010104001350000000ce6d57ce6d57ce6d57ce6d57ce6d572800
+[0;32mI (54140) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (54140) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (54300) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0xadc2,0xc257,0x57ad,0xadc2,0xc257,0x57ad,0xadc2,0x2857]
+ZCL_PAYLOAD_HEX: 51010104001350000000c2ad57c2ad57c2ad57c2ad57c2ad572800
+[0;32mI (54300) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (54300) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (54500) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=13[0m
+ZCL_PAYLOAD_HEX: d5e9261b00015a9d8f79670400
+[0;32mI (56000) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e9295301017804001350000000d1c311665331d3451fd59c4e393c7b2800
+[0;32mI (57510) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e92a530101a204001350000000dbfd59866c6387cc6c49bc765c0a822800
+[0;32mI (57890) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0xadc2,0xc257,0x57ad,0xadc2,0xeb57,0x7418,0xa7c2,0x287c]
+ZCL_PAYLOAD_HEX: 51010104001350000000c2ad57c2ad57c2ad57eb1874c2a77c2800
+[0;32mI (57900) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (57900) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (58030) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0xadc2,0xc257,0x57ad,0xadc2,0xba57,0x8089,0xd74e,0x2897]
+ZCL_PAYLOAD_HEX: 51010104001350000000c2ad57c2ad57c2ad57ba89804ed7972800
+[0;32mI (58030) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (58030) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (58220) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0xadc2,0xc257,0x57ad,0xadc2,0x7b57,0x8b4a,0x55df,0x28ba]
+ZCL_PAYLOAD_HEX: 51010104001350000000c2ad57c2ad57c2ad577b4a8bdf55ba2800
+[0;32mI (58230) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (58230) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (58390) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0xadc2,0xc257,0x57ad,0xadc2,0x6a57,0x8b8a,0x157c,0x28c1]
+ZCL_PAYLOAD_HEX: 51010104001350000000c2ad57c2ad57c2ad576a8a8b7c15c12800
+[0;32mI (58390) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (58390) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (58560) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0xadc2,0xc257,0x57ad,0xadc2,0x6357,0x8b7a,0x3572,0x28c2]
+ZCL_PAYLOAD_HEX: 51010104001350000000c2ad57c2ad57c2ad57637a8b7235c22800
+[0;32mI (58560) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (58560) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (58730) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0xadc2,0xc257,0x57ad,0xadc2,0x5157,0x8c1a,0x2497,0x28cb]
+ZCL_PAYLOAD_HEX: 51010104001350000000c2ad57c2ad57c2ad57511a8c9724cb2800
+[0;32mI (58740) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (58740) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (59000) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0xadc2,0xc257,0x57ad,0xadc2,0x4857,0x8c6a,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000c2ad57c2ad57c2ad57486a8cb153d02800
+[0;32mI (59000) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (59000) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (59030) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e92b530101ea040013500000002f2a86b6db7adc4c70fecd6412e4272800
+[0;32mI (60510) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e92d5301016604001350000000a6cb638b2a4f94fa549bb9549ff73a2800
+[0;32mI (60650) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0xadc2,0x0757,0x6dba,0x9849,0xde76,0x8a57,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000c2ad5707ba6d499876de578ab153d02800
+[0;32mI (60660) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (60660) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (60740) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0xadc2,0x7457,0x6be9,0xf7e0,0x8e71,0x8777,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000c2ad5774e96be0f7718e7787b153d02800
+[0;32mI (60740) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (60740) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (60890) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0xadc2,0x5f57,0x6738,0x772c,0xcc69,0x84b6,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000c2ad575f38672c7769ccb684b153d02800
+[0;32mI (60890) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (60890) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (61070) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0xadc2,0xed57,0x5026,0x55e0,0xb858,0x61c4,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000c2ad57ed2650e05558b8c461b153d02800
+[0;32mI (61070) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (61070) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (61300) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0xadc2,0x0757,0x2d86,0x2447,0xe22b,0x4433,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000c2ad5707862d47242be23344b153d02800
+[0;32mI (61300) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (61300) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (61450) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0xadc2,0xf457,0x29d5,0x840f,0xc324,0x40f3,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000c2ad57f4d5290f8424c3f340b153d02800
+[0;32mI (61450) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (61450) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (61610) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0xadc2,0xc357,0x2175,0x0387,0x8016,0x38d3,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000c2ad57c3752187031680d338b153d02800
+[0;32mI (61610) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (61610) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (61780) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0xadc2,0xb757,0x2005,0xe372,0x7613,0x3743,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000c2ad57b7052072e313764337b153d02800
+[0;32mI (61780) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (61780) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (61940) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0xadc2,0xb357,0x1fb5,0x0369,0x7213,0x3673,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000c2ad57b3b51f690313727336b153d02800
+[0;32mI (61940) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (61950) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (62010) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e9325301013e040013500000008d897134a9653ec854d2963ed1d4282800
+[0;32mI (62710) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x4dca,0xbc58,0x2005,0x0369,0x7213,0x3673,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000ca4d58bc0520690313727336b153d02800
+[0;32mI (62720) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (62720) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (62810) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x0deb,0x065d,0x2386,0x0369,0x7213,0x3673,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000eb0d5d068623690313727336b153d02800
+[0;32mI (62810) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (62820) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (62980) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0xfded,0x3a5e,0x2566,0x0369,0x7213,0x3673,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000edfd5e3a6625690313727336b153d02800
+[0;32mI (62980) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (62980) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (63150) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x7ebb,0x1b5d,0x2226,0x0369,0x7213,0x3673,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000bb7e5d1b2622690313727336b153d02800
+[0;32mI (63150) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (63150) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (63320) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x0f00,0x6a5e,0x2446,0x0369,0x7213,0x3673,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000000f5e6a4624690313727336b153d02800
+[0;32mI (63330) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (63330) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (63510) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e933530101cb04001350000000d0aa7d787a7daf197590154d6c14472800
+[0;32mI (63570) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x1e93,0x1061,0x28d7,0x0369,0x7213,0x3673,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000931e6110d728690313727336b153d02800
+[0;32mI (63580) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (63580) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (63720) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0xbe84,0x3061,0x29a7,0x0369,0x7213,0x3673,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 5101010400135000000084be6130a729690313727336b153d02800
+[0;32mI (63720) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (63720) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (63900) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0xaebd,0x3f60,0x2a27,0x0369,0x7213,0x3673,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000bdae603f272a690313727336b153d02800
+[0;32mI (63900) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (63900) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (64060) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x7ec8,0x4360,0x2a47,0x0369,0x7213,0x3673,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000c87e6043472a690313727336b153d02800
+[0;32mI (64060) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (64070) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (64250) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x5ee2,0xf85f,0x2836,0x0369,0x7213,0x3673,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000e25e5ff83628690313727336b153d02800
+[0;32mI (64260) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (64260) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (64400) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x6ee2,0xfa5f,0x2846,0x0369,0x7213,0x3673,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000e26e5ffa4628690313727336b153d02800
+[0;32mI (64400) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (64400) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (64560) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x7edf,0x025f,0x2877,0x0369,0x7213,0x3673,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000df7e5f027728690313727336b153d02800
+[0;32mI (64570) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (64570) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (64820) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0xbe78,0xe363,0x2eb7,0x0369,0x7213,0x3673,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 5101010400135000000078be63e3b72e690313727336b153d02800
+[0;32mI (64830) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (64830) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (64980) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0xecd4,0xac74,0x3498,0x0369,0x7213,0x3673,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000d4ec74ac9834690313727336b153d02800
+[0;32mI (64980) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (64980) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (65050) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=11[0m
+ZCL_PAYLOAD_HEX: d5e923170001fee9000400
+[0;32mI (65190) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x3bef,0x077e,0x3759,0x0369,0x7213,0x3673,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000ef3b7e075937690313727336b153d02800
+[0;32mI (65190) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (65190) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (65380) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x8b0c,0x8187,0xbc85,0x0369,0x7213,0x3673,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 510101040013500000000c8b878185bc690313727336b153d02800
+[0;32mI (65390) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (65390) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (65550) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0xaabf,0x938a,0xc654,0x0369,0x7213,0x3673,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000bfaa8a9354c6690313727336b153d02800
+[0;32mI (65560) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (65560) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (65720) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x0ad0,0xd58a,0xc394,0x0369,0x7213,0x3673,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000d00a8ad594c3690313727336b153d02800
+[0;32mI (65730) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (65730) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (66000) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0xaaf0,0x4388,0xbf15,0x0369,0x7213,0x3673,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000f0aa884315bf690313727336b153d02800
+[0;32mI (66000) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (66000) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (66160) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0xfb63,0x6e83,0x3a69,0x0369,0x7213,0x3673,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 5101010400135000000063fb836e693a690313727336b153d02800
+[0;32mI (66160) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (66160) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (66370) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0xfbae,0x2680,0x3849,0x0369,0x7213,0x3673,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000aefb80264938690313727336b153d02800
+[0;32mI (66380) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (66380) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (66550) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=11[0m
+ZCL_PAYLOAD_HEX: d5e9251700018fbf010400
+[0;32mI (66590) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0xfbac,0x2780,0x3859,0x0369,0x7213,0x3673,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000acfb80275938690313727336b153d02800
+[0;32mI (66600) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (66600) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (66660) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x0bab,0x2781,0x3859,0x0369,0x7213,0x3673,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000ab0b81275938690313727336b153d02800
+[0;32mI (66670) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (66670) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (66770) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x3ba6,0x2981,0x3869,0x0369,0x7213,0x3673,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000a63b81296938690313727336b153d02800
+[0;32mI (66780) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (66780) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (67340) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x3ba6,0x4b81,0x3899,0xf365,0x6f11,0x35a3,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000a63b814b993865f3116fa335b153d02800
+[0;32mI (67340) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (67350) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (67470) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x3ba6,0x0e81,0x3bda,0x9355,0x660e,0x3183,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000a63b810eda3b55930e668331b153d02800
+[0;32mI (67470) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (67470) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (67650) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x3ba6,0x6d81,0x3e5a,0x036b,0x650f,0x2f93,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000a63b816d5a3e6b030f65932fb153d02800
+[0;32mI (67650) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (67650) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (67830) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x3ba6,0xb981,0x405a,0x2395,0x6410,0x2e03,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000a63b81b95a4095231064032eb153d02800
+[0;32mI (67840) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (67840) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (68010) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x3ba6,0xdf81,0x415a,0x539e,0x6410,0x2d43,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000a63b81df5a419e531064432db153d02800
+[0;32mI (68010) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (68010) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (68050) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=13[0m
+ZCL_PAYLOAD_HEX: d5e9261b00015a9d8f79670400
+[0;32mI (68280) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x3ba6,0xfc81,0x421a,0x83a5,0x6410,0x2ce3,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000a63b81fc1a42a5831064e32cb153d02800
+[0;32mI (68280) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (68280) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (68440) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x3ba6,0x0381,0x424b,0x93a7,0x6410,0x2cc3,0x53b1,0x28d0]
+ZCL_PAYLOAD_HEX: 51010104001350000000a63b81034b42a7931064c32cb153d02800
+[0;32mI (68450) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (68450) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (69310) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x3ba6,0x0381,0x424b,0x93a7,0x6810,0x2fd3,0xf508,0x28c5]
+ZCL_PAYLOAD_HEX: 51010104001350000000a63b81034b42a7931068d32f08f5c52800
+[0;32mI (69320) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (69320) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (69460) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x3ba6,0x0381,0x424b,0x93a7,0x7310,0x3543,0x15b5,0x28bd]
+ZCL_PAYLOAD_HEX: 51010104001350000000a63b81034b42a79310734335b515bd2800
+[0;32mI (69460) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (69460) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (69550) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e9295301017804001350000000d1c311665331d3451fd59c4e393c7b2800
+[0;32mI (69620) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x3ba6,0x0381,0x424b,0x93a7,0x9c10,0x3a03,0xe5db,0x28b1]
+ZCL_PAYLOAD_HEX: 51010104001350000000a63b81034b42a793109c033adbe5b12800
+[0;32mI (69620) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (69630) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (69790) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x3ba6,0x0381,0x424b,0x93a7,0x7f10,0x3873,0xa605,0x28b7]
+ZCL_PAYLOAD_HEX: 51010104001350000000a63b81034b42a793107f733805a6b72800
+[0;32mI (69790) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (69790) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (69960) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x3ba6,0x0381,0x424b,0x93a7,0x6810,0x3533,0xe5f4,0x28bc]
+ZCL_PAYLOAD_HEX: 51010104001350000000a63b81034b42a79310683335f4e5bc2800
+[0;32mI (69960) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (69960) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (70120) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x3ba6,0x0381,0x424b,0x93a7,0x6810,0x3513,0x05f0,0x28bd]
+ZCL_PAYLOAD_HEX: 51010104001350000000a63b81034b42a79310681335f005bd2800
+[0;32mI (70130) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (70130) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (70480) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=27[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0151,0x0401,0x1300,0x0050,0x0000,0x3ba6,0x0381,0x424b,0x93a7,0x6810,0x34b3,0x85e4,0x28bd]
+ZCL_PAYLOAD_HEX: 51010104001350000000a63b81034b42a7931068b334e485bd2800
+[0;32mI (70480) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(27)[0m
+[0;33mW (70480) ARGB_TO_HUE: FC03 multiColor unexpected header 0x51 0x01[0m
+[0;32mI (70860) ARGB_TO_HUE: ZDO signal: NLME Status Indication (0x32), status: ESP_OK[0m
+[0;32mI (71060) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e92a530101a204001350000000dbfd59866c6387cc6c49bc765c0a822800
+[0;32mI (72560) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e92b530101ea040013500000002f2a86b6db7adc4c70fecd6412e4272800
+[0;32mI (73870) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0xfc03 profile=0x0104 cmd=0x00/read_attr dir=to_srv manuf=0x100b common=0 payload_len=5[0m
+ZCL_READ_ATTRS: cluster=0xfc03 attrs=[0x0011,0x0800]
+ZCL_PAYLOAD_HEX: 1100000800
+[0;32mI (73870) ARGB_TO_HUE: Custom cluster command: endpoint(11), cluster(0xfc03), cmd(0x0), manuf(0x100b), size(5)[0m
+[0;33mW (73870) ARGB_TO_HUE: FC03 multiColor payload too short (5 bytes)[0m
+[0;32mI (74060) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e92d5301016604001350000000a6cb638b2a4f94fa549bb9549ff73a2800
+[0;32mI (75560) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e9325301013e040013500000008d897134a9653ec854d2963ed1d4282800
+[0;32mI (77060) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e933530101cb04001350000000d0aa7d787a7daf197590154d6c14472800
+[0;32mI (78590) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=11[0m
+ZCL_PAYLOAD_HEX: d5e923170001fee9000400
+[0;32mI (80100) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=11[0m
+ZCL_PAYLOAD_HEX: d5e9251700018fbf010400
+[0;32mI (81600) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=13[0m
+ZCL_PAYLOAD_HEX: d5e9261b00015a9d8f79670400
+[0;32mI (83100) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e9295301017804001350000000d1c311665331d3451fd59c4e393c7b2800
+[0;32mI (84600) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e92a530101a204001350000000dbfd59866c6387cc6c49bc765c0a822800
+[0;32mI (86100) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e92b530101ea040013500000002f2a86b6db7adc4c70fecd6412e4272800
+[0;32mI (87620) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e92d5301016604001350000000a6cb638b2a4f94fa549bb9549ff73a2800
+[0;32mI (89110) ARGB_TO_HUE: ZCL_RAW ep=64->11 cluster=0x0005 profile=0x0104 cmd=0x02/write_attr dir=to_srv manuf=0x100b common=0 payload_len=31[0m
+ZCL_PAYLOAD_HEX: d5e9325301013e040013500000008d897134a9653ec854d2963ed1d4282800

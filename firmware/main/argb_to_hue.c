@@ -1165,32 +1165,61 @@ static void emit_gradient_json(uint8_t endpoint,
 }
 
 /* Parse a Hue FC03 "multiColor" (gradient) command payload.
- * The format observed on real lights and reproduced by ZHA/zigbee-herdsman-converters:
+ * Two layouts have been observed:
  *   0x50, 0x01, transition_time, 0x00,
  *   length, ncolors<<4, style, 0x00, 0x00,
- *   colors (3 bytes each),
- *   segments<<3, offset<<3
+ *   colors (3 bytes each), segments<<3, offset<<3
+ *
+ *   0x51, 0x01, 0x01, 0x04, 0x00,
+ *   length, ncolors<<4, style, 0x00, 0x00,
+ *   colors (3 bytes each), segments<<3, offset<<3
  */
 static void handle_hue_multicolor_command(uint8_t endpoint, const uint8_t *data, size_t size)
 {
-    if (size < 9) {
+    if (size < 2) {
         ESP_LOGW(TAG, "FC03 multiColor payload too short (%d bytes)", (int)size);
         return;
     }
 
-    /* First two bytes are a fixed header on all gradient commands. */
-    if (data[0] != 0x50 || data[1] != 0x01) {
+    size_t length_offset;
+    size_t count_offset;
+    size_t style_offset;
+    size_t colors_offset;
+    if (data[0] == 0x50 && data[1] == 0x01) {
+        length_offset = 4;
+        count_offset = 5;
+        style_offset = 6;
+        colors_offset = 9;
+    } else if (data[0] == 0x51 && data[1] == 0x01) {
+        length_offset = 5;
+        count_offset = 6;
+        style_offset = 7;
+        colors_offset = 10;
+    } else {
         ESP_LOGW(TAG, "FC03 multiColor unexpected header 0x%02x 0x%02x", data[0], data[1]);
         return;
     }
 
-    uint8_t n_colors = data[5] >> 4;
+    if (size <= colors_offset) {
+        ESP_LOGW(TAG, "FC03 multiColor payload too short for header 0x%02x (%d bytes)",
+                 data[0], (int)size);
+        return;
+    }
+
+    uint8_t n_colors = data[count_offset] >> 4;
     if (n_colors == 0 || n_colors > HUE_FC03_MAX_COLORS) {
         ESP_LOGW(TAG, "FC03 multiColor unsupported color count %u", (unsigned)n_colors);
         return;
     }
 
-    size_t expected = 11 + 3 * n_colors;
+    uint8_t expected_color_payload_len = 1 + 3 * (n_colors + 1);
+    if (data[length_offset] != expected_color_payload_len) {
+        ESP_LOGW(TAG, "FC03 multiColor unexpected color payload length %u for %u colors",
+                 (unsigned)data[length_offset], (unsigned)n_colors);
+    }
+
+    size_t tail_offset = colors_offset + 3 * n_colors;
+    size_t expected = tail_offset + 2;
     if (size < expected) {
         ESP_LOGW(TAG, "FC03 multiColor truncated: expected %d bytes, got %d",
                  (int)expected, (int)size);
@@ -1206,7 +1235,7 @@ static void handle_hue_multicolor_command(uint8_t endpoint, const uint8_t *data,
 
     gradient_color_t colors[HUE_FC03_MAX_COLORS];
     for (uint8_t i = 0; i < n_colors; i++) {
-        const uint8_t *p = &data[9 + 3 * i];
+        const uint8_t *p = &data[colors_offset + 3 * i];
         scaled_gradient_to_xy(p, &colors[i].x, &colors[i].y);
         rgb_t rgb = xy_to_rgb(colors[i].x, colors[i].y, effective_bri);
         colors[i].r = rgb.r;
@@ -1214,8 +1243,10 @@ static void handle_hue_multicolor_command(uint8_t endpoint, const uint8_t *data,
         colors[i].b = rgb.b;
     }
 
-    uint8_t segments = data[9 + 3 * n_colors] >> 3;
-    uint8_t offset = data[10 + 3 * n_colors] >> 3;
+    uint8_t segments_raw = data[tail_offset];
+    uint8_t offset_raw = data[tail_offset + 1];
+    uint8_t segments = segments_raw >> 3;
+    uint8_t offset = offset_raw >> 3;
 
     /* Keep the FC03 state attribute in sync so ZHA/bridge reads reflect the
      * currently active gradient. */
@@ -1230,15 +1261,19 @@ static void handle_hue_multicolor_command(uint8_t endpoint, const uint8_t *data,
         state[5] = state[6] = state[7] = state[8] = 0x00;
         state[9] = 1 + 3 * (n_colors + 1);
         state[10] = n_colors << 4;
-        state[11] = data[6];                 /* style */
+        state[11] = data[style_offset];      /* style */
         state[12] = state[13] = 0x00;
-        memcpy(&state[14], &data[9], 3 * n_colors);
-        state[14 + 3 * n_colors] = segments;
-        state[15 + 3 * n_colors] = offset;
+        memcpy(&state[14], &data[colors_offset], 3 * n_colors);
+        state[14 + 3 * n_colors] = segments_raw;
+        state[15 + 3 * n_colors] = offset_raw;
     }
 
-    ESP_LOGI(TAG, "FC03 multiColor: %u colors, style %u, segments %u, offset %u",
-             (unsigned)n_colors, (unsigned)data[6], (unsigned)segments, (unsigned)offset);
+    ESP_LOGI(TAG, "FC03 multiColor: format=0x%02x %u colors, style %u, segments %u, offset %u",
+             (unsigned)data[0],
+             (unsigned)n_colors,
+             (unsigned)data[style_offset],
+             (unsigned)segments,
+             (unsigned)offset);
 
     emit_gradient_json(endpoint, n_colors, colors, segments, offset);
 }
@@ -1787,6 +1822,19 @@ static const char *zcl_global_cmd_name(uint8_t cmd_id)
     }
 }
 
+static const char *zcl_cmd_name(const zb_zcl_parsed_hdr_t *hdr)
+{
+    if (!hdr) {
+        return "other";
+    }
+    if (!hdr->is_common_command &&
+        hdr->cluster_id == HUE_MANU_SPECIFIC_PHILIPS2_CLUSTER_ID &&
+        hdr->cmd_id == HUE_FC03_MULTICOLOR_CMD_ID) {
+        return "multi_color";
+    }
+    return zcl_global_cmd_name(hdr->cmd_id);
+}
+
 static void print_hex_bytes(const char *prefix, const uint8_t *payload, uint16_t len)
 {
     uint16_t shown = len < 48 ? len : 48;
@@ -1803,6 +1851,16 @@ static void print_hex_bytes(const char *prefix, const uint8_t *payload, uint16_t
 static void log_zcl_payload_summary(const zb_zcl_parsed_hdr_t *hdr, const uint8_t *payload, uint16_t len)
 {
     if (!hdr || !payload || len == 0) {
+        return;
+    }
+
+    if (!hdr->is_common_command) {
+        if (hdr->cluster_id == HUE_MANU_SPECIFIC_PHILIPS2_CLUSTER_ID &&
+            hdr->cmd_id == HUE_FC03_MULTICOLOR_CMD_ID &&
+            hdr->is_manuf_specific &&
+            hdr->manuf_specific == HUE_SIGNIFY_MANUFACTURER_CODE) {
+            print_hex_bytes("FC03_MULTICOLOR_HEX: ", payload, len);
+        }
         return;
     }
 
@@ -1863,7 +1921,7 @@ static bool zb_device_cb_id_handler(uint8_t bufid)
                  hdr->cluster_id,
                  hdr->profile_id,
                  hdr->cmd_id,
-                 zcl_global_cmd_name(hdr->cmd_id),
+                 zcl_cmd_name(hdr),
                  hdr->cmd_direction ? "to_cli" : "to_srv",
                  hdr->is_manuf_specific ? hdr->manuf_specific : 0,
                  (unsigned)payload_len);
@@ -1893,7 +1951,7 @@ static bool zb_raw_command_handler(uint8_t bufid)
                  hdr->cluster_id,
                  hdr->profile_id,
                  hdr->cmd_id,
-                 zcl_global_cmd_name(hdr->cmd_id),
+                 zcl_cmd_name(hdr),
                  hdr->cmd_direction ? "to_cli" : "to_srv",
                  hdr->is_manuf_specific ? hdr->manuf_specific : 0,
                  hdr->is_common_command ? 1 : 0,
@@ -1913,6 +1971,7 @@ static bool zb_raw_command_handler(uint8_t bufid)
 #endif
         if (hdr->cluster_id == ESP_ZB_ZCL_CLUSTER_ID_BASIC &&
             hdr->cmd_id == ZB_ZCL_CMD_READ_ATTRIB &&
+            hdr->is_common_command &&
             hdr->is_manuf_specific &&
             hdr->manuf_specific == HUE_SIGNIFY_MANUFACTURER_CODE &&
             hdr->cmd_direction == ESP_ZB_ZCL_CMD_DIRECTION_TO_SRV &&
@@ -1930,6 +1989,7 @@ static bool zb_raw_command_handler(uint8_t bufid)
         }
         if (hdr->cluster_id == ESP_ZB_ZCL_CLUSTER_ID_IDENTIFY &&
             hdr->cmd_id == ZB_ZCL_CMD_READ_ATTRIB &&
+            hdr->is_common_command &&
             hdr->is_manuf_specific &&
             hdr->manuf_specific == HUE_SIGNIFY_MANUFACTURER_CODE &&
             hdr->cmd_direction == ESP_ZB_ZCL_CMD_DIRECTION_TO_SRV &&
@@ -1939,6 +1999,7 @@ static bool zb_raw_command_handler(uint8_t bufid)
         }
         if (hdr->cluster_id == ESP_ZB_ZCL_CLUSTER_ID_LEVEL_CONTROL &&
             hdr->cmd_id == ZB_ZCL_CMD_READ_ATTRIB &&
+            hdr->is_common_command &&
             hdr->is_manuf_specific &&
             hdr->manuf_specific == HUE_SIGNIFY_MANUFACTURER_CODE &&
             hdr->cmd_direction == ESP_ZB_ZCL_CMD_DIRECTION_TO_SRV &&
@@ -1948,6 +2009,7 @@ static bool zb_raw_command_handler(uint8_t bufid)
         }
         if (hdr->cluster_id == ESP_ZB_ZCL_CLUSTER_ID_COLOR_CONTROL &&
             hdr->cmd_id == ZB_ZCL_CMD_READ_ATTRIB &&
+            hdr->is_common_command &&
             hdr->is_manuf_specific &&
             hdr->manuf_specific == HUE_SIGNIFY_MANUFACTURER_CODE &&
             hdr->cmd_direction == ESP_ZB_ZCL_CMD_DIRECTION_TO_SRV &&
@@ -1957,6 +2019,7 @@ static bool zb_raw_command_handler(uint8_t bufid)
         }
         if (hdr->cluster_id == ESP_ZB_ZCL_CLUSTER_ID_SCENES &&
             hdr->cmd_id == ZB_ZCL_CMD_READ_ATTRIB &&
+            hdr->is_common_command &&
             hdr->is_manuf_specific &&
             hdr->manuf_specific == HUE_SIGNIFY_MANUFACTURER_CODE &&
             hdr->cmd_direction == ESP_ZB_ZCL_CMD_DIRECTION_TO_SRV &&
@@ -1984,6 +2047,7 @@ static bool zb_raw_command_handler(uint8_t bufid)
         }
         if (hdr->cluster_id == HUE_MANU_SPECIFIC_PHILIPS2_CLUSTER_ID &&
             hdr->cmd_id == ZB_ZCL_CMD_READ_ATTRIB &&
+            hdr->is_common_command &&
             hdr->is_manuf_specific &&
             hdr->manuf_specific == HUE_SIGNIFY_MANUFACTURER_CODE &&
             hdr->cmd_direction == ESP_ZB_ZCL_CMD_DIRECTION_TO_SRV &&
@@ -1993,6 +2057,7 @@ static bool zb_raw_command_handler(uint8_t bufid)
         }
         if (hdr->cluster_id == HUE_MANU_SPECIFIC_PHILIPS2_CLUSTER_ID &&
             hdr->cmd_id == ZB_ZCL_CMD_DISCOVER_ATTR_EXT &&
+            hdr->is_common_command &&
             hdr->is_manuf_specific &&
             hdr->manuf_specific == HUE_SIGNIFY_MANUFACTURER_CODE &&
             hdr->cmd_direction == ESP_ZB_ZCL_CMD_DIRECTION_TO_SRV &&
@@ -2002,6 +2067,7 @@ static bool zb_raw_command_handler(uint8_t bufid)
         }
         if (hdr->cluster_id == ESP_ZB_ZCL_CLUSTER_ID_BASIC &&
             hdr->cmd_id == ZB_ZCL_CMD_WRITE_ATTRIB &&
+            hdr->is_common_command &&
             hdr->is_manuf_specific &&
             hdr->manuf_specific == HUE_SIGNIFY_MANUFACTURER_CODE &&
             hdr->cmd_direction == ESP_ZB_ZCL_CMD_DIRECTION_TO_SRV &&
@@ -2536,7 +2602,7 @@ static size_t hex_to_bytes(const char *hex, uint8_t *out, size_t out_len)
 
 /* Minimal serial CLI for self-testing the gradient parser without re-pairing
  * the device through the Hue app every time.  Typing:
- *   gradient 500104000a20000000ff00000000ff2800
+ *   gradient 51010104001350000000c2ad57c2ad57c2ad57c2ad57c2ad572800
  * will emit the same DATA line the daemon will see when the bridge/ZHA sends
  * an FC03 multiColor command. */
 static void serial_cmd_task(void *pvParameters)
