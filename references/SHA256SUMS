@@ -6,5 +6,8 @@ c9b68e0b6a387142fe9c608ca7234651c30d3feabce4de132a1025bb54991fab  references/pap
 fa4965a725fcc66d6f83f2da50659ade3c3b987c419ae2f32e569dd7ca0c0f0e  references/papers/ronen-2017-iot-goes-nuclear-ieee-sp.pdf
 76bd541eeecdfccd2230bb8a520321d552e89d32aaf9102abf000a48b87fc5ba  references/papers/shafqat-2021-zleaks-zigbee-smart-homes-arxiv-2107.10830.pdf
 fc60e7be2686d026475286a907090f0b68100b34c7a98d961c23f4e61c250806  references/slides/oflynn-2016-a-lightbulb-worm-slides.pdf
+ec480fd310541c3ba8ee5bfc33708529f7b70e08d382b91e7b1ff301af515313  references/articles/checkpoint-dont-be-silly-its-only-a-lightbulb.pdf
+6dfc5035aaacebfba2ab55ba5eec2066c62704495ed62b28e5096167c9a5647a  references/articles/colin-oflynn-getting-root-on-philips-hue-bridge-2.0.pdf
+26de2f7b18539fb89c9c47596d5af5e248e1b5a1c3cb12dd79095462cad2c24e  references/articles/synacktiv-make-it-blink-philips-hue-bridge.pdf
 a9cb807fd643e157839378dce060a86bd6bda143c8dfefae5b57f2a2bcbf8f1d  references/specs/bifrost-hue-zigbee-format-fc03.md
 30f198958fe8418cbab1e0dc0d7b6e4bf573af7b02c58f45d4b839804975b065  references/specs/hue-gradient-command-wizard-custom-gradient-utils.tsx

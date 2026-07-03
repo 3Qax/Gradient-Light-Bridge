@@ -107,6 +107,10 @@ Leave monitoring running until you see the device join the network (next step).
 3. The app should discover four new lights: `PC Case`, `PC Fans`, `PC RAM`, `PC Motherboard`.
 4. Add them to the room/automation of your choice.
 
+For fast firmware-identity iteration, use
+[`docs/hue-api-device-cycle.md`](docs/hue-api-device-cycle.md) to remove the
+bridge's stale light record and trigger rediscovery through the local Hue API.
+
 If pairing fails, erase the ESP32 and try again:
 
 ```bash

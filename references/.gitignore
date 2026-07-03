@@ -2,3 +2,4 @@
 # or contain key material, so do not commit mirrored PDFs into the repo.
 papers/*.pdf
 slides/*.pdf
+articles/*.pdf

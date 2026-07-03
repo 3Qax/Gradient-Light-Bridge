@@ -69,6 +69,28 @@ Hue trust-center keys in local, untracked `trust_center_key.h` files only.
     https://blackhat.com/docs/us-16/materials/us-16-OFlynn-A-Lightbulb-Worm.pdf
   - Relevance: presentation version of Colin O'Flynn's Hue teardown.
 
+### Article PDFs
+
+These are local browser-saved PDFs moved from the NAS into
+`references/articles/`. They are ignored by git.
+
+- `articles/colin-oflynn-getting-root-on-philips-hue-bridge-2.0.pdf`
+  - Source:
+    https://colinoflynn.com/2016/07/getting-root-on-philips-hue-bridge-2-0/
+  - Relevance: bridge 2.0 UART/root access context and bridge firmware
+    inspection starting point.
+
+- `articles/checkpoint-dont-be-silly-its-only-a-lightbulb.pdf`
+  - Source:
+    https://research.checkpoint.com/2020/dont-be-silly-its-only-a-lightbulb/
+  - Relevance: Hue bridge `ipbridge` reverse engineering and Zigbee-to-main-CPU
+    message processing.
+
+- `articles/synacktiv-make-it-blink-philips-hue-bridge.pdf`
+  - Source:
+    https://www.synacktiv.com/en/publications/make-it-blink-over-the-air-exploitation-of-the-philips-hue-bridge
+  - Relevance: recent Hue bridge RE and Zigbee frame processing context.
+
 ### Specs And Code Notes
 
 - `specs/bifrost-hue-zigbee-format-fc03.md`
@@ -87,13 +109,8 @@ Hue trust-center keys in local, untracked `trust_center_key.h` files only.
 
 ## Linked-Only Sources
 
-These were not mirrored locally, either because they are web articles rather
-than papers, because they may include sensitive key material, or because direct
-automated download was blocked.
-
-- Colin O'Flynn, "Getting Root on Philips Hue Bridge 2.0"
-  - https://colinoflynn.com/2016/07/getting-root-on-philips-hue-bridge-2-0/
-  - Useful for bridge 2.0 UART/root context and `ipbridge` follow-up work.
+These were not mirrored locally, either because they may include sensitive key
+material or because direct automated download was blocked.
 
 - PeeVeeOne, "Breakout breakthrough"
   - https://peeveeone.com/2016/11/breakout-breakthrough/
@@ -103,15 +120,6 @@ automated download was blocked.
 - PeeVeeOne, "Custom firmware Hue lights"
   - https://peeveeone.com/2016/11/custom-firmware-hue-lights/
   - Useful for historical custom ZLL/Hue-compatible light firmware behavior.
-
-- Check Point Research, "Don't be silly - it's only a lightbulb"
-  - https://research.checkpoint.com/2020/dont-be-silly-its-only-a-lightbulb/
-  - Useful for Hue bridge `ipbridge` reverse engineering and Zigbee-to-main-CPU
-    message processing.
-
-- Synacktiv, "Make it Blink: Over-the-Air Exploitation of the Philips Hue Bridge"
-  - https://www.synacktiv.com/en/publications/make-it-blink-over-the-air-exploitation-of-the-philips-hue-bridge
-  - Useful for recent Hue bridge RE and Zigbee frame processing context.
 
 - Wejn.org, "Project intro: Reversing Philips Hue light driver"
   - https://wejn.org/2024/12/reversing-philips-hue-light-driver/
