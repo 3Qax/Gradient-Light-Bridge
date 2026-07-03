@@ -283,12 +283,10 @@ tracked files; keep it only in local `trust_center_key.h` files.
     are chunks of one 85-byte metadata payload containing `LCX004`,
     `Signify Netherlands B.V.`, `Hue gradient lightstrip`, and trailing feature
     bytes. A generated-C1 firmware build reproduced both known response byte
-    sequences exactly, but the flashed rediscovery runs
-    `discovery-capture-20260703-basic-c0-c1-generated/` and
-    `discovery-capture-20260703-basic-c0-c1-generated-rerun/` regressed early
-    discovery before the bridge reached `0xC0`; the fake was not recreated. The
-    cleanup was therefore discarded from firmware and should not be reapplied as
-    written.
+    sequences exactly, but two local scratch rediscovery captures regressed
+    early discovery before the bridge reached `0xC0`; the fake was not
+    recreated. The cleanup was therefore discarded from firmware and should not
+    be reapplied as written.
   - `research/hue-api-diffs/sniffer-capture-20260703-real-headboard-rejoin-rxidle/`
   is the first usable passive real LCX004 rejoin capture. It was recorded after
   fixing the sniffer to keep the IEEE 802.15.4 radio in receive-when-idle mode.
