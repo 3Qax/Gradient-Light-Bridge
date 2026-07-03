@@ -346,6 +346,12 @@ tracked files; keep it only in local `trust_center_key.h` files.
     `0x50 0x01`; both share the same 3-byte scaled-XY color encoding. The
     firmware now parses both layouts and emits `DATA` gradient JSON from live
     Hue app packets.
+  - `research/hue-api-diffs/20260703-gradient-pixel-count-vs-points-capable.md`
+    records the live bridge evidence that FC03 color count follows the v2
+    gradient point count / `points_capable`, not `pixel_count`. Current fake
+    `/lights/59` reports `pixel_count=10`, `points_capable=5`, and five v2
+    `gradient.points`; the matching FC03 payload has length/count bytes
+    `0x13 0x50`, i.e. five 3-byte XY points.
 - `research/hue-api-diffs/sniffer-capture-20260703-real-headboard-factory-reset-zll-key/`
   captures a true dimmer-switch factory reset and Hue re-add of the same real
   LCX004. Hue created new v1 id `37`, certified true, with streaming

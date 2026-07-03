@@ -50,6 +50,16 @@ static const char *TAG = "ARGB_TO_HUE";
 #define HUE_OTA_LCX004_IMAGE_TYPE              0x0118
 #define HUE_OTA_FILE_VERSION                   0x01002000
 
+#define HUE_FC03_FLAG_ON_OFF                   0x0001
+#define HUE_FC03_FLAG_BRIGHTNESS               0x0002
+#define HUE_FC03_FLAG_COLOR_MIREK              0x0004
+#define HUE_FC03_FLAG_COLOR_XY                 0x0008
+#define HUE_FC03_FLAG_FADE_SPEED               0x0010
+#define HUE_FC03_FLAG_EFFECT_TYPE              0x0020
+#define HUE_FC03_FLAG_GRADIENT_PARAMS          0x0040
+#define HUE_FC03_FLAG_EFFECT_SPEED             0x0080
+#define HUE_FC03_FLAG_GRADIENT_COLORS          0x0100
+
 #define HUE_COLOR_POINT_RX_ID                  0x0032
 #define HUE_COLOR_POINT_RY_ID                  0x0033
 #define HUE_COLOR_POINT_GX_ID                  0x0036
@@ -197,7 +207,15 @@ static const uint8_t HUE_BASIC_CMD_C1_RESPONSE_0035[] = {
     0x03, 0x18, 0x01,
 };
 
-light_state_t g_light_state[ARGB_ENDPOINT_COUNT] = {0};
+light_state_t g_light_state[ARGB_ENDPOINT_COUNT] = {
+    {
+        .on = false,
+        .bri = 0xFE,
+        .x = 0x9F8F,
+        .y = 0x5C06,
+        .last_bri = 0xFE,
+    },
+};
 
 static void print_hex_bytes(const char *prefix, const uint8_t *payload, uint16_t len);
 
@@ -1090,7 +1108,36 @@ static bool handle_fc03_discover_attr_ext_raw(const zb_zcl_parsed_hdr_t *hdr,
     return true;
 }
 
-void emit_state_json(uint8_t endpoint)
+static uint16_t hue_u16_le(const uint8_t *p)
+{
+    return (uint16_t)p[0] | ((uint16_t)p[1] << 8);
+}
+
+static void sync_fc03_state_prefix(uint8_t idx)
+{
+    if (idx >= ARGB_ENDPOINT_COUNT) {
+        return;
+    }
+
+    light_state_t *st = &g_light_state[idx];
+    uint8_t *state = s_hue_state[idx];
+    uint8_t effective_bri = st->bri ? st->bri : st->last_bri;
+    if (effective_bri == 0) {
+        effective_bri = 0xFE;
+    }
+
+    state[3] = st->on ? 0x01 : 0x00;
+    state[4] = effective_bri;
+    state[5] = (uint8_t)(st->x & 0xff);
+    state[6] = (uint8_t)(st->x >> 8);
+    state[7] = (uint8_t)(st->y & 0xff);
+    state[8] = (uint8_t)(st->y >> 8);
+}
+
+static void emit_state_json_internal(uint8_t endpoint,
+                                     const char *source,
+                                     bool has_fade,
+                                     uint16_t fade)
 {
     if (endpoint < HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE ||
         endpoint >= HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE + ARGB_ENDPOINT_COUNT) {
@@ -1110,8 +1157,14 @@ void emit_state_json(uint8_t endpoint)
     rgb_t rgb = xy_to_rgb(xf, yf, effective_bri);
 
     // Prefix with DATA: so the PC daemon can ignore regular log lines.
-    printf("DATA: {\"endpoint\":%u,\"on\":%s,\"bri\":%u,\"x\":%.4f,\"y\":%.4f,\"r\":%u,\"g\":%u,\"b\":%u}\n",
-           (unsigned)endpoint,
+    printf("DATA: {\"endpoint\":%u", (unsigned)endpoint);
+    if (source) {
+        printf(",\"source\":\"%s\"", source);
+    }
+    if (has_fade) {
+        printf(",\"fade\":%u", (unsigned)fade);
+    }
+    printf(",\"on\":%s,\"bri\":%u,\"x\":%.4f,\"y\":%.4f,\"r\":%u,\"g\":%u,\"b\":%u}\n",
            st->on ? "true" : "false",
            (unsigned)st->bri,
            (double)xf,
@@ -1119,6 +1172,11 @@ void emit_state_json(uint8_t endpoint)
            (unsigned)rgb.r,
            (unsigned)rgb.g,
            (unsigned)rgb.b);
+}
+
+void emit_state_json(uint8_t endpoint)
+{
+    emit_state_json_internal(endpoint, NULL, false, 0);
 }
 
 #define HUE_FC03_MULTICOLOR_CMD_ID 0x00
@@ -1148,11 +1206,27 @@ static void scaled_gradient_to_xy(const uint8_t *p, float *x, float *y)
 static void emit_gradient_json(uint8_t endpoint,
                                uint8_t n_colors,
                                const gradient_color_t *colors,
-                               uint8_t segments,
-                               uint8_t offset)
+                               bool on,
+                               uint8_t style,
+                               uint8_t scale_raw,
+                               uint8_t offset_raw,
+                               bool has_fade,
+                               uint16_t fade)
 {
-    printf("DATA: {\"endpoint\":%u,\"gradient\":true,\"n\":%u,\"segments\":%u,\"offset\":%u,\"colors\":[",
-           (unsigned)endpoint, (unsigned)n_colors, (unsigned)segments, (unsigned)offset);
+    printf("DATA: {\"endpoint\":%u,\"source\":\"fc03\",\"on\":%s,\"gradient\":true,\"n\":%u,\"style\":%u,\"segments\":%u,\"scale\":%.3f,\"scale_raw\":%u,\"offset\":%u,\"offset_raw\":%u",
+           (unsigned)endpoint,
+           on ? "true" : "false",
+           (unsigned)n_colors,
+           (unsigned)style,
+           (unsigned)(scale_raw >> 3),
+           (double)scale_raw / 8.0,
+           (unsigned)scale_raw,
+           (unsigned)(offset_raw >> 3),
+           (unsigned)offset_raw);
+    if (has_fade) {
+        printf(",\"fade\":%u", (unsigned)fade);
+    }
+    printf(",\"colors\":[");
     for (uint8_t i = 0; i < n_colors; i++) {
         if (i) {
             printf(",");
@@ -1164,118 +1238,255 @@ static void emit_gradient_json(uint8_t endpoint,
     printf("]}\n");
 }
 
-/* Parse a Hue FC03 "multiColor" (gradient) command payload.
- * Two layouts have been observed:
- *   0x50, 0x01, transition_time, 0x00,
- *   length, ncolors<<4, style, 0x00, 0x00,
- *   colors (3 bytes each), segments<<3, offset<<3
+static bool fc03_require_bytes(size_t offset, size_t need, size_t size, const char *field)
+{
+    if (offset > size || need > size - offset) {
+        ESP_LOGW(TAG, "FC03 payload truncated before %s: need %u at %u, have %u",
+                 field, (unsigned)need, (unsigned)offset, (unsigned)size);
+        return false;
+    }
+    return true;
+}
+
+/* Parse a Hue FC03 command-0 payload.
  *
- *   0x51, 0x01, 0x01, 0x04, 0x00,
- *   length, ncolors<<4, style, 0x00, 0x00,
- *   colors (3 bytes each), segments<<3, offset<<3
+ * The first two bytes are a little-endian property bitset. Fields then appear
+ * in the fixed order documented in references/specs/bifrost-hue-zigbee-format-
+ * fc03.md. That makes the older "formats" observed in captures just specific
+ * flag combinations:
+ *   0x0150: fade + gradient colors + gradient params
+ *   0x0151: on/off + fade + gradient colors + gradient params
+ *   0x0011: on/off + fade, used by the Hue app for on/off toggles
  */
 static void handle_hue_multicolor_command(uint8_t endpoint, const uint8_t *data, size_t size)
 {
     if (size < 2) {
-        ESP_LOGW(TAG, "FC03 multiColor payload too short (%d bytes)", (int)size);
+        ESP_LOGW(TAG, "FC03 payload too short (%d bytes)", (int)size);
         return;
     }
 
-    size_t length_offset;
-    size_t count_offset;
-    size_t style_offset;
-    size_t colors_offset;
-    if (data[0] == 0x50 && data[1] == 0x01) {
-        length_offset = 4;
-        count_offset = 5;
-        style_offset = 6;
-        colors_offset = 9;
-    } else if (data[0] == 0x51 && data[1] == 0x01) {
-        length_offset = 5;
-        count_offset = 6;
-        style_offset = 7;
-        colors_offset = 10;
-    } else {
-        ESP_LOGW(TAG, "FC03 multiColor unexpected header 0x%02x 0x%02x", data[0], data[1]);
-        return;
-    }
-
-    if (size <= colors_offset) {
-        ESP_LOGW(TAG, "FC03 multiColor payload too short for header 0x%02x (%d bytes)",
-                 data[0], (int)size);
-        return;
-    }
-
-    uint8_t n_colors = data[count_offset] >> 4;
-    if (n_colors == 0 || n_colors > HUE_FC03_MAX_COLORS) {
-        ESP_LOGW(TAG, "FC03 multiColor unsupported color count %u", (unsigned)n_colors);
-        return;
-    }
-
-    uint8_t expected_color_payload_len = 1 + 3 * (n_colors + 1);
-    if (data[length_offset] != expected_color_payload_len) {
-        ESP_LOGW(TAG, "FC03 multiColor unexpected color payload length %u for %u colors",
-                 (unsigned)data[length_offset], (unsigned)n_colors);
-    }
-
-    size_t tail_offset = colors_offset + 3 * n_colors;
-    size_t expected = tail_offset + 2;
-    if (size < expected) {
-        ESP_LOGW(TAG, "FC03 multiColor truncated: expected %d bytes, got %d",
-                 (int)expected, (int)size);
+    if (endpoint < HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE ||
+        endpoint >= HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE + ARGB_ENDPOINT_COUNT) {
+        ESP_LOGW(TAG, "FC03 command for unsupported endpoint %u", (unsigned)endpoint);
         return;
     }
 
     uint8_t idx = endpoint - HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE;
-    light_state_t *st = (idx < ARGB_ENDPOINT_COUNT) ? &g_light_state[idx] : NULL;
-    uint8_t effective_bri = 255;
-    if (st && st->on) {
-        effective_bri = st->bri ? st->bri : st->last_bri;
+    light_state_t *st = &g_light_state[idx];
+    uint16_t flags = hue_u16_le(data);
+    uint16_t known_flags = HUE_FC03_FLAG_ON_OFF |
+                           HUE_FC03_FLAG_BRIGHTNESS |
+                           HUE_FC03_FLAG_COLOR_MIREK |
+                           HUE_FC03_FLAG_COLOR_XY |
+                           HUE_FC03_FLAG_FADE_SPEED |
+                           HUE_FC03_FLAG_EFFECT_TYPE |
+                           HUE_FC03_FLAG_GRADIENT_PARAMS |
+                           HUE_FC03_FLAG_EFFECT_SPEED |
+                           HUE_FC03_FLAG_GRADIENT_COLORS;
+    if (flags & ~known_flags) {
+        ESP_LOGW(TAG, "FC03 update has unknown flags 0x%04x", (unsigned)(flags & ~known_flags));
     }
 
+    size_t off = 2;
+    bool has_on = false;
+    bool has_bri = false;
+    bool has_xy = false;
+    bool has_fade = false;
+    bool has_effect = false;
+    bool has_effect_speed = false;
+    bool has_gradient = false;
+    bool has_gradient_params = false;
+    uint16_t fade = 0;
+    uint8_t effect = 0;
+    uint8_t effect_speed = 0;
+    uint8_t n_colors = 0;
+    uint8_t style = 0;
+    uint8_t scale_raw = 0;
+    uint8_t offset_raw = 0;
     gradient_color_t colors[HUE_FC03_MAX_COLORS];
-    for (uint8_t i = 0; i < n_colors; i++) {
-        const uint8_t *p = &data[colors_offset + 3 * i];
-        scaled_gradient_to_xy(p, &colors[i].x, &colors[i].y);
-        rgb_t rgb = xy_to_rgb(colors[i].x, colors[i].y, effective_bri);
-        colors[i].r = rgb.r;
-        colors[i].g = rgb.g;
-        colors[i].b = rgb.b;
+    const uint8_t *gradient_color_bytes = NULL;
+
+    if (flags & HUE_FC03_FLAG_ON_OFF) {
+        if (!fc03_require_bytes(off, 1, size, "on/off")) {
+            return;
+        }
+        st->on = data[off++] != 0;
+        has_on = true;
     }
 
-    uint8_t segments_raw = data[tail_offset];
-    uint8_t offset_raw = data[tail_offset + 1];
-    uint8_t segments = segments_raw >> 3;
-    uint8_t offset = offset_raw >> 3;
+    if (flags & HUE_FC03_FLAG_BRIGHTNESS) {
+        if (!fc03_require_bytes(off, 1, size, "brightness")) {
+            return;
+        }
+        uint8_t bri = data[off++];
+        if (bri == 0 || bri == 0xff) {
+            ESP_LOGW(TAG, "FC03 brightness value out of Hue range: %u", (unsigned)bri);
+        } else {
+            st->bri = bri;
+            st->last_bri = bri;
+            has_bri = true;
+        }
+    }
+
+    if (flags & HUE_FC03_FLAG_COLOR_MIREK) {
+        if (!fc03_require_bytes(off, 2, size, "mirek")) {
+            return;
+        }
+        off += 2;
+    }
+
+    if (flags & HUE_FC03_FLAG_COLOR_XY) {
+        if (!fc03_require_bytes(off, 4, size, "xy")) {
+            return;
+        }
+        st->x = hue_u16_le(&data[off]);
+        st->y = hue_u16_le(&data[off + 2]);
+        off += 4;
+        has_xy = true;
+    }
+
+    if (flags & HUE_FC03_FLAG_FADE_SPEED) {
+        if (!fc03_require_bytes(off, 2, size, "fade speed")) {
+            return;
+        }
+        fade = hue_u16_le(&data[off]);
+        off += 2;
+        has_fade = true;
+    }
+
+    if (flags & HUE_FC03_FLAG_EFFECT_TYPE) {
+        if (!fc03_require_bytes(off, 1, size, "effect type")) {
+            return;
+        }
+        effect = data[off++];
+        has_effect = true;
+    }
+
+    if (flags & HUE_FC03_FLAG_GRADIENT_COLORS) {
+        if (!fc03_require_bytes(off, 5, size, "gradient color header")) {
+            return;
+        }
+
+        uint8_t color_payload_len = data[off];
+        if (!fc03_require_bytes(off, 1 + color_payload_len, size, "gradient colors")) {
+            return;
+        }
+
+        n_colors = data[off + 1] >> 4;
+        if (data[off + 1] & 0x0f) {
+            ESP_LOGW(TAG, "FC03 gradient color count low nibble is non-zero: 0x%02x",
+                     (unsigned)data[off + 1]);
+        }
+        if (n_colors == 0 || n_colors > HUE_FC03_MAX_COLORS) {
+            ESP_LOGW(TAG, "FC03 gradient unsupported color count %u", (unsigned)n_colors);
+            return;
+        }
+
+        uint8_t expected_color_payload_len = 4 + 3 * n_colors;
+        if (color_payload_len != expected_color_payload_len) {
+            ESP_LOGW(TAG, "FC03 gradient length %u does not match %u colors (expected %u)",
+                     (unsigned)color_payload_len,
+                     (unsigned)n_colors,
+                     (unsigned)expected_color_payload_len);
+        }
+
+        size_t colors_offset = off + 5;
+        if (!fc03_require_bytes(colors_offset, 3 * n_colors, off + 1 + color_payload_len,
+                                "gradient color data")) {
+            return;
+        }
+
+        style = data[off + 2];
+        gradient_color_bytes = &data[colors_offset];
+        uint8_t color_bri = st->bri ? st->bri : st->last_bri;
+        if (color_bri == 0) {
+            color_bri = 0xFE;
+        }
+        for (uint8_t i = 0; i < n_colors; i++) {
+            const uint8_t *p = &gradient_color_bytes[3 * i];
+            scaled_gradient_to_xy(p, &colors[i].x, &colors[i].y);
+            rgb_t rgb = xy_to_rgb(colors[i].x, colors[i].y, color_bri);
+            colors[i].r = rgb.r;
+            colors[i].g = rgb.g;
+            colors[i].b = rgb.b;
+        }
+
+        off += 1 + color_payload_len;
+        has_gradient = true;
+    }
+
+    if (flags & HUE_FC03_FLAG_EFFECT_SPEED) {
+        if (!fc03_require_bytes(off, 1, size, "effect speed")) {
+            return;
+        }
+        effect_speed = data[off++];
+        has_effect_speed = true;
+    }
+
+    if (flags & HUE_FC03_FLAG_GRADIENT_PARAMS) {
+        if (!fc03_require_bytes(off, 2, size, "gradient params")) {
+            return;
+        }
+        scale_raw = data[off++];
+        offset_raw = data[off++];
+        has_gradient_params = true;
+    }
+
+    if (off != size) {
+        ESP_LOGW(TAG, "FC03 payload has %u trailing byte(s)", (unsigned)(size - off));
+    }
+
+    if (has_on && st->on && st->bri == 0) {
+        st->bri = st->last_bri ? st->last_bri : 0xFE;
+        st->last_bri = st->bri;
+    }
+
+    sync_fc03_state_prefix(idx);
 
     /* Keep the FC03 state attribute in sync so ZHA/bridge reads reflect the
      * currently active gradient. */
-    if (idx < ARGB_ENDPOINT_COUNT) {
+    if (has_gradient) {
         uint8_t *state = s_hue_state[idx];
         uint8_t payload_len = 15 + 3 * n_colors;
         state[0] = payload_len;
         state[1] = 0x4B;
         state[2] = 0x01;
-        state[3] = (st && st->on) ? 0x01 : 0x00;
-        state[4] = effective_bri;
-        state[5] = state[6] = state[7] = state[8] = 0x00;
-        state[9] = 1 + 3 * (n_colors + 1);
+        sync_fc03_state_prefix(idx);
+        state[9] = 4 + 3 * n_colors;
         state[10] = n_colors << 4;
-        state[11] = data[style_offset];      /* style */
+        state[11] = style;
         state[12] = state[13] = 0x00;
-        memcpy(&state[14], &data[colors_offset], 3 * n_colors);
-        state[14 + 3 * n_colors] = segments_raw;
+        memcpy(&state[14], gradient_color_bytes, 3 * n_colors);
+        state[14 + 3 * n_colors] = scale_raw;
         state[15 + 3 * n_colors] = offset_raw;
     }
 
-    ESP_LOGI(TAG, "FC03 multiColor: format=0x%02x %u colors, style %u, segments %u, offset %u",
-             (unsigned)data[0],
+    ESP_LOGI(TAG, "FC03 update: flags=0x%04x on=%s bri=%s xy=%s fade=%s gradient=%u effect=%d speed=%d params=%s scale=%u offset=%u",
+             (unsigned)flags,
+             has_on ? (st->on ? "true" : "false") : "-",
+             has_bri ? "set" : "-",
+             has_xy ? "set" : "-",
+             has_fade ? "set" : "-",
              (unsigned)n_colors,
-             (unsigned)data[style_offset],
-             (unsigned)segments,
-             (unsigned)offset);
+             has_effect ? (int)effect : -1,
+             has_effect_speed ? (int)effect_speed : -1,
+             has_gradient_params ? "set" : "-",
+             (unsigned)(scale_raw >> 3),
+             (unsigned)(offset_raw >> 3));
 
-    emit_gradient_json(endpoint, n_colors, colors, segments, offset);
+    if (has_gradient) {
+        emit_gradient_json(endpoint,
+                           n_colors,
+                           colors,
+                           st->on,
+                           style,
+                           scale_raw,
+                           offset_raw,
+                           has_fade,
+                           fade);
+    } else if (has_on || has_bri || has_xy) {
+        emit_state_json_internal(endpoint, "fc03", has_fade, fade);
+    }
 }
 
 static esp_err_t deferred_driver_init(void)

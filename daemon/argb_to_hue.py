@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import math
 import re
 import sys
 import time
@@ -75,6 +76,11 @@ def find_device(client: OpenRGBClient, pattern: str) -> Device | None:
 # switch it into Direct/Custom mode before setting the zone color.
 Target = tuple[Device, Zone | None] | None
 
+HUE_STYLE_LINEAR = 0x00
+HUE_STYLE_SCATTERED = 0x02
+HUE_STYLE_MIRRORED = 0x04
+HUE_STYLE_SEGMENTED = 0x06
+
 
 def ensure_direct_mode(device: Device) -> None:
     try:
@@ -120,17 +126,152 @@ def interpolate_color(a: RGBColor, b: RGBColor, t: float) -> RGBColor:
     )
 
 
+def color_at_position(colors: list[RGBColor], position: float) -> RGBColor:
+    if not colors:
+        return RGBColor(0, 0, 0)
+    if len(colors) == 1:
+        return colors[0]
+
+    position = max(0.0, min(float(len(colors) - 1), position))
+    idx = int(position)
+    if idx >= len(colors) - 1:
+        return colors[-1]
+    return interpolate_color(colors[idx], colors[idx + 1], position - idx)
+
+
+def coerce_rgb_color(data: dict[str, Any]) -> RGBColor:
+    if not isinstance(data, dict):
+        return RGBColor(0, 0, 0)
+
+    def channel(name: str) -> int:
+        try:
+            value = int(data.get(name, 0))
+        except (TypeError, ValueError):
+            value = 0
+        return max(0, min(255, value))
+
+    return RGBColor(channel("r"), channel("g"), channel("b"))
+
+
+def fixed_eighths_to_float(value: Any, default: float) -> float:
+    if value is None:
+        return default
+    try:
+        return int(value) / 8.0
+    except (TypeError, ValueError):
+        return default
+
+
+def coerce_int(value: Any, default: int) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def coerce_float(value: Any, default: float) -> float:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def render_linear_gradient(colors: list[RGBColor], led_count: int, scale: float, offset: float) -> list[RGBColor]:
+    if led_count <= 1:
+        return [color_at_position(colors, offset)] * max(0, led_count)
+
+    span = max(0.0, scale - 1.0)
+    return [
+        color_at_position(colors, offset + (i / (led_count - 1)) * span)
+        for i in range(led_count)
+    ]
+
+
+def render_mirrored_gradient(colors: list[RGBColor], led_count: int, scale: float, offset: float) -> list[RGBColor]:
+    if led_count <= 1:
+        return [color_at_position(colors, offset)] * max(0, led_count)
+
+    center = (led_count - 1) / 2.0
+    max_distance = max(center, 1.0)
+    span = max(0.0, scale - 1.0)
+    return [
+        color_at_position(colors, offset + (abs(i - center) / max_distance) * span)
+        for i in range(led_count)
+    ]
+
+
+def coprime_palette_step(color_count: int) -> int:
+    if color_count <= 1:
+        return 1
+
+    step = max(1, round(color_count * 0.61803398875))
+    while math.gcd(step, color_count) != 1:
+        step += 1
+    return step
+
+
+def render_scattered_gradient(colors: list[RGBColor], led_count: int, offset: float) -> list[RGBColor]:
+    if not colors:
+        return []
+    if len(colors) == 1:
+        return [colors[0]] * led_count
+
+    phase = int(offset) % len(colors)
+    step = coprime_palette_step(len(colors))
+    return [colors[(phase + i * step) % len(colors)] for i in range(led_count)]
+
+
+def render_segmented_gradient(colors: list[RGBColor], led_count: int, scale: float, offset: float) -> list[RGBColor]:
+    if not colors:
+        return []
+
+    visible_segments = max(1.0, scale)
+    rendered: list[RGBColor] = []
+    for i in range(led_count):
+        position = offset + (i / max(1, led_count)) * visible_segments
+        idx = max(0, min(len(colors) - 1, int(position)))
+        rendered.append(colors[idx])
+    return rendered
+
+
+def render_gradient(
+    colors: list[RGBColor],
+    led_count: int,
+    style: int,
+    scale: float,
+    offset: float,
+) -> list[RGBColor]:
+    if led_count <= 0 or not colors:
+        return []
+
+    if scale <= 0.0:
+        scale = float(len(colors))
+
+    if style == HUE_STYLE_MIRRORED:
+        return render_mirrored_gradient(colors, led_count, scale, offset)
+    if style == HUE_STYLE_SCATTERED:
+        return render_scattered_gradient(colors, led_count, offset)
+    if style == HUE_STYLE_SEGMENTED:
+        return render_segmented_gradient(colors, led_count, scale, offset)
+
+    if style != HUE_STYLE_LINEAR:
+        logger.debug("Unknown Hue gradient style %s; rendering as linear", style)
+    return render_linear_gradient(colors, led_count, scale, offset)
+
+
 def apply_gradient(
     target: Target,
-    colors: list[dict[str, int]],
-    segments: int,
+    colors: list[dict[str, Any]],
+    style: int,
+    scale: float,
+    offset: float,
     on: bool,
     set_direct_mode: bool,
 ) -> None:
     """Apply a Hue FC03 multiColor gradient to the mapped OpenRGB zone/device.
 
-    The firmware emits one RGB sample per gradient point; we linearly
-    interpolate between those samples across the LEDs in the target zone.
+    The firmware emits one RGB sample per received Hue gradient point. The
+    daemon renders those points across the actual OpenRGB LED count.
     """
     if target is None:
         return
@@ -151,22 +292,12 @@ def apply_gradient(
             zone.set_colors(off)
         return
 
-    sample_colors = [RGBColor(c["r"], c["g"], c["b"]) for c in colors]
+    sample_colors = [coerce_rgb_color(c) for c in colors]
     sample_count = len(sample_colors)
     if sample_count == 0:
         return
 
-    if sample_count == 1 or led_count == 1:
-        led_colors = [sample_colors[0]] * led_count
-    else:
-        led_colors = []
-        for i in range(led_count):
-            pos = (i / (led_count - 1)) * (sample_count - 1)
-            idx = int(pos)
-            t = pos - idx
-            c1 = sample_colors[min(idx, sample_count - 1)]
-            c2 = sample_colors[min(idx + 1, sample_count - 1)]
-            led_colors.append(interpolate_color(c1, c2, t))
+    led_colors = render_gradient(sample_colors, led_count, style, scale, offset)
 
     if zone is None:
         device.set_colors(led_colors)
@@ -274,9 +405,23 @@ def run(config: dict[str, Any]) -> None:
 
             if data.get("gradient"):
                 colors = data.get("colors", [])
-                segments = data.get("segments", len(colors))
-                logger.debug("RX endpoint=%s gradient n=%s segments=%s", endpoint, len(colors), segments)
-                apply_gradient(target, colors, segments, on, set_direct_mode)
+                if not isinstance(colors, list):
+                    colors = []
+                style = coerce_int(data.get("style"), HUE_STYLE_LINEAR)
+                scale = fixed_eighths_to_float(
+                    data.get("scale_raw"),
+                    coerce_float(data.get("scale", data.get("segments")), float(len(colors))),
+                )
+                offset = fixed_eighths_to_float(data.get("offset_raw"), coerce_float(data.get("offset"), 0.0))
+                logger.debug(
+                    "RX endpoint=%s gradient n=%s style=%s scale=%.3f offset=%.3f",
+                    endpoint,
+                    len(colors),
+                    style,
+                    scale,
+                    offset,
+                )
+                apply_gradient(target, colors, style, scale, offset, on, set_direct_mode)
             else:
                 r = data.get("r", 0)
                 g = data.get("g", 0)
