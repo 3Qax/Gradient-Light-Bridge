@@ -20,6 +20,14 @@ if [[ -n "${PORT:-}" ]]; then
     DOCKER_ARGS+=(--device "$PORT")
 fi
 
+if [[ -n "${HUE_EUI_SUFFIX:-}" ]]; then
+    DOCKER_ARGS+=(-e HUE_EUI_SUFFIX)
+fi
+
+if [[ -n "${HUE_SERIAL_DEBUG:-}" ]]; then
+    DOCKER_ARGS+=(-e HUE_SERIAL_DEBUG)
+fi
+
 # Only allocate a TTY when stdin is a terminal (interactive use).
 if [[ -t 0 ]]; then
     DOCKER_ARGS+=(-it)

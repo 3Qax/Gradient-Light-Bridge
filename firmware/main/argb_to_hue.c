@@ -12,8 +12,10 @@
 
 #include <ctype.h>
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 
 #include "esp_check.h"
 #include "esp_log.h"
@@ -24,6 +26,7 @@
 #include "ha/esp_zigbee_ha_standard.h"
 #include "zcl/esp_zigbee_zcl_command.h"
 #include "zcl_utility.h"
+#include "esp_mac.h"
 #include "esp_zigbee_cluster.h"
 #include "zboss_api.h"
 #include "zboss_api_buf.h"
@@ -83,6 +86,10 @@ static const char *TAG = "ARGB_TO_HUE";
 #define HUE_ZDO_DESCRIPTOR_OVERRIDE            1
 #define HUE_FC01_EXPLICIT_DEFAULT_RESPONSE     1
 
+#ifndef HUE_SERIAL_DEBUG
+#define HUE_SERIAL_DEBUG                       0
+#endif
+
 /* Real LCX004 devices also expose Green Power endpoint 242.
  *
  * Modes:
@@ -106,16 +113,92 @@ static const uint8_t HUE_FC03_DISCOVERY_ATTR2_STATE[] = {
     0x06, 0x07, 0x00, 0x01, 0xFE, 0x6E, 0x01,
 };
 
+#ifndef HUE_EUI_SUFFIX
+#define HUE_EUI_SUFFIX "FF:FE:05"
+#endif
+
 /* Spoof a Signify Netherlands B.V. extended address so the Hue bridge treats
- * the device as a genuine Hue product. The lower 5 bytes should be unique per
- * board if you run more than one argb-to-hue device on the same network. */
-/* esp_zb_set_long_address() stores the EUI-64 in little-endian order, so the
- * array here must be the reverse of the address the Hue bridge displays in
- * the uniqueid. We want the bridge to see a genuine Signify OUI
- * (00:17:88:01:0b:...), so pass the bytes in reverse. */
-static const esp_zb_ieee_addr_t HUE_SPOOFED_LONG_ADDR = {
-    0x05, 0xfe, 0xff, 0x0b, 0x01, 0x88, 0x17, 0x00
-};
+ * the device as a genuine Hue product. The displayed EUI-64 prefix remains
+ * 00:17:88:01:0b; HUE_EUI_SUFFIX supplies the final three displayed bytes.
+ *
+ * Use HUE_EUI_SUFFIX=auto for additional boards. In auto mode the suffix comes
+ * from the last three bytes of the ESP factory MAC, so one firmware image can
+ * be flashed to multiple boards without Zigbee EUI collisions.
+ *
+ * esp_zb_set_long_address() stores the EUI-64 in little-endian order, so the
+ * array passed to the stack is the reverse of the Hue uniqueid prefix. */
+static esp_zb_ieee_addr_t s_hue_spoofed_long_addr;
+
+static bool parse_hue_eui_suffix(const char *text, uint8_t suffix[3])
+{
+    if (!text || !suffix) {
+        return false;
+    }
+
+    if (strcasecmp(text, "auto") == 0) {
+        uint8_t factory_mac[6] = {0};
+        esp_err_t err = esp_read_mac(factory_mac, ESP_MAC_BASE);
+        if (err != ESP_OK) {
+            ESP_LOGE(TAG, "Failed to read ESP base MAC for Hue EUI suffix: %s", esp_err_to_name(err));
+            return false;
+        }
+        suffix[0] = factory_mac[3];
+        suffix[1] = factory_mac[4];
+        suffix[2] = factory_mac[5];
+        ESP_LOGI(TAG,
+                 "Using ESP factory MAC suffix for Hue EUI: %02x:%02x:%02x from %02x:%02x:%02x:%02x:%02x:%02x",
+                 suffix[0],
+                 suffix[1],
+                 suffix[2],
+                 factory_mac[0],
+                 factory_mac[1],
+                 factory_mac[2],
+                 factory_mac[3],
+                 factory_mac[4],
+                 factory_mac[5]);
+        return true;
+    }
+
+    unsigned int parsed[3] = {0};
+    if (sscanf(text, "%2x:%2x:%2x", &parsed[0], &parsed[1], &parsed[2]) != 3 &&
+        sscanf(text, "%2x-%2x-%2x", &parsed[0], &parsed[1], &parsed[2]) != 3 &&
+        sscanf(text, "%2x%2x%2x", &parsed[0], &parsed[1], &parsed[2]) != 3) {
+        ESP_LOGE(TAG, "Invalid HUE_EUI_SUFFIX `%s`; expected auto or three hex bytes", text);
+        return false;
+    }
+
+    for (int i = 0; i < 3; i++) {
+        if (parsed[i] > 0xff) {
+            ESP_LOGE(TAG, "Invalid HUE_EUI_SUFFIX byte %u in `%s`", parsed[i], text);
+            return false;
+        }
+        suffix[i] = (uint8_t)parsed[i];
+    }
+    return true;
+}
+
+static void init_hue_spoofed_long_addr(void)
+{
+    uint8_t suffix[3] = {0xff, 0xfe, 0x05};
+    if (!parse_hue_eui_suffix(HUE_EUI_SUFFIX, suffix)) {
+        ESP_LOGW(TAG, "Falling back to legacy Hue EUI suffix FF:FE:05");
+    }
+
+    s_hue_spoofed_long_addr[0] = suffix[2];
+    s_hue_spoofed_long_addr[1] = suffix[1];
+    s_hue_spoofed_long_addr[2] = suffix[0];
+    s_hue_spoofed_long_addr[3] = 0x0b;
+    s_hue_spoofed_long_addr[4] = 0x01;
+    s_hue_spoofed_long_addr[5] = 0x88;
+    s_hue_spoofed_long_addr[6] = 0x17;
+    s_hue_spoofed_long_addr[7] = 0x00;
+
+    ESP_LOGI(TAG,
+             "Hue spoofed EUI-64: 00:17:88:01:0b:%02x:%02x:%02x",
+             suffix[0],
+             suffix[1],
+             suffix[2]);
+}
 
 /* Zigbee strings are octet strings: first byte is the length.
  * These values are from an active read of a real LCX004 Basic cluster. */
@@ -2203,7 +2286,9 @@ static esp_err_t zb_action_handler(esp_zb_core_action_callback_id_t callback_id,
         ret = zb_custom_cluster_handler((esp_zb_zcl_custom_cluster_command_message_t *)message);
         break;
     default:
+#if HUE_SERIAL_DEBUG
         ESP_LOGW(TAG, "Receive Zigbee action(0x%x) callback", callback_id);
+#endif
         break;
     }
     return ret;
@@ -2250,6 +2335,7 @@ static const char *zcl_cmd_name(const zb_zcl_parsed_hdr_t *hdr)
 
 static void print_hex_bytes(const char *prefix, const uint8_t *payload, uint16_t len)
 {
+#if HUE_SERIAL_DEBUG
     uint16_t shown = len < 48 ? len : 48;
     printf("%s", prefix);
     for (uint16_t i = 0; i < shown; i++) {
@@ -2259,10 +2345,22 @@ static void print_hex_bytes(const char *prefix, const uint8_t *payload, uint16_t
         printf("...");
     }
     printf("\n");
+#else
+    (void)prefix;
+    (void)payload;
+    (void)len;
+#endif
 }
 
 static void log_zcl_payload_summary(const zb_zcl_parsed_hdr_t *hdr, const uint8_t *payload, uint16_t len)
 {
+#if !HUE_SERIAL_DEBUG
+    (void)hdr;
+    (void)payload;
+    (void)len;
+    return;
+#endif
+
     if (!hdr || !payload || len == 0) {
         return;
     }
@@ -2601,6 +2699,7 @@ static void add_hue_proprietary_clusters(esp_zb_cluster_list_t *cluster_list, ui
 
 static void log_fake_simple_descriptor(uint8_t endpoint)
 {
+#if HUE_SERIAL_DEBUG
     printf("FAKE_DESCRIPTOR: endpoint=%u profile=0x%04x device=0x%04x version=%u "
            "server_clusters=[0x0000,0x0003,0x0004,0x0005,0x0006,0x0008,0x1000,0xfc03,0x0300,0xfc01,0xfc04] "
            "client_clusters=[0x0019]\n",
@@ -2608,6 +2707,9 @@ static void log_fake_simple_descriptor(uint8_t endpoint)
            (unsigned)ESP_ZB_AF_HA_PROFILE_ID,
            0x010D,
            1);
+#else
+    (void)endpoint;
+#endif
 }
 
 #if HUE_GP_ENDPOINT_MODE == 1
@@ -2626,13 +2728,15 @@ static void add_green_power_endpoint(esp_zb_ep_list_t *ep_list)
     };
     ESP_ERROR_CHECK(esp_zb_ep_list_add_gateway_ep(ep_list, cluster_list, endpoint_config));
 
-    printf("FAKE_DESCRIPTOR: endpoint=%u profile=0x%04x device=0x%04x version=%u "
-           "server_clusters=[] client_clusters=[0x%04x]\n",
-           HUE_GP_ENDPOINT,
-           HUE_GP_PROFILE_ID,
-           HUE_GP_DEVICE_ID,
-           0,
-           HUE_GP_CLUSTER_ID);
+    if (HUE_SERIAL_DEBUG) {
+        printf("FAKE_DESCRIPTOR: endpoint=%u profile=0x%04x device=0x%04x version=%u "
+               "server_clusters=[] client_clusters=[0x%04x]\n",
+               HUE_GP_ENDPOINT,
+               HUE_GP_PROFILE_ID,
+               HUE_GP_DEVICE_ID,
+               0,
+               HUE_GP_CLUSTER_ID);
+    }
 }
 #elif HUE_GP_ENDPOINT_MODE == 2
 static zb_uint8_t s_gp_shared_security_key_type;
@@ -2681,13 +2785,15 @@ static void register_native_green_power_endpoint(void)
     s_device_ep_list_with_gp[1] = &s_gp_endpoint_desc;
     ZB_AF_REGISTER_DEVICE_CTX(&s_device_ctx_with_gp);
 
-    printf("FAKE_DESCRIPTOR: endpoint=%u profile=0x%04x device=0x%04x version=%u "
-           "server_clusters=[] client_clusters=[0x%04x] source=zboss_gppb\n",
-           HUE_GP_ENDPOINT,
-           HUE_GP_PROFILE_ID,
-           HUE_GP_DEVICE_ID,
-           0,
-           HUE_GP_CLUSTER_ID);
+    if (HUE_SERIAL_DEBUG) {
+        printf("FAKE_DESCRIPTOR: endpoint=%u profile=0x%04x device=0x%04x version=%u "
+               "server_clusters=[] client_clusters=[0x%04x] source=zboss_gppb\n",
+               HUE_GP_ENDPOINT,
+               HUE_GP_PROFILE_ID,
+               HUE_GP_DEVICE_ID,
+               0,
+               HUE_GP_CLUSTER_ID);
+    }
 }
 #endif
 
@@ -3073,7 +3179,8 @@ static void esp_zb_task(void *pvParameters)
     esp_zb_init(&zb_nwk_cfg);
 
     /* Pretend to be a Signify device at the Zigbee MAC and node-descriptor level. */
-    ESP_ERROR_CHECK(esp_zb_set_long_address((uint8_t *)HUE_SPOOFED_LONG_ADDR));
+    init_hue_spoofed_long_addr();
+    ESP_ERROR_CHECK(esp_zb_set_long_address(s_hue_spoofed_long_addr));
     esp_zb_set_node_descriptor_manufacturer_code(HUE_SIGNIFY_MANUFACTURER_CODE);
     ESP_LOGI(TAG, "Node descriptor manufacturer code set to 0x%04x", (unsigned)HUE_SIGNIFY_MANUFACTURER_CODE);
 
@@ -3112,6 +3219,11 @@ static void esp_zb_task(void *pvParameters)
 
 void app_main(void)
 {
+#if !HUE_SERIAL_DEBUG
+    esp_log_level_set("*", ESP_LOG_WARN);
+    esp_log_level_set(TAG, ESP_LOG_WARN);
+#endif
+
     esp_zb_platform_config_t config = {
         .radio_config = ESP_ZB_DEFAULT_RADIO_CONFIG(),
         .host_config = ESP_ZB_DEFAULT_HOST_CONFIG(),

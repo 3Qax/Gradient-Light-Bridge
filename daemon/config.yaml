@@ -9,33 +9,82 @@ openrgb:
   port: 6742
 
 serial:
-  # Set to a specific port (e.g. /dev/ttyACM0 on Linux, /dev/tty.usbmodem* on macOS)
-  # or leave empty/null to auto-detect an argb-to-hue device.
-  port: null
+  # Inputs below use stable /dev/serial/by-id paths. Keep this as a global
+  # default only for baud/prefix shared by all attached NanoC6 boards.
   baud: 115200
   # Prefix used by the firmware on every data line.
   prefix: "DATA: "
 
-endpoints:
-  # endpoint number -> OpenRGB mapping
-  # The firmware exposes one Hue gradient endpoint (11).
-  # OpenRGB profile argb-to-hue.orp:
-  #   0: JAF      -> global motherboard zone, leave untouched
-  #   1: JARGB 1 -> 6 LEDs
-  #   2: JARGB 2 -> 48 LEDs split into 12 LED segments:
-  #      VRM [0:12], Right [12:24], Center [24:36], Left [36:48]
-  #   3: JARGB 3 -> 6 LEDs
-  11:
-    name: "VRM"
-    device: "MSI MYSTIC LIGHT"
-    zone: 2
-    segment: "VRM"
-    segment_start: 0
-    leds: 12
+# One input per physical NanoC6. Each firmware exposes endpoint 11, so the
+# input name/serial port decides which OpenRGB segment that endpoint controls.
+#
+# Current OpenRGB profile:
+#   0: JAF      -> global motherboard zone, leave untouched
+#   1: JARGB 1 -> Bottom [0:6]
+#   2: JARGB 2 -> VRM [0:12], Top_* mirrored across Right/Center/Left
+#   3: JARGB 3 -> Side [0:6]
+inputs:
+  vrm:
+    port: /dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_54:32:04:1F:C3:F0-if00
+    endpoints:
+      11:
+        name: "VRM"
+        device: "MSI MYSTIC LIGHT"
+        zone: 2
+        segment: "VRM"
+        segment_start: 0
+        leds: 12
+  side:
+    port: /dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_40:4C:CA:5A:F9:3C-if00
+    endpoints:
+      11:
+        name: "Side"
+        device: "MSI MYSTIC LIGHT"
+        zone: 3
+        segment: "Side"
+        segment_start: 0
+        leds: 6
+  bottom:
+    port: /dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_40:4C:CA:5A:E1:2C-if00
+    endpoints:
+      11:
+        name: "Bottom"
+        device: "MSI MYSTIC LIGHT"
+        zone: 1
+        segment: "Bottom"
+        segment_start: 0
+        leds: 6
+  top:
+    enabled: true
+    port: /dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_40:4C:CA:5B:0C:50-if00
+    endpoints:
+      11:
+        - name: "Top_Right"
+          device: "MSI MYSTIC LIGHT"
+          zone: 2
+          segment: "Right"
+          segment_start: 12
+          leds: 12
+        - name: "Top_Center"
+          device: "MSI MYSTIC LIGHT"
+          zone: 2
+          segment: "Center"
+          segment_start: 24
+          leds: 12
+        - name: "Top_Left"
+          device: "MSI MYSTIC LIGHT"
+          zone: 2
+          segment: "Left"
+          segment_start: 36
+          leds: 12
 
 # If true, attempt to switch matched devices into Direct/Custom mode before
 # setting colors.
 set_direct_mode: true
+
+# Persists raw, uncorrected target colors so color_correction edits can be
+# reapplied after daemon restarts without waiting for a fresh Hue scene packet.
+color_state_cache: ~/.cache/argb-to-hue/last-colors.json
 
 dynamic:
   # Hue dynamic-scene speed is mapped to one full palette cycle. Extreme speed
@@ -44,3 +93,18 @@ dynamic:
   frame_interval_seconds: 0.05
   min_cycle_seconds: 1.5
   max_cycle_seconds: 90.0
+
+# Reloaded live when this file changes. Start with FastLED's common SMD5050
+# correction, then tweak gain/gamma while comparing against real Hue lights.
+# Supported presets:
+#   TypicalSMD5050, TypicalLEDStrip, Typical8mmPixel, TypicalPixelString,
+#   UncorrectedColor
+# Supported temperatures:
+#   UncorrectedTemperature, Candle, Tungsten40W, Tungsten100W, Halogen,
+#   CarbonArc, HighNoonSun, DirectSunlight, OvercastSky, ClearBlueSky
+color_correction:
+  enabled: true
+  preset: TypicalLEDStrip
+  temperature: Candle
+  gain: [1.0, 1.0, 0.7]
+  gamma: 1.0
