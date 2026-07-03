@@ -91,6 +91,9 @@ These are local browser-saved PDFs moved from the NAS into
     https://www.synacktiv.com/en/publications/make-it-blink-over-the-air-exploitation-of-the-philips-hue-bridge
   - Relevance: recent Hue bridge RE and Zigbee frame processing context.
 
+- `aricles/hal9k-snigging-philips-hue-zigbee-traffic-with-wireshark`
+    - Source: https://www.hal9k.dk/sniffing-philips-hue-zigbee-traffic-with-wireshark/
+    - Relevance: how to decrypt sniffed Zigbee traffic via wireshark
 ### Specs And Code Notes
 
 - `specs/bifrost-hue-zigbee-format-fc03.md`
