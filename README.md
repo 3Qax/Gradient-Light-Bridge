@@ -109,6 +109,13 @@ Use `ARGB_LED_GPIO=1` for Grove `G1` or `ARGB_LED_GPIO=2` for Grove `G2`.
 Power the LEDs from the motherboard ARGB header `5V`/`GND`, share that ground
 with the NanoC6, and leave the motherboard ARGB data pin disconnected.
 
+Local LED builds apply the same FastLED-style correction defaults as the
+OpenRGB daemon config: `ARGB_COLOR_CORRECTION=TypicalLEDStrip`,
+`ARGB_COLOR_TEMPERATURE=Candle`, `ARGB_COLOR_GAIN_R=1.0`,
+`ARGB_COLOR_GAIN_G=1.0`, `ARGB_COLOR_GAIN_B=0.7`, and per-channel gamma of
+`1.0`. Disable it with `ARGB_COLOR_CORRECTION_ENABLED=0`, or override preset,
+temperature, per-channel correction bytes, gain, and gamma at build time.
+
 After flashing a local LED build, use the serial CLI smoke tests to confirm the
 data pin and color order before pairing or assigning scenes:
 

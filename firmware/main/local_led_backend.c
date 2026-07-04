@@ -1,6 +1,7 @@
 #include "local_led_backend.h"
 
 #include <stdbool.h>
+#include <math.h>
 #include <stdint.h>
 #include <string.h>
 
@@ -27,6 +28,50 @@
 
 #ifndef ARGB_COLOR_ORDER
 #define ARGB_COLOR_ORDER ARGB_COLOR_ORDER_GRB
+#endif
+
+#ifndef ARGB_COLOR_CORRECTION_ENABLED
+#define ARGB_COLOR_CORRECTION_ENABLED 1
+#endif
+
+#ifndef ARGB_COLOR_CORRECTION_R
+#define ARGB_COLOR_CORRECTION_R 255
+#endif
+#ifndef ARGB_COLOR_CORRECTION_G
+#define ARGB_COLOR_CORRECTION_G 176
+#endif
+#ifndef ARGB_COLOR_CORRECTION_B
+#define ARGB_COLOR_CORRECTION_B 240
+#endif
+
+#ifndef ARGB_COLOR_TEMPERATURE_R
+#define ARGB_COLOR_TEMPERATURE_R 255
+#endif
+#ifndef ARGB_COLOR_TEMPERATURE_G
+#define ARGB_COLOR_TEMPERATURE_G 147
+#endif
+#ifndef ARGB_COLOR_TEMPERATURE_B
+#define ARGB_COLOR_TEMPERATURE_B 41
+#endif
+
+#ifndef ARGB_COLOR_GAIN_R
+#define ARGB_COLOR_GAIN_R 1.0
+#endif
+#ifndef ARGB_COLOR_GAIN_G
+#define ARGB_COLOR_GAIN_G 1.0
+#endif
+#ifndef ARGB_COLOR_GAIN_B
+#define ARGB_COLOR_GAIN_B 0.7
+#endif
+
+#ifndef ARGB_COLOR_GAMMA_R
+#define ARGB_COLOR_GAMMA_R 1.0
+#endif
+#ifndef ARGB_COLOR_GAMMA_G
+#define ARGB_COLOR_GAMMA_G 1.0
+#endif
+#ifndef ARGB_COLOR_GAMMA_B
+#define ARGB_COLOR_GAMMA_B 1.0
 #endif
 
 #ifndef ARGB_LED_RESOLUTION_HZ
@@ -92,8 +137,55 @@ static const char *color_order_name(void)
 #endif
 }
 
+#if ARGB_COLOR_CORRECTION_ENABLED
+static uint8_t corrected_channel(uint8_t channel, uint8_t correction, uint8_t temperature, float gain, float gamma)
+{
+    float value = (float)channel / 255.0f;
+    if (gamma != 1.0f) {
+        value = powf(value, gamma);
+    }
+    value *= ((float)correction / 255.0f) * ((float)temperature / 255.0f) * gain;
+    if (value <= 0.0f) {
+        return 0;
+    }
+    if (value >= 1.0f) {
+        return 255;
+    }
+    return (uint8_t)(value * 255.0f + 0.5f);
+}
+
+static rgb_t apply_color_correction(rgb_t color)
+{
+    rgb_t corrected = {
+        .r = corrected_channel(color.r,
+                               ARGB_COLOR_CORRECTION_R,
+                               ARGB_COLOR_TEMPERATURE_R,
+                               (float)ARGB_COLOR_GAIN_R,
+                               (float)ARGB_COLOR_GAMMA_R),
+        .g = corrected_channel(color.g,
+                               ARGB_COLOR_CORRECTION_G,
+                               ARGB_COLOR_TEMPERATURE_G,
+                               (float)ARGB_COLOR_GAIN_G,
+                               (float)ARGB_COLOR_GAMMA_G),
+        .b = corrected_channel(color.b,
+                               ARGB_COLOR_CORRECTION_B,
+                               ARGB_COLOR_TEMPERATURE_B,
+                               (float)ARGB_COLOR_GAIN_B,
+                               (float)ARGB_COLOR_GAMMA_B),
+    };
+    return corrected;
+}
+#else
+static rgb_t apply_color_correction(rgb_t color)
+{
+    return color;
+}
+#endif
+
 static void encode_color(size_t led, rgb_t color)
 {
+    color = apply_color_correction(color);
+
     uint8_t *out = &s_led_bytes[led * 3];
 #if ARGB_COLOR_ORDER == ARGB_COLOR_ORDER_RGB
     out[0] = color.r;
@@ -183,6 +275,24 @@ esp_err_t local_led_backend_init(void)
              ARGB_LED_GPIO,
              ARGB_LED_COUNT,
              color_order_name());
+#if ARGB_COLOR_CORRECTION_ENABLED
+    ESP_LOGI(TAG,
+             "Local LED color correction: correction=%u/%u/%u temperature=%u/%u/%u gain=%.3f/%.3f/%.3f gamma=%.3f/%.3f/%.3f",
+             (unsigned)ARGB_COLOR_CORRECTION_R,
+             (unsigned)ARGB_COLOR_CORRECTION_G,
+             (unsigned)ARGB_COLOR_CORRECTION_B,
+             (unsigned)ARGB_COLOR_TEMPERATURE_R,
+             (unsigned)ARGB_COLOR_TEMPERATURE_G,
+             (unsigned)ARGB_COLOR_TEMPERATURE_B,
+             (double)ARGB_COLOR_GAIN_R,
+             (double)ARGB_COLOR_GAIN_G,
+             (double)ARGB_COLOR_GAIN_B,
+             (double)ARGB_COLOR_GAMMA_R,
+             (double)ARGB_COLOR_GAMMA_G,
+             (double)ARGB_COLOR_GAMMA_B);
+#else
+    ESP_LOGI(TAG, "Local LED color correction disabled");
+#endif
 
     s_led_lock = xSemaphoreCreateMutex();
     ESP_RETURN_ON_FALSE(s_led_lock, ESP_ERR_NO_MEM, TAG, "create LED mutex failed");

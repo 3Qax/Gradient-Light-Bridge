@@ -35,6 +35,13 @@
     - `ARGB_LED_COUNT`: physical LED count; default is `12`.
     - `ARGB_COLOR_ORDER`: `RGB`, `GRB`, `BRG`, `RBG`, `GBR`, or `BGR`; default
       is `GRB`, which is common for WS2812/SK6812-compatible strips.
+    - Local LED color correction defaults match the OpenRGB daemon config:
+      `ARGB_COLOR_CORRECTION=TypicalLEDStrip`,
+      `ARGB_COLOR_TEMPERATURE=Candle`, `ARGB_COLOR_GAIN_R=1.0`,
+      `ARGB_COLOR_GAIN_G=1.0`, `ARGB_COLOR_GAIN_B=0.7`, and gamma `1.0`.
+      Disable with `ARGB_COLOR_CORRECTION_ENABLED=0`, or override correction
+      preset, temperature preset, per-channel correction bytes, gain, and gamma
+      at build time.
   - Local LED smoke tests after flashing:
     - `python3 firmware/send_cmd.py --port /dev/ttyACM0 led off`
     - `python3 firmware/send_cmd.py --port /dev/ttyACM0 led solid ff0000`

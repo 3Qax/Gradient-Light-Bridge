@@ -44,6 +44,27 @@ if [[ -n "${ARGB_COLOR_ORDER:-}" ]]; then
     DOCKER_ARGS+=(-e ARGB_COLOR_ORDER)
 fi
 
+for ARG_NAME in \
+    ARGB_COLOR_CORRECTION_ENABLED \
+    ARGB_COLOR_CORRECTION \
+    ARGB_COLOR_TEMPERATURE \
+    ARGB_COLOR_CORRECTION_R \
+    ARGB_COLOR_CORRECTION_G \
+    ARGB_COLOR_CORRECTION_B \
+    ARGB_COLOR_TEMPERATURE_R \
+    ARGB_COLOR_TEMPERATURE_G \
+    ARGB_COLOR_TEMPERATURE_B \
+    ARGB_COLOR_GAIN_R \
+    ARGB_COLOR_GAIN_G \
+    ARGB_COLOR_GAIN_B \
+    ARGB_COLOR_GAMMA_R \
+    ARGB_COLOR_GAMMA_G \
+    ARGB_COLOR_GAMMA_B; do
+    if [[ -n "${!ARG_NAME:-}" ]]; then
+        DOCKER_ARGS+=(-e "$ARG_NAME")
+    fi
+done
+
 CMD=("$@")
 if [[ "${CMD[0]:-}" == "idf.py" ]]; then
     IDF_DEFINES=(
@@ -53,7 +74,27 @@ if [[ "${CMD[0]:-}" == "idf.py" ]]; then
         "-DARGB_LED_GPIO=${ARGB_LED_GPIO:--1}"
         "-DARGB_LED_COUNT=${ARGB_LED_COUNT:-12}"
         "-DARGB_COLOR_ORDER=${ARGB_COLOR_ORDER:-GRB}"
+        "-DARGB_COLOR_CORRECTION_ENABLED=${ARGB_COLOR_CORRECTION_ENABLED:-1}"
+        "-DARGB_COLOR_CORRECTION=${ARGB_COLOR_CORRECTION:-TypicalLEDStrip}"
+        "-DARGB_COLOR_TEMPERATURE=${ARGB_COLOR_TEMPERATURE:-Candle}"
+        "-DARGB_COLOR_GAIN_R=${ARGB_COLOR_GAIN_R:-1.0}"
+        "-DARGB_COLOR_GAIN_G=${ARGB_COLOR_GAIN_G:-1.0}"
+        "-DARGB_COLOR_GAIN_B=${ARGB_COLOR_GAIN_B:-0.7}"
+        "-DARGB_COLOR_GAMMA_R=${ARGB_COLOR_GAMMA_R:-1.0}"
+        "-DARGB_COLOR_GAMMA_G=${ARGB_COLOR_GAMMA_G:-1.0}"
+        "-DARGB_COLOR_GAMMA_B=${ARGB_COLOR_GAMMA_B:-1.0}"
     )
+    for ARG_NAME in \
+        ARGB_COLOR_CORRECTION_R \
+        ARGB_COLOR_CORRECTION_G \
+        ARGB_COLOR_CORRECTION_B \
+        ARGB_COLOR_TEMPERATURE_R \
+        ARGB_COLOR_TEMPERATURE_G \
+        ARGB_COLOR_TEMPERATURE_B; do
+        if [[ -n "${!ARG_NAME:-}" ]]; then
+            IDF_DEFINES+=("-D${ARG_NAME}=${!ARG_NAME}")
+        fi
+    done
     CMD=("idf.py" "${IDF_DEFINES[@]}" "${CMD[@]:1}")
 fi
 

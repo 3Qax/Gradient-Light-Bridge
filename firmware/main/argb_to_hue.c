@@ -57,6 +57,7 @@ static const char *TAG = "ARGB_BRIDGE";
 #define OTA_FILE_VERSION                   0x01002000
 #define SCENES_MFG_COMPACT_SCENE_CMD_ID    0x00
 #define SCENES_MFG_STORE_CMD_ID            0x02
+#define SCENES_REMOVE_SCENE_CMD_ID         0x02
 #define SCENES_RECALL_SCENE_CMD_ID         0x05
 #define SCENES_KEY_PAYLOAD_LEN             3
 #define SCENES_REAL_CAPACITY               50
@@ -3099,6 +3100,35 @@ static bool cache_scene_fc03_payload(uint8_t endpoint, const uint8_t *payload, u
     return changed;
 }
 
+static bool remove_scene_fc03_cache_entry(uint8_t endpoint, uint16_t group_id, uint8_t scene_id)
+{
+    bool changed = false;
+    for (size_t i = 0; i < SCENE_FC03_CACHE_ENTRIES; i++) {
+        scene_fc03_cache_entry_t *entry = &s_scene_fc03_cache[i];
+        if (!entry->valid ||
+            entry->endpoint != endpoint ||
+            entry->group_id != group_id ||
+            entry->scene_id != scene_id) {
+            continue;
+        }
+
+        memset(entry, 0, sizeof(*entry));
+        changed = true;
+    }
+
+    if (take_pending_scene_recall(endpoint, group_id, scene_id)) {
+        changed = true;
+    }
+
+    ESP_LOGI(TAG,
+             "SCENE_FC03_CACHE_REMOVE: endpoint=%u group=0x%04x scene=0x%02x changed=%u",
+             (unsigned)endpoint,
+             (unsigned)group_id,
+             (unsigned)scene_id,
+             changed ? 1U : 0U);
+    return changed;
+}
+
 static bool apply_cached_scene_fc03(uint8_t endpoint, const uint8_t *payload, uint16_t payload_len)
 {
     uint16_t group_id = 0;
@@ -3153,6 +3183,69 @@ static bool apply_cached_scene_fc03(uint8_t endpoint, const uint8_t *payload, ui
              (unsigned)scene_id);
     remember_pending_scene_recall(endpoint, group_id, scene_id);
     return false;
+}
+
+static bool handle_scenes_remove_scene_raw(const zb_zcl_parsed_hdr_t *hdr,
+                                           const uint8_t *payload,
+                                           uint16_t payload_len)
+{
+    if (!hdr || !payload ||
+        hdr->addr_data.common_data.source.addr_type != ZB_ZCL_ADDR_TYPE_SHORT ||
+        payload_len != SCENES_KEY_PAYLOAD_LEN) {
+        return false;
+    }
+
+    uint8_t endpoint = hdr->addr_data.common_data.dst_endpoint;
+    if (endpoint < HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE ||
+        endpoint >= HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE + ARGB_ENDPOINT_COUNT) {
+        return false;
+    }
+
+    uint16_t group_id = 0;
+    uint8_t scene_id = 0;
+    if (!scene_payload_key(payload, payload_len, &group_id, &scene_id)) {
+        return false;
+    }
+
+    if (remove_scene_fc03_cache_entry(endpoint, group_id, scene_id)) {
+        save_scene_fc03_cache();
+    }
+
+    zb_bufid_t out = zb_buf_get_out();
+    if (!out) {
+        ESP_LOGE(TAG, "SCENES_REMOVE_SCENE_RESP_RAW: no ZBOSS output buffer");
+        return true;
+    }
+
+    uint8_t *cmd_ptr = ZB_ZCL_START_PACKET(out);
+    ZB_ZCL_CONSTRUCT_SPECIFIC_COMMAND_RESP_FRAME_CONTROL_A(cmd_ptr,
+                                                           ZB_ZCL_FRAME_DIRECTION_TO_CLI,
+                                                           ZB_ZCL_NOT_MANUFACTURER_SPECIFIC);
+    ZB_ZCL_CONSTRUCT_COMMAND_HEADER(cmd_ptr,
+                                    hdr->seq_number,
+                                    SCENES_REMOVE_SCENE_CMD_ID);
+    ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ZB_ZCL_STATUS_SUCCESS);
+    ZB_ZCL_PACKET_PUT_DATA16_VAL(cmd_ptr, group_id);
+    ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, scene_id);
+
+    uint16_t dst_addr = hdr->addr_data.common_data.source.u.short_addr;
+    ESP_LOGI(TAG,
+             "SCENES_REMOVE_SCENE_RESP_RAW: tsn=0x%02x to=0x%04x ep=%u group=0x%04x scene=0x%02x",
+             (unsigned)hdr->seq_number,
+             (unsigned)dst_addr,
+             (unsigned)endpoint,
+             (unsigned)group_id,
+             (unsigned)scene_id);
+    ZB_ZCL_FINISH_N_SEND_PACKET(out,
+                                cmd_ptr,
+                                dst_addr,
+                                ZB_APS_ADDR_MODE_16_ENDP_PRESENT,
+                                hdr->addr_data.common_data.src_endpoint,
+                                endpoint,
+                                hdr->profile_id,
+                                hdr->cluster_id,
+                                NULL);
+    return true;
 }
 
 static bool handle_scenes_mfg_store_raw(const zb_zcl_parsed_hdr_t *hdr,
@@ -3864,6 +3957,18 @@ static const char *zcl_cmd_name(const zb_zcl_parsed_hdr_t *hdr)
     }
     if (!hdr->is_common_command &&
         hdr->cluster_id == ESP_ZB_ZCL_CLUSTER_ID_SCENES &&
+        !hdr->is_manuf_specific &&
+        hdr->cmd_id == SCENES_REMOVE_SCENE_CMD_ID) {
+        return "remove_scene";
+    }
+    if (!hdr->is_common_command &&
+        hdr->cluster_id == ESP_ZB_ZCL_CLUSTER_ID_SCENES &&
+        !hdr->is_manuf_specific &&
+        hdr->cmd_id == SCENES_RECALL_SCENE_CMD_ID) {
+        return "recall_scene";
+    }
+    if (!hdr->is_common_command &&
+        hdr->cluster_id == ESP_ZB_ZCL_CLUSTER_ID_SCENES &&
         hdr->is_manuf_specific) {
         return "mfg_scene_cmd";
     }
@@ -3913,6 +4018,9 @@ static void log_zcl_payload_summary(const zb_zcl_parsed_hdr_t *hdr, const uint8_
             print_hex_bytes("SCENES_MFG_CMD_HEX: ", payload, len);
         } else if (hdr->is_manuf_specific) {
             print_hex_bytes("ZCL_MFG_CMD_HEX: ", payload, len);
+        } else if (hdr->cluster_id == ESP_ZB_ZCL_CLUSTER_ID_SCENES &&
+                   hdr->cmd_id == SCENES_REMOVE_SCENE_CMD_ID) {
+            print_hex_bytes("SCENES_REMOVE_HEX: ", payload, len);
         } else if (hdr->cluster_id == ESP_ZB_ZCL_CLUSTER_ID_SCENES &&
                    hdr->cmd_id == SCENES_RECALL_SCENE_CMD_ID) {
             print_hex_bytes("SCENES_RECALL_HEX: ", payload, len);
@@ -4098,6 +4206,15 @@ static bool zb_raw_command_handler(uint8_t bufid)
             !hdr->is_manuf_specific &&
             hdr->cmd_direction == ESP_ZB_ZCL_CMD_DIRECTION_TO_SRV &&
             handle_scenes_get_membership_raw(hdr, payload, payload_len)) {
+            zb_buf_free(bufid);
+            return true;
+        }
+        if (hdr->cluster_id == ESP_ZB_ZCL_CLUSTER_ID_SCENES &&
+            hdr->cmd_id == SCENES_REMOVE_SCENE_CMD_ID &&
+            !hdr->is_common_command &&
+            !hdr->is_manuf_specific &&
+            hdr->cmd_direction == ESP_ZB_ZCL_CMD_DIRECTION_TO_SRV &&
+            handle_scenes_remove_scene_raw(hdr, payload, payload_len)) {
             zb_buf_free(bufid);
             return true;
         }

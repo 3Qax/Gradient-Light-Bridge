@@ -13,6 +13,12 @@ Firmware changes tested:
   `00 32 00 20 07 33 00 20 07 34 00 20 07`.
 - Groups cluster `0x0004` Add Group (`cmd=0x00`) now returns a standard success
   response for the requested group.
+- Scenes cluster `0x0005` Remove Scene (`cmd=0x02`, non-manufacturer-specific)
+  is a standard command, despite sharing the numeric command id with global
+  Write Attributes and the manufacturer-specific scene-store command. On scene
+  deletion the bridge sends `group_id` + `scene_id`; firmware should evict the
+  matching FC03 scene-cache entry, persist the cache, and respond with the
+  standard Remove Scene response.
 
 Evidence captures:
 
