@@ -66,6 +66,10 @@ static const char *TAG = "ARGB_BRIDGE";
 #define SCENE_FC03_CACHE_NVS_KEY           "fc03_v1"
 #define SCENE_FC03_CACHE_MAGIC             0x53464C43U /* SFLC */
 #define SCENE_FC03_CACHE_VERSION           1
+#define POWER_RECOVERY_NVS_NAMESPACE       "power_rec"
+#define POWER_RECOVERY_NVS_KEY             "state_v1"
+#define POWER_RECOVERY_NVS_MAGIC           0x50575231U /* PWR1 */
+#define POWER_RECOVERY_NVS_VERSION         1
 
 #define FC03_FLAG_ON_OFF                   0x0001
 #define FC03_FLAG_BRIGHTNESS               0x0002
@@ -339,7 +343,40 @@ light_state_t g_light_state[ARGB_ENDPOINT_COUNT] = {
     },
 };
 
+static uint8_t s_startup_on_off[ARGB_ENDPOINT_COUNT] = { 0xFF };
+static uint8_t s_startup_current_level[ARGB_ENDPOINT_COUNT] = { 0xFF };
+static uint16_t s_startup_color_temperature[ARGB_ENDPOINT_COUNT] = { 0xFFFF };
+static uint16_t s_startup_current_x[ARGB_ENDPOINT_COUNT] = { 0xFFFF };
+static uint16_t s_startup_current_y[ARGB_ENDPOINT_COUNT] = { 0xFFFF };
+
+typedef struct {
+    uint8_t on;
+    uint8_t bri;
+    uint8_t last_bri;
+    uint8_t startup_on_off;
+    uint16_t x;
+    uint16_t y;
+    uint8_t startup_current_level;
+    uint8_t reserved0;
+    uint16_t startup_color_temperature;
+    uint16_t startup_current_x;
+    uint16_t startup_current_y;
+} power_recovery_nvs_entry_t;
+
+typedef struct {
+    uint32_t magic;
+    uint16_t version;
+    uint16_t entry_count;
+    power_recovery_nvs_entry_t entries[ARGB_ENDPOINT_COUNT];
+} power_recovery_nvs_blob_t;
+
+static power_recovery_nvs_blob_t s_power_recovery_last_saved;
+static bool s_power_recovery_has_last_saved;
+
 static void print_hex_bytes(const char *prefix, const uint8_t *payload, uint16_t len);
+static void load_power_recovery_state(void);
+static void save_power_recovery_state(const char *reason);
+static void apply_power_recovery_startup(uint8_t endpoint);
 
 static void send_basic_c1_response_raw(const zb_zcl_parsed_hdr_t *hdr,
                                        const uint8_t *payload,
@@ -433,6 +470,55 @@ static void send_ota_query_next_image_raw(const zb_zcl_parsed_hdr_t *hdr)
                                 hdr->profile_id,
                                 hdr->cluster_id,
                                 NULL);
+}
+
+static bool send_write_attr_success_raw(const zb_zcl_parsed_hdr_t *hdr, const char *log_prefix)
+{
+    if (!hdr || hdr->addr_data.common_data.source.addr_type != ZB_ZCL_ADDR_TYPE_SHORT) {
+        return false;
+    }
+
+    zb_bufid_t out = zb_buf_get_out();
+    if (!out) {
+        ESP_LOGE(TAG, "%s: no ZBOSS output buffer", log_prefix);
+        return true;
+    }
+
+    uint8_t *cmd_ptr = ZB_ZCL_START_PACKET(out);
+    ZB_ZCL_CONSTRUCT_GENERAL_COMMAND_RESP_FRAME_CONTROL_A(
+        cmd_ptr,
+        ZB_ZCL_FRAME_DIRECTION_TO_CLI,
+        hdr->is_manuf_specific ? ZB_ZCL_MANUFACTURER_SPECIFIC : ZB_ZCL_NOT_MANUFACTURER_SPECIFIC);
+    if (hdr->is_manuf_specific) {
+        ZB_ZCL_CONSTRUCT_COMMAND_HEADER_EXT(cmd_ptr,
+                                            hdr->seq_number,
+                                            ZB_TRUE,
+                                            hdr->manuf_specific,
+                                            ZB_ZCL_CMD_WRITE_ATTRIB_RESP);
+    } else {
+        ZB_ZCL_CONSTRUCT_COMMAND_HEADER(cmd_ptr,
+                                        hdr->seq_number,
+                                        ZB_ZCL_CMD_WRITE_ATTRIB_RESP);
+    }
+    ZB_ZCL_GENERAL_SUCCESS_WRITE_ATTR_RESP(cmd_ptr);
+
+    uint16_t dst_addr = hdr->addr_data.common_data.source.u.short_addr;
+    uint8_t endpoint = hdr->addr_data.common_data.dst_endpoint;
+    ESP_LOGI(TAG, "%s: tsn=0x%02x to=0x%04x ep=%u status=success",
+             log_prefix,
+             (unsigned)hdr->seq_number,
+             (unsigned)dst_addr,
+             (unsigned)endpoint);
+    ZB_ZCL_FINISH_N_SEND_PACKET(out,
+                                cmd_ptr,
+                                dst_addr,
+                                ZB_APS_ADDR_MODE_16_ENDP_PRESENT,
+                                hdr->addr_data.common_data.src_endpoint,
+                                endpoint,
+                                hdr->profile_id,
+                                hdr->cluster_id,
+                                NULL);
+    return true;
 }
 
 static bool handle_basic_write_attrs_raw(const zb_zcl_parsed_hdr_t *hdr,
@@ -533,6 +619,104 @@ static bool handle_basic_write_attrs_raw(const zb_zcl_parsed_hdr_t *hdr,
                                 NULL);
 
     return true;
+}
+
+static bool handle_power_recovery_write_attrs_raw(const zb_zcl_parsed_hdr_t *hdr,
+                                                  const uint8_t *payload,
+                                                  uint16_t payload_len)
+{
+    if (!hdr || !payload ||
+        hdr->addr_data.common_data.source.addr_type != ZB_ZCL_ADDR_TYPE_SHORT) {
+        return false;
+    }
+
+    uint8_t endpoint = hdr->addr_data.common_data.dst_endpoint;
+    if (endpoint < HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE ||
+        endpoint >= HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE + ARGB_ENDPOINT_COUNT) {
+        return false;
+    }
+    uint8_t idx = endpoint - HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE;
+
+    bool changed = false;
+    bool handled = false;
+    uint16_t offset = 0;
+    while (offset + 3 <= payload_len) {
+        uint16_t attr_id = (uint16_t)payload[offset] | ((uint16_t)payload[offset + 1] << 8);
+        uint8_t attr_type = payload[offset + 2];
+        const uint8_t *value = &payload[offset + 3];
+        uint16_t value_len = 0;
+
+        if (hdr->cluster_id == ESP_ZB_ZCL_CLUSTER_ID_ON_OFF &&
+            !hdr->is_manuf_specific &&
+            attr_id == 0x4003 &&
+            attr_type == ESP_ZB_ZCL_ATTR_TYPE_8BIT_ENUM &&
+            offset + 4 <= payload_len) {
+            uint8_t old = s_startup_on_off[idx];
+            s_startup_on_off[idx] = value[0];
+            changed |= old != s_startup_on_off[idx];
+            handled = true;
+            value_len = 1;
+            ESP_LOGI(TAG, "POWER_RECOVERY_WRITE: ep=%u attr=on_off_startup value=0x%02x",
+                     (unsigned)endpoint,
+                     (unsigned)s_startup_on_off[idx]);
+        } else if (hdr->cluster_id == ESP_ZB_ZCL_CLUSTER_ID_LEVEL_CONTROL &&
+                   !hdr->is_manuf_specific &&
+                   attr_id == 0x4000 &&
+                   attr_type == ESP_ZB_ZCL_ATTR_TYPE_U8 &&
+                   offset + 4 <= payload_len) {
+            uint8_t old = s_startup_current_level[idx];
+            s_startup_current_level[idx] = value[0];
+            changed |= old != s_startup_current_level[idx];
+            handled = true;
+            value_len = 1;
+            ESP_LOGI(TAG, "POWER_RECOVERY_WRITE: ep=%u attr=level_startup value=0x%02x",
+                     (unsigned)endpoint,
+                     (unsigned)s_startup_current_level[idx]);
+        } else if (hdr->cluster_id == ESP_ZB_ZCL_CLUSTER_ID_COLOR_CONTROL &&
+                   !hdr->is_manuf_specific &&
+                   attr_id == 0x4010 &&
+                   attr_type == ESP_ZB_ZCL_ATTR_TYPE_U16 &&
+                   offset + 5 <= payload_len) {
+            uint16_t old = s_startup_color_temperature[idx];
+            s_startup_color_temperature[idx] = (uint16_t)value[0] | ((uint16_t)value[1] << 8);
+            changed |= old != s_startup_color_temperature[idx];
+            handled = true;
+            value_len = 2;
+            ESP_LOGI(TAG, "POWER_RECOVERY_WRITE: ep=%u attr=color_temp_startup value=0x%04x",
+                     (unsigned)endpoint,
+                     (unsigned)s_startup_color_temperature[idx]);
+        } else if (hdr->cluster_id == ESP_ZB_ZCL_CLUSTER_ID_COLOR_CONTROL &&
+                   hdr->is_manuf_specific &&
+                   hdr->manuf_specific == SIGNIFY_MANUFACTURER_CODE &&
+                   (attr_id == 0x0003 || attr_id == 0x0004) &&
+                   attr_type == ESP_ZB_ZCL_ATTR_TYPE_U16 &&
+                   offset + 5 <= payload_len) {
+            uint16_t attr_value = (uint16_t)value[0] | ((uint16_t)value[1] << 8);
+            uint16_t *slot = attr_id == 0x0003 ? &s_startup_current_x[idx] : &s_startup_current_y[idx];
+            uint16_t old = *slot;
+            *slot = attr_value;
+            changed |= old != *slot;
+            handled = true;
+            value_len = 2;
+            ESP_LOGI(TAG, "POWER_RECOVERY_WRITE: ep=%u attr=startup_%c value=0x%04x",
+                     (unsigned)endpoint,
+                     attr_id == 0x0003 ? 'x' : 'y',
+                     (unsigned)*slot);
+        } else {
+            return false;
+        }
+
+        offset += 3 + value_len;
+    }
+
+    if (!handled || offset != payload_len) {
+        return false;
+    }
+
+    if (changed) {
+        save_power_recovery_state("startup_attrs");
+    }
+    return send_write_attr_success_raw(hdr, "POWER_RECOVERY_WRITE_RESP_RAW");
 }
 
 static bool handle_basic_read_attrs_raw(const zb_zcl_parsed_hdr_t *hdr,
@@ -795,6 +979,7 @@ static bool handle_color_mfg_read_attrs_raw(const zb_zcl_parsed_hdr_t *hdr,
         endpoint >= HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE + ARGB_ENDPOINT_COUNT) {
         return false;
     }
+    uint8_t idx = endpoint - HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE;
 
     for (uint16_t offset = 0; offset + 1 < payload_len; offset += 2) {
         uint16_t attr_id = (uint16_t)payload[offset] | ((uint16_t)payload[offset + 1] << 8);
@@ -821,10 +1006,11 @@ static bool handle_color_mfg_read_attrs_raw(const zb_zcl_parsed_hdr_t *hdr,
 
     for (uint16_t offset = 0; offset + 1 < payload_len; offset += 2) {
         uint16_t attr_id = (uint16_t)payload[offset] | ((uint16_t)payload[offset + 1] << 8);
+        uint16_t attr_value = attr_id == 0x0003 ? s_startup_current_x[idx] : s_startup_current_y[idx];
         ZB_ZCL_PACKET_PUT_DATA16_VAL(cmd_ptr, attr_id);
         ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ZB_ZCL_STATUS_SUCCESS);
         ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ESP_ZB_ZCL_ATTR_TYPE_U16);
-        ZB_ZCL_PACKET_PUT_DATA16_VAL(cmd_ptr, 0xFFFF);
+        ZB_ZCL_PACKET_PUT_DATA16_VAL(cmd_ptr, attr_value);
     }
 
     uint16_t dst_addr = hdr->addr_data.common_data.source.u.short_addr;
@@ -1420,6 +1606,11 @@ static float clamp_unit_float(float v)
     return v;
 }
 
+static uint16_t xy_float_to_u16(float v)
+{
+    return (uint16_t)lroundf(clamp_unit_float(v) * 65535.0f);
+}
+
 #if ARGB_BACKEND == ARGB_BACKEND_LOCAL_LED
 static uint8_t clamp_u8_from_float(float v)
 {
@@ -1880,6 +2071,219 @@ static void sync_fc03_to_standard_attrs(uint8_t endpoint,
     }
 }
 
+static void power_recovery_set_defaults(void)
+{
+    for (uint8_t idx = 0; idx < ARGB_ENDPOINT_COUNT; idx++) {
+        s_startup_on_off[idx] = 0xFF;
+        s_startup_current_level[idx] = 0xFF;
+        s_startup_color_temperature[idx] = 0xFFFF;
+        s_startup_current_x[idx] = 0xFFFF;
+        s_startup_current_y[idx] = 0xFFFF;
+
+        if (g_light_state[idx].bri == 0) {
+            g_light_state[idx].bri = 0xFE;
+        }
+        if (g_light_state[idx].last_bri == 0) {
+            g_light_state[idx].last_bri = g_light_state[idx].bri;
+        }
+        sync_fc03_state_prefix(idx);
+    }
+}
+
+static void power_recovery_fill_blob(power_recovery_nvs_blob_t *blob)
+{
+    if (!blob) {
+        return;
+    }
+
+    memset(blob, 0, sizeof(*blob));
+    blob->magic = POWER_RECOVERY_NVS_MAGIC;
+    blob->version = POWER_RECOVERY_NVS_VERSION;
+    blob->entry_count = ARGB_ENDPOINT_COUNT;
+    for (uint8_t idx = 0; idx < ARGB_ENDPOINT_COUNT; idx++) {
+        const light_state_t *st = &g_light_state[idx];
+        power_recovery_nvs_entry_t *entry = &blob->entries[idx];
+        entry->on = st->on ? 1 : 0;
+        entry->bri = st->bri;
+        entry->last_bri = st->last_bri;
+        entry->startup_on_off = s_startup_on_off[idx];
+        entry->x = st->x;
+        entry->y = st->y;
+        entry->startup_current_level = s_startup_current_level[idx];
+        entry->startup_color_temperature = s_startup_color_temperature[idx];
+        entry->startup_current_x = s_startup_current_x[idx];
+        entry->startup_current_y = s_startup_current_y[idx];
+    }
+}
+
+static void load_power_recovery_state(void)
+{
+    power_recovery_set_defaults();
+
+    nvs_handle_t nvs = 0;
+    esp_err_t err = nvs_open(POWER_RECOVERY_NVS_NAMESPACE, NVS_READONLY, &nvs);
+    if (err == ESP_ERR_NVS_NOT_FOUND) {
+        ESP_LOGI(TAG, "POWER_RECOVERY_LOAD: no persisted state");
+        return;
+    }
+    if (err != ESP_OK) {
+        ESP_LOGW(TAG, "POWER_RECOVERY_LOAD: nvs_open failed: %s", esp_err_to_name(err));
+        return;
+    }
+
+    power_recovery_nvs_blob_t blob;
+    size_t blob_size = sizeof(blob);
+    err = nvs_get_blob(nvs, POWER_RECOVERY_NVS_KEY, &blob, &blob_size);
+    nvs_close(nvs);
+
+    if (err == ESP_ERR_NVS_NOT_FOUND) {
+        ESP_LOGI(TAG, "POWER_RECOVERY_LOAD: no persisted state");
+        return;
+    }
+    if (err != ESP_OK) {
+        ESP_LOGW(TAG, "POWER_RECOVERY_LOAD: failed: %s", esp_err_to_name(err));
+        return;
+    }
+    if (blob_size != sizeof(blob) ||
+        blob.magic != POWER_RECOVERY_NVS_MAGIC ||
+        blob.version != POWER_RECOVERY_NVS_VERSION ||
+        blob.entry_count != ARGB_ENDPOINT_COUNT) {
+        ESP_LOGW(TAG, "POWER_RECOVERY_LOAD: ignored incompatible blob");
+        return;
+    }
+
+    for (uint8_t idx = 0; idx < ARGB_ENDPOINT_COUNT; idx++) {
+        const power_recovery_nvs_entry_t *entry = &blob.entries[idx];
+        light_state_t *st = &g_light_state[idx];
+        st->on = entry->on != 0;
+        st->bri = entry->bri ? entry->bri : 0xFE;
+        st->last_bri = entry->last_bri ? entry->last_bri : st->bri;
+        st->x = entry->x;
+        st->y = entry->y;
+        s_startup_on_off[idx] = entry->startup_on_off;
+        s_startup_current_level[idx] = entry->startup_current_level;
+        s_startup_color_temperature[idx] = entry->startup_color_temperature;
+        s_startup_current_x[idx] = entry->startup_current_x;
+        s_startup_current_y[idx] = entry->startup_current_y;
+        sync_fc03_state_prefix(idx);
+    }
+
+    s_power_recovery_last_saved = blob;
+    s_power_recovery_has_last_saved = true;
+    ESP_LOGI(TAG, "POWER_RECOVERY_LOAD: entries=%u", (unsigned)ARGB_ENDPOINT_COUNT);
+}
+
+static void save_power_recovery_state(const char *reason)
+{
+    power_recovery_nvs_blob_t blob;
+    power_recovery_fill_blob(&blob);
+
+    if (s_power_recovery_has_last_saved &&
+        memcmp(&blob, &s_power_recovery_last_saved, sizeof(blob)) == 0) {
+        return;
+    }
+
+    nvs_handle_t nvs = 0;
+    esp_err_t err = nvs_open(POWER_RECOVERY_NVS_NAMESPACE, NVS_READWRITE, &nvs);
+    if (err != ESP_OK) {
+        ESP_LOGW(TAG, "POWER_RECOVERY_SAVE: nvs_open failed: %s", esp_err_to_name(err));
+        return;
+    }
+
+    err = nvs_set_blob(nvs, POWER_RECOVERY_NVS_KEY, &blob, sizeof(blob));
+    if (err == ESP_OK) {
+        err = nvs_commit(nvs);
+    }
+    nvs_close(nvs);
+
+    if (err != ESP_OK) {
+        ESP_LOGW(TAG, "POWER_RECOVERY_SAVE: failed: %s", esp_err_to_name(err));
+        return;
+    }
+
+    s_power_recovery_last_saved = blob;
+    s_power_recovery_has_last_saved = true;
+    ESP_LOGI(TAG, "POWER_RECOVERY_SAVE: reason=%s entries=%u",
+             reason ? reason : "-",
+             (unsigned)ARGB_ENDPOINT_COUNT);
+}
+
+static void apply_power_recovery_startup(uint8_t endpoint)
+{
+    uint8_t idx = 0;
+    light_state_t *st = NULL;
+    if (!get_light_state_for_endpoint(endpoint, &idx, &st)) {
+        return;
+    }
+
+    bool has_on = false;
+    bool has_bri = false;
+    bool has_color = false;
+    bool has_mirek = false;
+    uint16_t mirek = 0;
+
+    switch (s_startup_on_off[idx]) {
+    case 0x00:
+        st->on = false;
+        has_on = true;
+        break;
+    case 0x01:
+        st->on = true;
+        has_on = true;
+        break;
+    case 0x02:
+        st->on = !st->on;
+        has_on = true;
+        break;
+    case 0xFF:
+    default:
+        break;
+    }
+
+    if (s_startup_current_level[idx] != 0xFF) {
+        st->bri = s_startup_current_level[idx];
+        if (st->bri) {
+            st->last_bri = st->bri;
+        }
+        has_bri = true;
+    }
+
+    if (s_startup_current_x[idx] != 0xFFFF && s_startup_current_y[idx] != 0xFFFF) {
+        st->x = s_startup_current_x[idx];
+        st->y = s_startup_current_y[idx];
+        has_color = true;
+    } else if (s_startup_color_temperature[idx] != 0xFFFF &&
+               mirek_to_xy(s_startup_color_temperature[idx], &st->x, &st->y)) {
+        mirek = s_startup_color_temperature[idx];
+        has_color = true;
+        has_mirek = true;
+    }
+
+    if (st->on && st->bri == 0) {
+        st->bri = st->last_bri ? st->last_bri : 0xFE;
+        st->last_bri = st->bri;
+        has_bri = true;
+    }
+
+    sync_fc03_to_standard_attrs(endpoint, st, has_on, has_bri, has_color, has_mirek, mirek);
+    sync_fc03_state_prefix(idx);
+
+    ESP_LOGI(TAG,
+             "POWER_RECOVERY_APPLY: ep=%u startup_on=0x%02x startup_level=0x%02x startup_ct=0x%04x startup_xy=0x%04x/0x%04x on=%u bri=%u xy=0x%04x/0x%04x",
+             (unsigned)endpoint,
+             (unsigned)s_startup_on_off[idx],
+             (unsigned)s_startup_current_level[idx],
+             (unsigned)s_startup_color_temperature[idx],
+             (unsigned)s_startup_current_x[idx],
+             (unsigned)s_startup_current_y[idx],
+             st->on ? 1U : 0U,
+             (unsigned)st->bri,
+             (unsigned)st->x,
+             (unsigned)st->y);
+    emit_state_json_internal(endpoint, "startup", false, 0, false, 0);
+    save_power_recovery_state("startup_apply");
+}
+
 static void emit_gradient_json(uint8_t endpoint,
                                uint16_t fc03_flags,
                                uint8_t n_colors,
@@ -2133,6 +2537,8 @@ static void handle_fc03_multicolor_command(uint8_t endpoint, const uint8_t *data
             colors[i].g = rgb.g;
             colors[i].b = rgb.b;
         }
+        st->x = xy_float_to_u16(colors[0].x);
+        st->y = xy_float_to_u16(colors[0].y);
 
         off += 1 + color_payload_len;
         has_gradient = true;
@@ -2165,7 +2571,7 @@ static void handle_fc03_multicolor_command(uint8_t endpoint, const uint8_t *data
         has_bri = true;
     }
 
-    sync_fc03_to_standard_attrs(endpoint, st, has_on, has_bri, has_mirek || has_xy, has_mirek, mirek);
+    sync_fc03_to_standard_attrs(endpoint, st, has_on, has_bri, has_mirek || has_xy || has_gradient, has_mirek, mirek);
     sync_fc03_state_prefix(idx);
 
     /* Keep the FC03 state attribute in sync so ZHA/bridge reads reflect the
@@ -2222,6 +2628,10 @@ static void handle_fc03_multicolor_command(uint8_t endpoint, const uint8_t *data
                                  effect_speed);
     } else if (has_on || has_bri || has_mirek || has_xy) {
         emit_state_json_internal(endpoint, "fc03", has_fade, fade, true, flags);
+    }
+
+    if (has_on || has_bri || has_mirek || has_xy || has_gradient) {
+        save_power_recovery_state("fc03");
     }
 }
 
@@ -3098,7 +3508,13 @@ void esp_zb_app_signal_handler(esp_zb_app_signal_t *signal_struct)
     case ESP_ZB_BDB_SIGNAL_DEVICE_FIRST_START:
     case ESP_ZB_BDB_SIGNAL_DEVICE_REBOOT:
         if (err_status == ESP_OK) {
-            ESP_LOGI(TAG, "Deferred driver initialization %s", deferred_driver_init() ? "failed" : "successful");
+            esp_err_t init_err = deferred_driver_init();
+            ESP_LOGI(TAG, "Deferred driver initialization %s", init_err ? "failed" : "successful");
+            if (init_err == ESP_OK) {
+                for (uint8_t i = 0; i < ARGB_ENDPOINT_COUNT; i++) {
+                    apply_power_recovery_startup(HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE + i);
+                }
+            }
             ESP_LOGI(TAG, "Device started up in %s factory-reset mode", esp_zb_bdb_is_factory_new() ? "" : "non");
             /* Always attempt steering/rejoin on startup. When the bridge is
              * in "add light" mode the network is open; otherwise the stack
@@ -3300,6 +3716,7 @@ static esp_err_t zb_attribute_handler(const esp_zb_zcl_set_attr_value_message_t 
     case ESP_ZB_ZCL_CLUSTER_ID_LEVEL_CONTROL:
     case ESP_ZB_ZCL_CLUSTER_ID_COLOR_CONTROL:
         emit_state_json(endpoint);
+        save_power_recovery_state("zcl_attr");
         break;
     default:
         break;
@@ -3731,6 +4148,13 @@ static bool zb_raw_command_handler(uint8_t bufid)
             zb_buf_free(bufid);
             return true;
         }
+        if (hdr->cmd_id == ZB_ZCL_CMD_WRITE_ATTRIB &&
+            hdr->is_common_command &&
+            hdr->cmd_direction == ESP_ZB_ZCL_CMD_DIRECTION_TO_SRV &&
+            handle_power_recovery_write_attrs_raw(hdr, payload, payload_len)) {
+            zb_buf_free(bufid);
+            return true;
+        }
         if (hdr->cluster_id == ESP_ZB_ZCL_CLUSTER_ID_BASIC &&
             hdr->cmd_id == ZB_ZCL_CMD_WRITE_ATTRIB &&
             hdr->is_common_command &&
@@ -3974,6 +4398,7 @@ static void add_color_dimmable_light_endpoint(esp_zb_ep_list_t *ep_list, uint8_t
 
     esp_zb_ep_list_add_ep(ep_list, esp_zb_color_dimmable_light_clusters_create(&light_cfg),
                           endpoint_config);
+    uint8_t idx = endpoint - HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE;
 
     zcl_basic_manufacturer_info_t info = {
         .manufacturer_name = (char *)BASIC_MANUFACTURER_NAME,
@@ -4005,7 +4430,7 @@ static void add_color_dimmable_light_endpoint(esp_zb_ep_list_t *ep_list, uint8_t
     esp_zb_custom_cluster_add_custom_attr(basic_attr_list, 0x0021,
                                           ESP_ZB_ZCL_ATTR_TYPE_U32,
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_ONLY,
-                                          &s_basic_attr21[endpoint - HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE]);
+                                          &s_basic_attr21[idx]);
     esp_zb_custom_cluster_add_custom_attr(basic_attr_list, 0x0040,
                                           ESP_ZB_ZCL_ATTR_TYPE_CHAR_STRING,
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_ONLY,
@@ -4013,30 +4438,29 @@ static void add_color_dimmable_light_endpoint(esp_zb_ep_list_t *ep_list, uint8_t
     esp_zb_custom_cluster_add_custom_attr(basic_attr_list, 0x0041,
                                           ESP_ZB_ZCL_ATTR_TYPE_U32,
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_ONLY,
-                                          &s_basic_attr41[endpoint - HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE]);
+                                          &s_basic_attr41[idx]);
     esp_zb_custom_cluster_add_custom_attr(basic_attr_list, 0x0050,
                                           ESP_ZB_ZCL_ATTR_TYPE_32BITMAP,
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_ONLY,
-                                          &s_basic_attr50[endpoint - HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE]);
+                                          &s_basic_attr50[idx]);
     esp_zb_custom_cluster_add_custom_attr(basic_attr_list, 0x0051,
                                           ESP_ZB_ZCL_ATTR_TYPE_8BIT_ENUM,
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_WRITE,
-                                          &s_basic_attr51[endpoint - HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE]);
+                                          &s_basic_attr51[idx]);
     esp_zb_custom_cluster_add_custom_attr(basic_attr_list, 0x0053,
                                           ESP_ZB_ZCL_ATTR_TYPE_U32,
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_WRITE,
-                                          &s_basic_attr53[endpoint - HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE]);
+                                          &s_basic_attr53[idx]);
     esp_zb_custom_cluster_add_custom_attr(basic_attr_list, 0x0054,
                                           ESP_ZB_ZCL_ATTR_TYPE_128_BIT_KEY,
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_WRITE,
-                                          s_basic_attr54[endpoint - HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE]);
+                                          s_basic_attr54[idx]);
 
     // Fix "Off with effect" command from the bridge.
     // https://github.com/espressif/esp-zigbee-sdk/issues/457#issuecomment-2426128314
     uint16_t on_off_on_time = 0;
     uint16_t on_off_off_wait_time = 0;
     bool on_off_global_scene_control = false;
-    uint8_t on_off_startup_on_off = 0xFF;
     esp_zb_cluster_list_t *cluster_list = esp_zb_ep_list_get_ep(ep_list, endpoint);
     esp_zb_attribute_list_t *onoff_attr_list = esp_zb_cluster_list_get_cluster(
         cluster_list, ESP_ZB_ZCL_CLUSTER_ID_ON_OFF, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
@@ -4048,15 +4472,14 @@ static void add_color_dimmable_light_endpoint(esp_zb_ep_list_t *ep_list, uint8_t
                                    &on_off_global_scene_control);
     esp_zb_custom_cluster_add_custom_attr(onoff_attr_list, 0x4003,
                                           ESP_ZB_ZCL_ATTR_TYPE_8BIT_ENUM,
-                                          ESP_ZB_ZCL_ATTR_ACCESS_READ_ONLY,
-                                          &on_off_startup_on_off);
+                                          ESP_ZB_ZCL_ATTR_ACCESS_READ_WRITE,
+                                          &s_startup_on_off[idx]);
 
     // Restore previous brightness when the bridge sends "On" without a level command.
     uint8_t level_on_level = 0xFF; /* 0xFF == use previous level */
     uint16_t level_on_transition_time = 0;
     uint16_t level_off_transition_time = 0;
     uint16_t level_signify_attr3 = 0x000A;
-    uint8_t level_startup_current_level = 0xFF;
     esp_zb_attribute_list_t *level_attr_list = esp_zb_cluster_list_get_cluster(
         cluster_list, ESP_ZB_ZCL_CLUSTER_ID_LEVEL_CONTROL, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
     esp_zb_level_cluster_add_attr(level_attr_list, ESP_ZB_ZCL_ATTR_LEVEL_CONTROL_ON_LEVEL_ID,
@@ -4073,8 +4496,8 @@ static void add_color_dimmable_light_endpoint(esp_zb_ep_list_t *ep_list, uint8_t
                                           &level_signify_attr3);
     esp_zb_custom_cluster_add_custom_attr(level_attr_list, 0x4000,
                                           ESP_ZB_ZCL_ATTR_TYPE_U8,
-                                          ESP_ZB_ZCL_ATTR_ACCESS_READ_ONLY,
-                                          &level_startup_current_level);
+                                          ESP_ZB_ZCL_ATTR_ACCESS_READ_WRITE,
+                                          &s_startup_current_level[idx]);
 
     /* Add the extended Color Control attributes that the default color dimmable
      * light config does not include. ColorCapabilities was already set via
@@ -4085,7 +4508,6 @@ static void add_color_dimmable_light_endpoint(esp_zb_ep_list_t *ep_list, uint8_t
     static uint16_t color_temperature = 500;
     static uint16_t color_temp_min = 153;
     static uint16_t color_temp_max = 500;
-    static uint16_t color_attr4010 = 0xFFFF;
     /* LCX004 / gamut C color points, encoded as Zigbee normalized U16 XY. */
     static uint16_t color_point_rx = 0xB105; /* real LCX004 read attr 0x0032 */
     static uint16_t color_point_ry = 0x4EEC; /* real LCX004 read attr 0x0033 */
@@ -4129,8 +4551,8 @@ static void add_color_dimmable_light_endpoint(esp_zb_ep_list_t *ep_list, uint8_t
     esp_zb_custom_cluster_add_custom_attr(color_attr_list,
                                           0x4010,
                                           ESP_ZB_ZCL_ATTR_TYPE_U16,
-                                          ESP_ZB_ZCL_ATTR_ACCESS_READ_ONLY,
-                                          &color_attr4010);
+                                          ESP_ZB_ZCL_ATTR_ACCESS_READ_WRITE,
+                                          &s_startup_color_temperature[idx]);
     esp_zb_custom_cluster_add_custom_attr(color_attr_list,
                                           COLOR_POINT_RX_ID,
                                           ESP_ZB_ZCL_ATTR_TYPE_U16,
@@ -4223,7 +4645,7 @@ static void add_color_dimmable_light_endpoint(esp_zb_ep_list_t *ep_list, uint8_t
 
     /* Add Signify proprietary clusters (FC01/FC03/FC04) so the bridge
      * recognises this as a certified gradient light. */
-    add_proprietary_clusters(cluster_list, endpoint - HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE);
+    add_proprietary_clusters(cluster_list, idx);
     log_fake_simple_descriptor(endpoint);
 }
 
@@ -4585,6 +5007,7 @@ void app_main(void)
         .host_config = ESP_ZB_DEFAULT_HOST_CONFIG(),
     };
     ESP_ERROR_CHECK(nvs_flash_init());
+    load_power_recovery_state();
     load_scene_fc03_cache();
     ESP_ERROR_CHECK(esp_zb_platform_config(&config));
     xTaskCreate(esp_zb_task, "Zigbee_main", 4096, NULL, 5, NULL);
