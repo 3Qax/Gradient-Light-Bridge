@@ -27,12 +27,21 @@
   - `ARGB_SERIAL_DEBUG=1 ./in-docker.sh idf.py build`
   - `ARGB_BACKEND=ARGB_BACKEND_SERIAL_JSON ./in-docker.sh idf.py build`
   - `ARGB_BACKEND=ARGB_BACKEND_LOCAL_LED ARGB_LED_GPIO=<gpio> ARGB_LED_COUNT=12 ARGB_COLOR_ORDER=GRB ./in-docker.sh idf.py build`
+  - Five 12-pixel local LED slices from one ESP, the current cleanly tested
+    Hue Bridge limit:
+    `ARGB_BACKEND=ARGB_BACKEND_LOCAL_LED ARGB_LED_GPIO=2 ARGB_ENDPOINT_COUNT=5 ARGB_ENDPOINT_LED_COUNT=12 ARGB_LED_COUNT=60 ARGB_COLOR_ORDER=GRB ./in-docker.sh idf.py build`
   - `ARGB_BACKEND` is a single selector, not a set of independent feature
     toggles. Use `ARGB_BACKEND_SERIAL_JSON` for the current daemon/OpenRGB
     flow. Use `ARGB_BACKEND_LOCAL_LED` for the direct GPIO/RMT backend.
   - Local LED backend knobs:
     - `ARGB_LED_GPIO`: required GPIO for the 5 V 3-pin addressable data line.
-    - `ARGB_LED_COUNT`: physical LED count; default is `12`.
+    - `ARGB_LED_COUNT`: total physical LED count on the data line; default is
+      `12`.
+    - `ARGB_ENDPOINT_COUNT`: number of logical Hue light endpoints exposed by
+      one ESP; default is `1`.
+    - `ARGB_ENDPOINT_LED_COUNT`: physical LEDs controlled by each endpoint;
+      default is `12`. Local LED endpoint `11 + n` maps to pixel slice
+      `n * ARGB_ENDPOINT_LED_COUNT`.
     - `ARGB_COLOR_ORDER`: `RGB`, `GRB`, `BRG`, `RBG`, `GBR`, or `BGR`; default
       is `GRB`, which is common for WS2812/SK6812-compatible strips.
     - Local LED color correction defaults match the OpenRGB daemon config:

@@ -262,26 +262,25 @@ static const char *BASIC_MODEL_IDENTIFIER  = "\x06" "LCX004";
  * 1 (len) + 2 (mode) + 1 (onOff) + 1 (bri) + 4 (unknown) + 1 (len2) +
  * 1 (ncolors) + 1 (style) + 2 (reserved) + 3*N (colors) + 1 (segments) +
  * 1 (offset) = 16 + 3*N bytes.  For N=9 this is 43 bytes. */
-static uint8_t s_fc03_state[ARGB_ENDPOINT_COUNT][64] = {
-    {
-        0x1E,                   /* length of payload (30 bytes) */
-        0x4B, 0x01,             /* mode = gradient */
-        0x00,                   /* onOff = off */
-        0xFE,                   /* brightness = 254 */
-        0x8F, 0x9F,             /* currentX = 0x9f8f */
-        0x06, 0x5C,             /* currentY = 0x5c06 */
-        0x13,                   /* length of color payload */
-        0x50,                   /* color count << 4 (5 colors), style linear */
-        0x00, 0x00, 0x00,       /* style + reserved */
-        0x92, 0x2D, 0x6D,
-        0x92, 0x2D, 0x6D,
-        0x92, 0x2D, 0x6D,
-        0x92, 0x2D, 0x6D,
-        0x92, 0x2D, 0x6D,
-        0x28,                   /* segments */
-        0x00,                   /* offset */
-    },
+static const uint8_t FC03_DEFAULT_STATE[] = {
+    0x1E,                   /* length of payload (30 bytes) */
+    0x4B, 0x01,             /* mode = gradient */
+    0x00,                   /* onOff = off */
+    0xFE,                   /* brightness = 254 */
+    0x8F, 0x9F,             /* currentX = 0x9f8f */
+    0x06, 0x5C,             /* currentY = 0x5c06 */
+    0x13,                   /* length of color payload */
+    0x50,                   /* color count << 4 (5 colors), style linear */
+    0x00, 0x00, 0x00,       /* style + reserved */
+    0x92, 0x2D, 0x6D,
+    0x92, 0x2D, 0x6D,
+    0x92, 0x2D, 0x6D,
+    0x92, 0x2D, 0x6D,
+    0x92, 0x2D, 0x6D,
+    0x28,                   /* segments */
+    0x00,                   /* offset */
 };
+static uint8_t s_fc03_state[ARGB_ENDPOINT_COUNT][64];
 
 /* FC01 certification/proprietary attributes observed on a real LCX004:
  *   0x0000 - 8-bit bitmap = 0x0B
@@ -305,10 +304,11 @@ static uint16_t s_fc03_attr38[ARGB_ENDPOINT_COUNT] = { 0x000A };
 static uint16_t s_fc04_attr0[ARGB_ENDPOINT_COUNT] = { 0x1007 };
 static uint8_t s_basic_attr51[ARGB_ENDPOINT_COUNT] = { 0x01 };
 static uint32_t s_basic_attr53[ARGB_ENDPOINT_COUNT] = { 0x0F4C913C };
-static uint8_t s_basic_attr54[ARGB_ENDPOINT_COUNT][16] = {
-    { 0xc7, 0x54, 0x2a, 0xfa, 0x34, 0x8c, 0xf3, 0x83,
-      0x78, 0xa0, 0x2d, 0x5d, 0x1c, 0x74, 0xf1, 0xe6 },
+static const uint8_t BASIC_ATTR54_DEFAULT[16] = {
+    0xc7, 0x54, 0x2a, 0xfa, 0x34, 0x8c, 0xf3, 0x83,
+    0x78, 0xa0, 0x2d, 0x5d, 0x1c, 0x74, 0xf1, 0xe6,
 };
+static uint8_t s_basic_attr54[ARGB_ENDPOINT_COUNT][16];
 static const uint8_t BASIC_POWER_ON_CONFIG[] = "\x09" "0:PWRON@1";
 static const uint8_t BASIC_PRODUCT_LABEL[] = "\x1A" "Philips-LCX004-1-GALSECLv1";
 static uint32_t s_basic_attr1[ARGB_ENDPOINT_COUNT] = { 0x00000000 };
@@ -377,6 +377,7 @@ static power_recovery_nvs_blob_t s_power_recovery_last_saved;
 static bool s_power_recovery_has_last_saved;
 
 static void print_hex_bytes(const char *prefix, const uint8_t *payload, uint16_t len);
+static void init_endpoint_defaults(void);
 static void load_power_recovery_state(void);
 static void save_power_recovery_state(const char *reason);
 static void apply_power_recovery_startup(uint8_t endpoint);
@@ -1523,6 +1524,45 @@ static void sync_fc03_state_prefix(uint8_t idx)
     state[8] = (uint8_t)(st->y >> 8);
 }
 
+static void init_endpoint_defaults(void)
+{
+    for (uint8_t idx = 0; idx < ARGB_ENDPOINT_COUNT; idx++) {
+        memset(s_fc03_state[idx], 0, sizeof(s_fc03_state[idx]));
+        memcpy(s_fc03_state[idx], FC03_DEFAULT_STATE, sizeof(FC03_DEFAULT_STATE));
+
+        s_fc01_attr0[idx] = 0x0B;
+        s_fc01_attr1[idx] = 0x00;
+        s_fc01_attr2[idx] = 0x0A;
+        s_fc01_attr3[idx] = 0x04;
+        s_fc03_attr1[idx] = 0x0000000F;
+        s_fc03_attr10[idx] = 0x0001;
+        s_fc03_attr11[idx] = 0x000000000003FE0EULL;
+        s_fc03_attr12[idx] = 0x00000003;
+        s_fc03_attr13[idx] = 0x000F;
+        s_fc03_attr32[idx] = 0x00;
+        s_fc03_attr33[idx] = 0x00;
+        s_fc03_attr34[idx] = 0x00;
+        s_fc03_attr38[idx] = 0x000A;
+        s_fc04_attr0[idx] = 0x1007;
+        s_basic_attr1[idx] = 0x00000000;
+        s_basic_attr21[idx] = 0x001517EC;
+        s_basic_attr41[idx] = 0xC4C1C739;
+        s_basic_attr50[idx] = 0x00000001;
+        s_basic_attr51[idx] = 0x01;
+        s_basic_attr53[idx] = 0x0F4C913C;
+        memcpy(s_basic_attr54[idx], BASIC_ATTR54_DEFAULT, sizeof(BASIC_ATTR54_DEFAULT));
+
+        g_light_state[idx] = (light_state_t) {
+            .on = false,
+            .bri = 0xFE,
+            .x = 0x9F8F,
+            .y = 0x5C06,
+            .last_bri = 0xFE,
+        };
+        sync_fc03_state_prefix(idx);
+    }
+}
+
 static void emit_state_json_internal(uint8_t endpoint,
                                      const char *source,
                                      bool has_fade,
@@ -1854,12 +1894,59 @@ static void local_led_fill_pixels(rgb_t *pixels, size_t led_count, rgb_t color)
     }
 }
 
-static void local_led_full_pixels_from_partial(rgb_t *out, const rgb_t *pixels, size_t count)
+static size_t local_led_total_pixel_count(void)
 {
-    rgb_t off = {0, 0, 0};
     size_t led_count = local_led_backend_pixel_count();
-    for (size_t i = 0; i < led_count; i++) {
-        out[i] = (pixels && i < count) ? pixels[i] : off;
+    return led_count > ARGB_LED_COUNT ? ARGB_LED_COUNT : led_count;
+}
+
+static bool local_led_slice_for_idx(uint8_t idx, size_t *start_out, size_t *count_out)
+{
+    size_t led_count = local_led_total_pixel_count();
+    size_t start = (size_t)idx * (size_t)ARGB_ENDPOINT_LED_COUNT;
+    if (start >= led_count) {
+        ESP_LOGW(TAG,
+                 "local LED endpoint slice out of range: idx=%u start=%u leds=%u",
+                 (unsigned)idx,
+                 (unsigned)start,
+                 (unsigned)led_count);
+        return false;
+    }
+
+    size_t count = ARGB_ENDPOINT_LED_COUNT;
+    if (count > led_count - start) {
+        count = led_count - start;
+    }
+    if (start_out) {
+        *start_out = start;
+    }
+    if (count_out) {
+        *count_out = count;
+    }
+    return true;
+}
+
+static void local_led_copy_endpoint_slice(rgb_t *frame,
+                                          size_t frame_count,
+                                          uint8_t idx,
+                                          const rgb_t *pixels,
+                                          size_t count)
+{
+    size_t start = 0;
+    size_t slice_count = 0;
+    rgb_t off = {0, 0, 0};
+    if (!frame || !local_led_slice_for_idx(idx, &start, &slice_count)) {
+        return;
+    }
+
+    if (start >= frame_count) {
+        return;
+    }
+    if (start + slice_count > frame_count) {
+        slice_count = frame_count - start;
+    }
+    for (size_t i = 0; i < slice_count; i++) {
+        frame[start + i] = (pixels && i < count) ? pixels[i] : off;
     }
 }
 
@@ -1877,8 +1964,11 @@ static void local_led_current_pixels_locked(rgb_t *out, size_t led_count)
 static esp_err_t local_led_show_pixels_now_locked(const rgb_t *pixels, size_t count)
 {
     rgb_t full_pixels[ARGB_LED_COUNT];
-    size_t led_count = local_led_backend_pixel_count();
-    local_led_full_pixels_from_partial(full_pixels, pixels, count);
+    rgb_t off = {0, 0, 0};
+    size_t led_count = local_led_total_pixel_count();
+    for (size_t i = 0; i < led_count; i++) {
+        full_pixels[i] = (pixels && i < count) ? pixels[i] : off;
+    }
 
     esp_err_t err = local_led_backend_show_pixels(full_pixels, led_count);
     if (err == ESP_OK) {
@@ -1900,13 +1990,18 @@ static esp_err_t local_led_start_pixel_transition(uint8_t endpoint,
     }
 
     rgb_t target_pixels[ARGB_LED_COUNT];
-    size_t led_count = local_led_backend_pixel_count();
-    local_led_full_pixels_from_partial(target_pixels, target, count);
+    size_t led_count = local_led_total_pixel_count();
+    if (!local_led_slice_for_idx(idx, NULL, NULL)) {
+        return ESP_ERR_INVALID_ARG;
+    }
     uint32_t duration_ms = local_fade_duration_ms(has_fade, fade);
 
     if (!local_led_take_animation_lock()) {
         return ESP_ERR_NO_MEM;
     }
+
+    local_led_current_pixels_locked(target_pixels, led_count);
+    local_led_copy_endpoint_slice(target_pixels, led_count, idx, target, count);
 
     s_local_fade_runtime[idx].active = false;
     if (duration_ms == 0) {
@@ -1930,9 +2025,9 @@ static esp_err_t local_led_start_solid_transition(uint8_t endpoint,
                                                   bool has_fade,
                                                   uint16_t fade)
 {
-    rgb_t pixels[ARGB_LED_COUNT];
-    local_led_fill_pixels(pixels, local_led_backend_pixel_count(), color);
-    return local_led_start_pixel_transition(endpoint, pixels, local_led_backend_pixel_count(), has_fade, fade);
+    rgb_t pixels[ARGB_ENDPOINT_LED_COUNT];
+    local_led_fill_pixels(pixels, ARGB_ENDPOINT_LED_COUNT, color);
+    return local_led_start_pixel_transition(endpoint, pixels, ARGB_ENDPOINT_LED_COUNT, has_fade, fade);
 }
 
 static float local_dynamic_cycle_seconds(uint8_t effect_speed)
@@ -1975,9 +2070,19 @@ static void local_led_dynamic_task(void *arg)
     while (true) {
         TickType_t now = xTaskGetTickCount();
         if (local_led_take_animation_lock()) {
+            size_t led_count = local_led_total_pixel_count();
+            rgb_t frame[ARGB_LED_COUNT];
+            bool frame_changed = false;
+            local_led_current_pixels_locked(frame, led_count);
+
             for (uint8_t i = 0; i < ARGB_ENDPOINT_COUNT; i++) {
+                size_t slice_start = 0;
+                size_t slice_count = 0;
+                if (!local_led_slice_for_idx(i, &slice_start, &slice_count)) {
+                    continue;
+                }
+
                 if (s_local_fade_runtime[i].active) {
-                    rgb_t pixels[ARGB_LED_COUNT];
                     uint32_t elapsed_ms = (uint32_t)pdTICKS_TO_MS(now - s_local_fade_runtime[i].started_tick);
                     float t = s_local_fade_runtime[i].duration_ms
                         ? (float)elapsed_ms / (float)s_local_fade_runtime[i].duration_ms
@@ -1986,23 +2091,21 @@ static void local_led_dynamic_task(void *arg)
                         t = 1.0f;
                         s_local_fade_runtime[i].active = false;
                     }
-                    for (size_t led = 0; led < local_led_backend_pixel_count(); led++) {
-                        pixels[led] = interpolate_rgb(s_local_fade_runtime[i].start[led],
-                                                      s_local_fade_runtime[i].target[led],
-                                                      t);
+                    for (size_t led = 0; led < slice_count; led++) {
+                        size_t pos = slice_start + led;
+                        frame[pos] = interpolate_rgb(s_local_fade_runtime[i].start[pos],
+                                                     s_local_fade_runtime[i].target[pos],
+                                                     t);
                     }
-                    esp_err_t err = local_led_show_pixels_now_locked(pixels, local_led_backend_pixel_count());
-                    if (err != ESP_OK) {
-                        ESP_LOGW(TAG, "local LED fade frame failed: %s", esp_err_to_name(err));
-                    }
-                    break;
+                    frame_changed = true;
+                    continue;
                 }
 
                 local_led_gradient_runtime_t state = s_local_gradient_runtime[i];
                 if (!state.active || !state.on) {
                     continue;
                 }
-                rgb_t pixels[ARGB_LED_COUNT];
+                rgb_t pixels[ARGB_ENDPOINT_LED_COUNT];
                 render_gradient_pixels(state.colors,
                                        state.n_colors,
                                        state.style,
@@ -2011,12 +2114,16 @@ static void local_led_dynamic_task(void *arg)
                                        true,
                                        state.on,
                                        pixels,
-                                       local_led_backend_pixel_count());
-                esp_err_t err = local_led_show_pixels_now_locked(pixels, local_led_backend_pixel_count());
+                                       slice_count);
+                local_led_copy_endpoint_slice(frame, led_count, i, pixels, slice_count);
+                frame_changed = true;
+            }
+
+            if (frame_changed) {
+                esp_err_t err = local_led_show_pixels_now_locked(frame, led_count);
                 if (err != ESP_OK) {
-                    ESP_LOGW(TAG, "local LED dynamic frame failed: %s", esp_err_to_name(err));
+                    ESP_LOGW(TAG, "local LED animation frame failed: %s", esp_err_to_name(err));
                 }
-                break;
             }
             local_led_give_animation_lock();
         }
@@ -2103,6 +2210,12 @@ static void local_led_show_gradient_update(uint8_t endpoint,
         return;
     }
 
+    size_t led_count = local_led_total_pixel_count();
+    size_t slice_count = 0;
+    if (!local_led_slice_for_idx(idx, NULL, &slice_count)) {
+        return;
+    }
+
     local_led_gradient_runtime_t *state = &s_local_gradient_runtime[idx];
     uint32_t fade_ms = local_fade_duration_ms(has_fade, fade);
     TickType_t now = xTaskGetTickCount();
@@ -2118,7 +2231,7 @@ static void local_led_show_gradient_update(uint8_t endpoint,
     };
     memcpy(snapshot.colors, colors, n_colors * sizeof(colors[0]));
 
-    rgb_t target_pixels[ARGB_LED_COUNT];
+    rgb_t target_pixels[ARGB_ENDPOINT_LED_COUNT];
     render_gradient_pixels(snapshot.colors,
                            snapshot.n_colors,
                            snapshot.style,
@@ -2127,7 +2240,7 @@ static void local_led_show_gradient_update(uint8_t endpoint,
                            has_effect_speed,
                            snapshot.on,
                            target_pixels,
-                           local_led_backend_pixel_count());
+                           slice_count);
 
     if (!local_led_take_animation_lock()) {
         return;
@@ -2135,15 +2248,23 @@ static void local_led_show_gradient_update(uint8_t endpoint,
     *state = snapshot;
     s_local_fade_runtime[idx].active = false;
     if (fade_ms == 0) {
-        esp_err_t err = local_led_show_pixels_now_locked(target_pixels, local_led_backend_pixel_count());
+        rgb_t frame[ARGB_LED_COUNT];
+        local_led_current_pixels_locked(frame, led_count);
+        local_led_copy_endpoint_slice(frame, led_count, idx, target_pixels, slice_count);
+        esp_err_t err = local_led_show_pixels_now_locked(frame, led_count);
         if (err != ESP_OK) {
             ESP_LOGW(TAG, "local LED gradient update failed: %s", esp_err_to_name(err));
         }
     } else {
-        local_led_current_pixels_locked(s_local_fade_runtime[idx].start, local_led_backend_pixel_count());
+        local_led_current_pixels_locked(s_local_fade_runtime[idx].start, led_count);
         memcpy(s_local_fade_runtime[idx].target,
-               target_pixels,
-               local_led_backend_pixel_count() * sizeof(target_pixels[0]));
+               s_local_fade_runtime[idx].start,
+               led_count * sizeof(s_local_fade_runtime[idx].target[0]));
+        local_led_copy_endpoint_slice(s_local_fade_runtime[idx].target,
+                                      led_count,
+                                      idx,
+                                      target_pixels,
+                                      slice_count);
         s_local_fade_runtime[idx].started_tick = now;
         s_local_fade_runtime[idx].duration_ms = fade_ms;
         s_local_fade_runtime[idx].active = true;
@@ -3666,19 +3787,22 @@ static bool send_node_desc_response(const esp_zb_apsde_data_ind_t *ind, uint8_t 
 
 static bool send_active_ep_response(const esp_zb_apsde_data_ind_t *ind, uint8_t tsn, uint16_t nwk_addr)
 {
-    uint8_t payload[] = {
+    uint8_t payload[5 + ARGB_ENDPOINT_COUNT + 1] = {
         tsn,
         ZDO_SUCCESS_STATUS,
         0x00, 0x00, /* nwk_addr */
-        0x02,
-        HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE,
-        GP_ENDPOINT,
+        ARGB_ENDPOINT_COUNT + 1,
     };
     put_le16(&payload[2], nwk_addr);
+    for (uint8_t i = 0; i < ARGB_ENDPOINT_COUNT; i++) {
+        payload[5 + i] = HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE + i;
+    }
+    payload[5 + ARGB_ENDPOINT_COUNT] = GP_ENDPOINT;
 
-    ESP_LOGI(TAG, "ZDO override: Active_EP_rsp nwk=0x%04x eps=[%u,%u] to=0x%04x",
+    ESP_LOGI(TAG, "ZDO override: Active_EP_rsp nwk=0x%04x light_eps=%u..%u gp_ep=%u to=0x%04x",
              (unsigned)nwk_addr,
              (unsigned)HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE,
+             (unsigned)(HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE + ARGB_ENDPOINT_COUNT - 1),
              (unsigned)GP_ENDPOINT,
              (unsigned)ind->src_short_addr);
     return send_zdo_response(ind->src_short_addr, ZDO_ACTIVE_EP_RSP_CLUSTER_ID,
@@ -3690,8 +3814,8 @@ static bool send_simple_desc_response(const esp_zb_apsde_data_ind_t *ind,
                                       uint16_t nwk_addr,
                                       uint8_t endpoint)
 {
-    static const uint8_t ep11_simple_desc[] = {
-        HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE,
+    static const uint8_t light_simple_desc_template[] = {
+        0x00,       /* endpoint is patched per logical light */
         0x04, 0x01, /* HA profile */
         0x0d, 0x01, /* extended color light */
         0x01,
@@ -3721,10 +3845,14 @@ static bool send_simple_desc_response(const esp_zb_apsde_data_ind_t *ind,
     };
 
     const uint8_t *desc = NULL;
+    uint8_t light_desc[sizeof(light_simple_desc_template)];
     uint8_t desc_len = 0;
-    if (endpoint == HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE) {
-        desc = ep11_simple_desc;
-        desc_len = sizeof(ep11_simple_desc);
+    if (endpoint >= HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE &&
+        endpoint < HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE + ARGB_ENDPOINT_COUNT) {
+        memcpy(light_desc, light_simple_desc_template, sizeof(light_desc));
+        light_desc[0] = endpoint;
+        desc = light_desc;
+        desc_len = sizeof(light_desc);
     } else if (endpoint == GP_ENDPOINT) {
         desc = ep242_simple_desc;
         desc_len = sizeof(ep242_simple_desc);
@@ -3732,7 +3860,7 @@ static bool send_simple_desc_response(const esp_zb_apsde_data_ind_t *ind,
         return false;
     }
 
-    uint8_t payload[4 + 1 + sizeof(ep11_simple_desc)] = {
+    uint8_t payload[4 + 1 + sizeof(light_simple_desc_template)] = {
         tsn,
         ZDO_SUCCESS_STATUS,
         0x00, 0x00, /* nwk_addr */
@@ -5066,7 +5194,11 @@ static void run_led_gradient_test(void)
     local_led_stop_dynamic(HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE);
 
     rgb_t pixels[ARGB_LED_COUNT];
-    size_t led_count = local_led_backend_pixel_count();
+    size_t led_count = 0;
+    if (!local_led_slice_for_idx(0, NULL, &led_count)) {
+        print_led_result("gradient", ESP_ERR_INVALID_STATE);
+        return;
+    }
     rgb_t red = {255, 0, 0};
     rgb_t green = {0, 255, 0};
     rgb_t blue = {0, 0, 255};
@@ -5095,7 +5227,11 @@ static void run_led_chase_test(void)
     local_led_stop_dynamic(HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE);
 
     rgb_t pixels[ARGB_LED_COUNT];
-    size_t led_count = local_led_backend_pixel_count();
+    size_t led_count = 0;
+    if (!local_led_slice_for_idx(0, NULL, &led_count)) {
+        print_led_result("chase", ESP_ERR_INVALID_STATE);
+        return;
+    }
     const rgb_t colors[] = {
         {255, 0, 0},
         {0, 255, 0},
@@ -5327,8 +5463,10 @@ static void esp_zb_task(void *pvParameters)
     esp_zb_raw_command_handler_register(zb_raw_command_handler);
 #if ZDO_DESCRIPTOR_OVERRIDE
     esp_zb_aps_data_indication_handler_register(zdo_descriptor_override_cb);
-    ESP_LOGI(TAG, "ZDO descriptor override enabled: endpoint list will advertise [%u,%u]",
-             (unsigned)HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE, (unsigned)GP_ENDPOINT);
+    ESP_LOGI(TAG, "ZDO descriptor override enabled: endpoint list will advertise light_eps=%u..%u gp_ep=%u",
+             (unsigned)HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE,
+             (unsigned)(HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE + ARGB_ENDPOINT_COUNT - 1),
+             (unsigned)GP_ENDPOINT);
 #endif
     esp_zb_set_primary_network_channel_set(ESP_ZB_PRIMARY_CHANNEL_MASK);
     ESP_ERROR_CHECK(esp_zb_start(false));
@@ -5347,9 +5485,10 @@ void app_main(void)
         .host_config = ESP_ZB_DEFAULT_HOST_CONFIG(),
     };
     ESP_ERROR_CHECK(nvs_flash_init());
+    init_endpoint_defaults();
     load_power_recovery_state();
     load_scene_fc03_cache();
     ESP_ERROR_CHECK(esp_zb_platform_config(&config));
-    xTaskCreate(esp_zb_task, "Zigbee_main", 4096, NULL, 5, NULL);
+    xTaskCreate(esp_zb_task, "Zigbee_main", 8192, NULL, 5, NULL);
     xTaskCreate(serial_cmd_task, "serial_cli", 8192, NULL, 1, NULL);
 }

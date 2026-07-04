@@ -3,12 +3,30 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#ifndef ARGB_ENDPOINT_COUNT
 #define ARGB_ENDPOINT_COUNT 1
+#endif
+
+#ifndef ARGB_ENDPOINT_LED_COUNT
+#define ARGB_ENDPOINT_LED_COUNT 12
+#endif
+
+#if ARGB_ENDPOINT_COUNT < 1
+#error ARGB_ENDPOINT_COUNT must be at least 1
+#endif
+
+#if ARGB_ENDPOINT_LED_COUNT < 1
+#error ARGB_ENDPOINT_LED_COUNT must be at least 1
+#endif
 
 /* The gradient-capable device profile exposes its light endpoint as 11 (0x0B).
  * This matches the uniqueid suffix (-0b) seen on real Signify gradient
  * lights and is the endpoint ZHA/Home Assistant use for the FC03 cluster. */
 #define HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE 11
+
+#if HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE + ARGB_ENDPOINT_COUNT - 1 >= 242
+#error ARGB_ENDPOINT_COUNT overlaps the Green Power endpoint 242
+#endif
 
 /* The registry versions of esp-zigbee-lib do not ship the example-only
  * configuration macros, so define the ones we need locally. */

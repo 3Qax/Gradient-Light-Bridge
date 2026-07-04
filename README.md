@@ -1,10 +1,10 @@
 # argb-to-hue
 
-Expose your PC’s motherboard-controlled ARGB as Philips Hue lights.
+Expose PC ARGB fans/strips as Hue-compatible gradient lights.
 
-- **ESP32-C6** joins your existing Hue Zigbee network as one or more color lights.
-- It forwards every on/off, brightness, and color change to a tiny daemon on the PC.
-- The daemon drives **OpenRGB**, which controls the MSI motherboard, RAM, case fans, etc.
+- **ESP32-C6** joins your existing Hue Zigbee network as one or more gradient lights.
+- It can forward on/off, brightness, color, scene, and gradient changes to a PC daemon.
+- It can also drive 5 V 3-pin addressable fans/strips directly from a GPIO/RMT backend.
 
 Developed on macOS, deployed on Linux.
 
@@ -28,14 +28,22 @@ iOS Hue App → Hue Bridge → Zigbee 3.0 → ESP32-C6
                                         OpenRGB → ARGB devices
 ```
 
-The firmware registers four endpoints by default:
+The firmware registers one light endpoint by default. Build with
+`ARGB_ENDPOINT_COUNT=<n>` to expose multiple logical Hue lights from the same
+ESP32-C6 Zigbee node. In the local LED backend, each endpoint owns a contiguous
+slice of the physical LED chain:
 
-1. `PC Case`
-2. `PC Fans`
-3. `PC RAM`
-4. `PC Motherboard`
+```text
+endpoint 11 -> pixels 0..11
+endpoint 12 -> pixels 12..23
+endpoint 13 -> pixels 24..35
+...
+```
 
-You can change the names/count in `firmware/main/argb_to_hue.h`.
+For five 12-LED fans on one ARGB data line, use `ARGB_ENDPOINT_COUNT=5`,
+`ARGB_ENDPOINT_LED_COUNT=12`, and `ARGB_LED_COUNT=60`. A clean 2026-07-04
+Hue Bridge test accepted five LCX004 endpoints from one ESP, while six endpoints
+were read through endpoint 16 and then the bridge sent a ZDO leave/reset.
 
 ## Important: Hue Trust Center Link Key
 
@@ -109,6 +117,17 @@ Use `ARGB_LED_GPIO=1` for Grove `G1` or `ARGB_LED_GPIO=2` for Grove `G2`.
 Power the LEDs from the motherboard ARGB header `5V`/`GND`, share that ground
 with the NanoC6, and leave the motherboard ARGB data pin disconnected.
 
+For one ESP exposing five independently controlled Hue lightstrips on one
+60-pixel ARGB chain:
+
+```bash
+cd firmware
+sg docker -c 'ARGB_BACKEND=ARGB_BACKEND_LOCAL_LED ARGB_EUI_SUFFIX=auto ARGB_LED_GPIO=2 ARGB_ENDPOINT_COUNT=5 ARGB_ENDPOINT_LED_COUNT=12 ARGB_LED_COUNT=60 ARGB_COLOR_ORDER=GRB ./in-docker.sh idf.py build'
+```
+
+This is one Zigbee device with multiple light endpoints, not five separate
+IEEE/EUI-64 radios. The bridge should discover one Hue light per endpoint.
+
 Local LED builds apply the same FastLED-style correction defaults as the
 OpenRGB daemon config: `ARGB_COLOR_CORRECTION=TypicalLEDStrip`,
 `ARGB_COLOR_TEMPERATURE=Candle`, `ARGB_COLOR_GAIN_R=1.0`,
@@ -174,7 +193,7 @@ Leave monitoring running until you see the device join the network (next step).
 
 1. Open the Philips Hue app → **Settings** → **Light setup** → **Add light**.
 2. Power-cycle or reset the ESP32 if needed. It will start Zigbee network steering automatically.
-3. The app should discover four new lights: `PC Case`, `PC Fans`, `PC RAM`, `PC Motherboard`.
+3. The app should discover one light per advertised endpoint.
 4. Add them to the room/automation of your choice.
 
 For fast firmware-identity iteration, use
@@ -241,6 +260,27 @@ launchctl start com.argb-to-hue.daemon
 - **Daemon cannot open serial port**: ensure no other program (e.g. `idf.py monitor`) is using the port.
 - **Colors do not change in OpenRGB**: check that OpenRGB detects your devices and that they support a Direct/Custom mode. Set `set_direct_mode: true` in `config.yaml`.
 - **Wrong zone mapping**: use OpenRGB’s GUI to inspect device/zone names and indices, then update `config.yaml`.
+
+## Known Gaps
+
+The current firmware supports the useful Hue-gradient-light workflow: pairing,
+certified gradient classification, scenes, dynamic scenes, play/stop, fades,
+power recovery, and direct local LED rendering. It is not a complete clone of
+every behavior in a Signify light. Known remaining gaps:
+
+- **Hue Entertainment / streaming**: not implemented. The research notes
+  separated gradient support from `capabilities.streaming`, and firmware does
+  not implement the entertainment streaming path.
+- **Named/timed Hue effects**: dynamic scenes are supported, but dedicated
+  effects like candle/fireplace are not mapped. Firmware parses and logs effect
+  fields, but does not implement a library of named effects.
+- **OTA updates**: firmware exposes enough OTA-like identity/static attributes
+  to satisfy the bridge, but does not implement a real firmware update flow.
+- **Identify/alert behavior**: discovery/read support exists, but "blink this
+  light so I can identify it" behavior is not implemented as a visible feature.
+- **Full Zigbee scene/group command matrix**: firmware implements the commands
+  the Hue bridge uses in the captured app flows. Other standard edge commands
+  may still be missing until the app/bridge needs them.
 
 ## Research & References
 
