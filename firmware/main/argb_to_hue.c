@@ -20,6 +20,7 @@
 
 #include "esp_check.h"
 #include "esp_log.h"
+#include "nvs.h"
 #include "nvs_flash.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -54,6 +55,17 @@ static const char *TAG = "ARGB_BRIDGE";
 #define OTA_QUERY_NEXT_IMAGE_REQ_CMD_ID    0x01
 #define OTA_LCX004_IMAGE_TYPE              0x0118
 #define OTA_FILE_VERSION                   0x01002000
+#define SCENES_MFG_COMPACT_SCENE_CMD_ID    0x00
+#define SCENES_MFG_STORE_CMD_ID            0x02
+#define SCENES_RECALL_SCENE_CMD_ID         0x05
+#define SCENES_KEY_PAYLOAD_LEN             3
+#define SCENES_REAL_CAPACITY               50
+#define SCENE_FC03_CACHE_ENTRIES           48
+#define SCENE_FC03_MAX_PAYLOAD_LEN         64
+#define SCENE_FC03_CACHE_NVS_NAMESPACE     "scene_cache"
+#define SCENE_FC03_CACHE_NVS_KEY           "fc03_v1"
+#define SCENE_FC03_CACHE_MAGIC             0x53464C43U /* SFLC */
+#define SCENE_FC03_CACHE_VERSION           1
 
 #define FC03_FLAG_ON_OFF                   0x0001
 #define FC03_FLAG_BRIGHTNESS               0x0002
@@ -64,6 +76,15 @@ static const char *TAG = "ARGB_BRIDGE";
 #define FC03_FLAG_GRADIENT_PARAMS          0x0040
 #define FC03_FLAG_EFFECT_SPEED             0x0080
 #define FC03_FLAG_GRADIENT_COLORS          0x0100
+#define FC03_KNOWN_FLAGS                   (FC03_FLAG_ON_OFF | \
+                                            FC03_FLAG_BRIGHTNESS | \
+                                            FC03_FLAG_COLOR_MIREK | \
+                                            FC03_FLAG_COLOR_XY | \
+                                            FC03_FLAG_FADE_SPEED | \
+                                            FC03_FLAG_EFFECT_TYPE | \
+                                            FC03_FLAG_GRADIENT_PARAMS | \
+                                            FC03_FLAG_EFFECT_SPEED | \
+                                            FC03_FLAG_GRADIENT_COLORS)
 
 #define GRADIENT_STYLE_LINEAR              0x00
 #define GRADIENT_STYLE_SCATTERED           0x02
@@ -913,16 +934,17 @@ static bool handle_scenes_get_membership_raw(const zb_zcl_parsed_hdr_t *hdr,
                                     hdr->seq_number,
                                     0x06); /* Get Scene Membership Response */
     ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ZB_ZCL_STATUS_SUCCESS);
-    ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, 0xFE); /* Capacity unknown. */
+    ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, SCENES_REAL_CAPACITY);
     ZB_ZCL_PACKET_PUT_DATA16_VAL(cmd_ptr, group_id);
     ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, 0x00); /* No scene IDs. */
 
     uint16_t dst_addr = hdr->addr_data.common_data.source.u.short_addr;
-    ESP_LOGI(TAG, "SCENES_GET_MEMBERSHIP_RESP_RAW: tsn=0x%02x to=0x%04x ep=%u group=0x%04x scenes=0",
+    ESP_LOGI(TAG, "SCENES_GET_MEMBERSHIP_RESP_RAW: tsn=0x%02x to=0x%04x ep=%u group=0x%04x capacity=%u scenes=0",
              (unsigned)hdr->seq_number,
              (unsigned)dst_addr,
              (unsigned)endpoint,
-             (unsigned)group_id);
+             (unsigned)group_id,
+             (unsigned)SCENES_REAL_CAPACITY);
     ZB_ZCL_FINISH_N_SEND_PACKET(out,
                                 cmd_ptr,
                                 dst_addr,
@@ -1927,17 +1949,8 @@ static void handle_fc03_multicolor_command(uint8_t endpoint, const uint8_t *data
     uint8_t idx = endpoint - HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE;
     light_state_t *st = &g_light_state[idx];
     uint16_t flags = u16_le(data);
-    uint16_t known_flags = FC03_FLAG_ON_OFF |
-                           FC03_FLAG_BRIGHTNESS |
-                           FC03_FLAG_COLOR_MIREK |
-                           FC03_FLAG_COLOR_XY |
-                           FC03_FLAG_FADE_SPEED |
-                           FC03_FLAG_EFFECT_TYPE |
-                           FC03_FLAG_GRADIENT_PARAMS |
-                           FC03_FLAG_EFFECT_SPEED |
-                           FC03_FLAG_GRADIENT_COLORS;
-    if (flags & ~known_flags) {
-        ESP_LOGW(TAG, "FC03 update has unknown flags 0x%04x", (unsigned)(flags & ~known_flags));
+    if (flags & ~FC03_KNOWN_FLAGS) {
+        ESP_LOGW(TAG, "FC03 update has unknown flags 0x%04x", (unsigned)(flags & ~FC03_KNOWN_FLAGS));
     }
 
     size_t off = 2;
@@ -2155,6 +2168,524 @@ static void handle_fc03_multicolor_command(uint8_t endpoint, const uint8_t *data
     } else if (has_on || has_bri || has_mirek || has_xy) {
         emit_state_json_internal(endpoint, "fc03", has_fade, fade, true, flags);
     }
+}
+
+typedef struct {
+    bool valid;
+    uint8_t endpoint;
+    uint16_t group_id;
+    uint8_t scene_id;
+    uint8_t fc03_len;
+    uint8_t fc03[SCENE_FC03_MAX_PAYLOAD_LEN];
+    uint32_t age;
+} scene_fc03_cache_entry_t;
+
+typedef struct {
+    uint8_t valid;
+    uint8_t endpoint;
+    uint8_t scene_id;
+    uint8_t fc03_len;
+    uint16_t group_id;
+    uint16_t reserved;
+    uint32_t age;
+    uint8_t fc03[SCENE_FC03_MAX_PAYLOAD_LEN];
+} scene_fc03_cache_nvs_entry_t;
+
+typedef struct {
+    uint32_t magic;
+    uint16_t version;
+    uint16_t entry_count;
+    uint32_t cache_age;
+    scene_fc03_cache_nvs_entry_t entries[SCENE_FC03_CACHE_ENTRIES];
+} scene_fc03_cache_nvs_blob_t;
+
+typedef struct {
+    bool valid;
+    uint8_t endpoint;
+    uint16_t group_id;
+    uint8_t scene_id;
+} pending_scene_recall_t;
+
+static scene_fc03_cache_entry_t s_scene_fc03_cache[SCENE_FC03_CACHE_ENTRIES];
+static uint32_t s_scene_fc03_cache_age;
+static bool s_scene_fc03_cache_loaded;
+static pending_scene_recall_t s_pending_scene_recall;
+
+static size_t scene_fc03_cache_valid_count(void)
+{
+    size_t count = 0;
+    for (size_t i = 0; i < SCENE_FC03_CACHE_ENTRIES; i++) {
+        if (s_scene_fc03_cache[i].valid) {
+            count++;
+        }
+    }
+    return count;
+}
+
+static void save_scene_fc03_cache(void)
+{
+    scene_fc03_cache_nvs_blob_t *blob = calloc(1, sizeof(*blob));
+    if (!blob) {
+        ESP_LOGW(TAG, "SCENE_FC03_CACHE_SAVE: no heap for blob");
+        return;
+    }
+    blob->magic = SCENE_FC03_CACHE_MAGIC;
+    blob->version = SCENE_FC03_CACHE_VERSION;
+    blob->entry_count = SCENE_FC03_CACHE_ENTRIES;
+    blob->cache_age = s_scene_fc03_cache_age;
+
+    for (size_t i = 0; i < SCENE_FC03_CACHE_ENTRIES; i++) {
+        const scene_fc03_cache_entry_t *src = &s_scene_fc03_cache[i];
+        scene_fc03_cache_nvs_entry_t *dst = &blob->entries[i];
+        dst->valid = src->valid ? 1 : 0;
+        dst->endpoint = src->endpoint;
+        dst->group_id = src->group_id;
+        dst->scene_id = src->scene_id;
+        dst->fc03_len = src->fc03_len;
+        dst->age = src->age;
+        memcpy(dst->fc03, src->fc03, sizeof(dst->fc03));
+    }
+
+    nvs_handle_t nvs = 0;
+    esp_err_t err = nvs_open(SCENE_FC03_CACHE_NVS_NAMESPACE, NVS_READWRITE, &nvs);
+    if (err != ESP_OK) {
+        ESP_LOGW(TAG, "SCENE_FC03_CACHE_SAVE: nvs_open failed: %s", esp_err_to_name(err));
+        free(blob);
+        return;
+    }
+
+    err = nvs_set_blob(nvs, SCENE_FC03_CACHE_NVS_KEY, blob, sizeof(*blob));
+    if (err == ESP_OK) {
+        err = nvs_commit(nvs);
+    }
+    nvs_close(nvs);
+    free(blob);
+
+    if (err != ESP_OK) {
+        ESP_LOGW(TAG, "SCENE_FC03_CACHE_SAVE: failed: %s", esp_err_to_name(err));
+        return;
+    }
+    ESP_LOGI(TAG, "SCENE_FC03_CACHE_SAVE: entries=%u", (unsigned)scene_fc03_cache_valid_count());
+}
+
+static void load_scene_fc03_cache(void)
+{
+    if (s_scene_fc03_cache_loaded) {
+        return;
+    }
+    s_scene_fc03_cache_loaded = true;
+
+    nvs_handle_t nvs = 0;
+    esp_err_t err = nvs_open(SCENE_FC03_CACHE_NVS_NAMESPACE, NVS_READONLY, &nvs);
+    if (err == ESP_ERR_NVS_NOT_FOUND) {
+        ESP_LOGI(TAG, "SCENE_FC03_CACHE_LOAD: no persisted cache");
+        return;
+    }
+    if (err != ESP_OK) {
+        ESP_LOGW(TAG, "SCENE_FC03_CACHE_LOAD: nvs_open failed: %s", esp_err_to_name(err));
+        return;
+    }
+
+    scene_fc03_cache_nvs_blob_t *blob = calloc(1, sizeof(*blob));
+    if (!blob) {
+        nvs_close(nvs);
+        ESP_LOGW(TAG, "SCENE_FC03_CACHE_LOAD: no heap for blob");
+        return;
+    }
+
+    size_t blob_size = sizeof(*blob);
+    err = nvs_get_blob(nvs, SCENE_FC03_CACHE_NVS_KEY, blob, &blob_size);
+    nvs_close(nvs);
+
+    if (err == ESP_ERR_NVS_NOT_FOUND) {
+        ESP_LOGI(TAG, "SCENE_FC03_CACHE_LOAD: no persisted cache");
+        free(blob);
+        return;
+    }
+    if (err != ESP_OK) {
+        ESP_LOGW(TAG, "SCENE_FC03_CACHE_LOAD: failed: %s", esp_err_to_name(err));
+        free(blob);
+        return;
+    }
+    if (blob_size != sizeof(*blob) ||
+        blob->magic != SCENE_FC03_CACHE_MAGIC ||
+        blob->version != SCENE_FC03_CACHE_VERSION ||
+        blob->entry_count != SCENE_FC03_CACHE_ENTRIES) {
+        ESP_LOGW(TAG, "SCENE_FC03_CACHE_LOAD: ignored incompatible blob");
+        free(blob);
+        return;
+    }
+
+    memset(s_scene_fc03_cache, 0, sizeof(s_scene_fc03_cache));
+    s_scene_fc03_cache_age = blob->cache_age;
+    for (size_t i = 0; i < SCENE_FC03_CACHE_ENTRIES; i++) {
+        const scene_fc03_cache_nvs_entry_t *src = &blob->entries[i];
+        scene_fc03_cache_entry_t *dst = &s_scene_fc03_cache[i];
+        if (!src->valid ||
+            src->fc03_len < 2 ||
+            src->fc03_len > SCENE_FC03_MAX_PAYLOAD_LEN) {
+            continue;
+        }
+        dst->valid = true;
+        dst->endpoint = src->endpoint;
+        dst->group_id = src->group_id;
+        dst->scene_id = src->scene_id;
+        dst->fc03_len = src->fc03_len;
+        dst->age = src->age;
+        memcpy(dst->fc03, src->fc03, src->fc03_len);
+        if (dst->age > s_scene_fc03_cache_age) {
+            s_scene_fc03_cache_age = dst->age;
+        }
+    }
+
+    ESP_LOGI(TAG, "SCENE_FC03_CACHE_LOAD: entries=%u", (unsigned)scene_fc03_cache_valid_count());
+    free(blob);
+}
+
+static bool scene_payload_key(const uint8_t *payload,
+                              uint16_t payload_len,
+                              uint16_t *group_id,
+                              uint8_t *scene_id)
+{
+    if (!payload || payload_len < SCENES_KEY_PAYLOAD_LEN) {
+        return false;
+    }
+    if (group_id) {
+        *group_id = u16_le(payload);
+    }
+    if (scene_id) {
+        *scene_id = payload[2];
+    }
+    return true;
+}
+
+static bool scene_fc03_payload_has_known_flags(const uint8_t *payload, uint16_t payload_len)
+{
+    if (!payload || payload_len < 2) {
+        return false;
+    }
+
+    uint16_t flags = u16_le(payload);
+    return (flags & ~FC03_KNOWN_FLAGS) == 0 && flags != 0;
+}
+
+static void remember_pending_scene_recall(uint8_t endpoint, uint16_t group_id, uint8_t scene_id)
+{
+    s_pending_scene_recall.valid = true;
+    s_pending_scene_recall.endpoint = endpoint;
+    s_pending_scene_recall.group_id = group_id;
+    s_pending_scene_recall.scene_id = scene_id;
+}
+
+static bool take_pending_scene_recall(uint8_t endpoint, uint16_t group_id, uint8_t scene_id)
+{
+    if (!s_pending_scene_recall.valid ||
+        s_pending_scene_recall.endpoint != endpoint ||
+        s_pending_scene_recall.group_id != group_id ||
+        s_pending_scene_recall.scene_id != scene_id) {
+        return false;
+    }
+
+    s_pending_scene_recall.valid = false;
+    return true;
+}
+
+static bool scene_compact_payload_to_keyed_fc03(const uint8_t *payload,
+                                                uint16_t payload_len,
+                                                uint8_t *out,
+                                                uint16_t out_size,
+                                                uint16_t *out_len)
+{
+    if (!payload || !out || !out_len ||
+        payload_len < SCENES_KEY_PAYLOAD_LEN + 2 ||
+        out_size < SCENES_KEY_PAYLOAD_LEN + 6) {
+        return false;
+    }
+
+    const uint8_t *body = payload + SCENES_KEY_PAYLOAD_LEN;
+    uint16_t body_len = payload_len - SCENES_KEY_PAYLOAD_LEN;
+    if (body[0] != 0x0c) {
+        return false;
+    }
+
+    uint8_t color_payload_len = body[1];
+    uint16_t color_block_len = 1 + color_payload_len;
+    if (body_len < 1 + color_block_len) {
+        return false;
+    }
+
+    uint8_t n_colors = body[2] >> 4;
+    uint8_t expected_color_payload_len = 4 + 3 * n_colors;
+    if (n_colors == 0 ||
+        n_colors > FC03_MAX_COLORS ||
+        color_payload_len != expected_color_payload_len) {
+        ESP_LOGW(TAG,
+                 "SCENES_MFG_COMPACT_SKIP: color_len=%u colors=%u expected=%u",
+                 (unsigned)color_payload_len,
+                 (unsigned)n_colors,
+                 (unsigned)expected_color_payload_len);
+        return false;
+    }
+
+    uint16_t fc03_len = 2 + 2 + color_block_len + 2;
+    uint16_t keyed_len = SCENES_KEY_PAYLOAD_LEN + fc03_len;
+    if (keyed_len > out_size) {
+        return false;
+    }
+
+    memcpy(out, payload, SCENES_KEY_PAYLOAD_LEN);
+    uint8_t *fc03 = out + SCENES_KEY_PAYLOAD_LEN;
+    uint16_t flags = FC03_FLAG_FADE_SPEED |
+                     FC03_FLAG_GRADIENT_COLORS |
+                     FC03_FLAG_GRADIENT_PARAMS;
+    fc03[0] = (uint8_t)(flags & 0xff);
+    fc03[1] = (uint8_t)(flags >> 8);
+    fc03[2] = 0x04; /* Match the fade used by app scene updates. */
+    fc03[3] = 0x00;
+    memcpy(&fc03[4], &body[1], color_block_len);
+    fc03[4 + color_block_len] = 0x28; /* Real scene FC03 stores use scale 5. */
+    fc03[5 + color_block_len] = 0x00;
+
+    *out_len = keyed_len;
+    return true;
+}
+
+static bool cache_scene_fc03_payload(uint8_t endpoint, const uint8_t *payload, uint16_t payload_len)
+{
+    uint16_t group_id = 0;
+    uint8_t scene_id = 0;
+    if (!scene_payload_key(payload, payload_len, &group_id, &scene_id)) {
+        return false;
+    }
+
+    uint16_t fc03_len = payload_len - SCENES_KEY_PAYLOAD_LEN;
+    const uint8_t *fc03 = payload + SCENES_KEY_PAYLOAD_LEN;
+    if (fc03_len < 2 || fc03_len > SCENE_FC03_MAX_PAYLOAD_LEN) {
+        ESP_LOGW(TAG,
+                 "SCENE_FC03_CACHE_SKIP: group=0x%04x scene=0x%02x fc03_len=%u",
+                 (unsigned)group_id,
+                 (unsigned)scene_id,
+                 (unsigned)fc03_len);
+        return false;
+    }
+    if (!scene_fc03_payload_has_known_flags(fc03, fc03_len)) {
+        ESP_LOGW(TAG,
+                 "SCENE_FC03_CACHE_SKIP: group=0x%04x scene=0x%02x invalid_fc03_flags=0x%04x",
+                 (unsigned)group_id,
+                 (unsigned)scene_id,
+                 (unsigned)u16_le(fc03));
+        return false;
+    }
+
+    scene_fc03_cache_entry_t *slot = NULL;
+    scene_fc03_cache_entry_t *oldest = &s_scene_fc03_cache[0];
+    for (size_t i = 0; i < SCENE_FC03_CACHE_ENTRIES; i++) {
+        scene_fc03_cache_entry_t *entry = &s_scene_fc03_cache[i];
+        if (entry->valid &&
+            entry->endpoint == endpoint &&
+            entry->group_id == group_id &&
+            entry->scene_id == scene_id) {
+            slot = entry;
+            break;
+        }
+        if (!entry->valid && !slot) {
+            slot = entry;
+        }
+        if (entry->age < oldest->age) {
+            oldest = entry;
+        }
+    }
+    if (!slot) {
+        slot = oldest;
+    }
+
+    bool changed = !slot->valid ||
+        slot->endpoint != endpoint ||
+        slot->group_id != group_id ||
+        slot->scene_id != scene_id ||
+        slot->fc03_len != fc03_len ||
+        memcmp(slot->fc03, fc03, fc03_len) != 0;
+
+    slot->valid = true;
+    slot->endpoint = endpoint;
+    slot->group_id = group_id;
+    slot->scene_id = scene_id;
+    slot->fc03_len = (uint8_t)fc03_len;
+    memcpy(slot->fc03, fc03, fc03_len);
+    slot->age = ++s_scene_fc03_cache_age;
+
+    ESP_LOGI(TAG,
+             "SCENE_FC03_CACHE_STORE: endpoint=%u group=0x%04x scene=0x%02x fc03_len=%u changed=%u",
+             (unsigned)endpoint,
+             (unsigned)group_id,
+             (unsigned)scene_id,
+             (unsigned)fc03_len,
+             changed ? 1U : 0U);
+    return changed;
+}
+
+static bool apply_cached_scene_fc03(uint8_t endpoint, const uint8_t *payload, uint16_t payload_len)
+{
+    uint16_t group_id = 0;
+    uint8_t scene_id = 0;
+    if (!scene_payload_key(payload, payload_len, &group_id, &scene_id)) {
+        return false;
+    }
+
+    for (size_t i = 0; i < SCENE_FC03_CACHE_ENTRIES; i++) {
+        scene_fc03_cache_entry_t *entry = &s_scene_fc03_cache[i];
+        if (!entry->valid ||
+            entry->endpoint != endpoint ||
+            entry->group_id != group_id ||
+            entry->scene_id != scene_id) {
+            continue;
+        }
+
+        ESP_LOGI(TAG,
+                 "SCENE_FC03_CACHE_APPLY: endpoint=%u group=0x%04x scene=0x%02x fc03_len=%u",
+                 (unsigned)endpoint,
+                 (unsigned)group_id,
+                 (unsigned)scene_id,
+                 (unsigned)entry->fc03_len);
+        entry->age = ++s_scene_fc03_cache_age;
+        handle_fc03_multicolor_command(endpoint, entry->fc03, entry->fc03_len);
+        return true;
+    }
+
+    ESP_LOGI(TAG,
+             "SCENE_FC03_CACHE_MISS: endpoint=%u group=0x%04x scene=0x%02x",
+             (unsigned)endpoint,
+             (unsigned)group_id,
+             (unsigned)scene_id);
+    remember_pending_scene_recall(endpoint, group_id, scene_id);
+    return false;
+}
+
+static bool handle_scenes_mfg_store_raw(const zb_zcl_parsed_hdr_t *hdr,
+                                        const uint8_t *payload,
+                                        uint16_t payload_len)
+{
+    if (!hdr || !payload ||
+        hdr->addr_data.common_data.source.addr_type != ZB_ZCL_ADDR_TYPE_SHORT) {
+        return false;
+    }
+
+    uint8_t endpoint = hdr->addr_data.common_data.dst_endpoint;
+    if (endpoint < HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE ||
+        endpoint >= HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE + ARGB_ENDPOINT_COUNT) {
+        return false;
+    }
+
+    uint16_t group_id = 0;
+    uint8_t scene_id = 0;
+    if (!scene_payload_key(payload, payload_len, &group_id, &scene_id)) {
+        return false;
+    }
+
+    if (cache_scene_fc03_payload(endpoint, payload, payload_len)) {
+        save_scene_fc03_cache();
+    }
+    bool apply_pending = take_pending_scene_recall(endpoint, group_id, scene_id);
+
+    zb_bufid_t out = zb_buf_get_out();
+    if (!out) {
+        ESP_LOGE(TAG, "SCENES_MFG_STORE_RESP_RAW: no ZBOSS output buffer");
+        return true;
+    }
+
+    uint8_t *cmd_ptr = ZB_ZCL_START_PACKET(out);
+    ZB_ZCL_CONSTRUCT_SPECIFIC_COMMAND_RESP_FRAME_CONTROL_A(cmd_ptr,
+                                                           ZB_ZCL_FRAME_DIRECTION_TO_CLI,
+                                                           ZB_ZCL_MANUFACTURER_SPECIFIC);
+    ZB_ZCL_CONSTRUCT_COMMAND_HEADER_EXT(cmd_ptr,
+                                        hdr->seq_number,
+                                        ZB_TRUE,
+                                        SIGNIFY_MANUFACTURER_CODE,
+                                        SCENES_MFG_STORE_CMD_ID);
+    ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ZB_ZCL_STATUS_SUCCESS);
+    ZB_ZCL_PACKET_PUT_DATA16_VAL(cmd_ptr, group_id);
+    ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, scene_id);
+
+    uint16_t dst_addr = hdr->addr_data.common_data.source.u.short_addr;
+    ESP_LOGI(TAG,
+             "SCENES_MFG_STORE_RESP_RAW: tsn=0x%02x to=0x%04x ep=%u group=0x%04x scene=0x%02x",
+             (unsigned)hdr->seq_number,
+             (unsigned)dst_addr,
+             (unsigned)endpoint,
+             (unsigned)group_id,
+             (unsigned)scene_id);
+    ZB_ZCL_FINISH_N_SEND_PACKET(out,
+                                cmd_ptr,
+                                dst_addr,
+                                ZB_APS_ADDR_MODE_16_ENDP_PRESENT,
+                                hdr->addr_data.common_data.src_endpoint,
+                                endpoint,
+                                hdr->profile_id,
+                                hdr->cluster_id,
+                                NULL);
+    if (apply_pending) {
+        ESP_LOGI(TAG,
+                 "SCENE_FC03_CACHE_RECOVER: endpoint=%u group=0x%04x scene=0x%02x source=mfg_store",
+                 (unsigned)endpoint,
+                 (unsigned)group_id,
+                 (unsigned)scene_id);
+        handle_fc03_multicolor_command(endpoint,
+                                      payload + SCENES_KEY_PAYLOAD_LEN,
+                                      payload_len - SCENES_KEY_PAYLOAD_LEN);
+    }
+    return true;
+}
+
+static bool handle_scenes_mfg_compact_scene_raw(const zb_zcl_parsed_hdr_t *hdr,
+                                                const uint8_t *payload,
+                                                uint16_t payload_len)
+{
+    if (!hdr || !payload ||
+        hdr->addr_data.common_data.source.addr_type != ZB_ZCL_ADDR_TYPE_SHORT) {
+        return false;
+    }
+
+    uint8_t endpoint = hdr->addr_data.common_data.dst_endpoint;
+    if (endpoint < HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE ||
+        endpoint >= HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE + ARGB_ENDPOINT_COUNT) {
+        return false;
+    }
+
+    uint16_t group_id = 0;
+    uint8_t scene_id = 0;
+    if (!scene_payload_key(payload, payload_len, &group_id, &scene_id)) {
+        return false;
+    }
+
+    uint8_t keyed_fc03[SCENES_KEY_PAYLOAD_LEN + SCENE_FC03_MAX_PAYLOAD_LEN];
+    uint16_t keyed_fc03_len = 0;
+    if (!scene_compact_payload_to_keyed_fc03(payload,
+                                             payload_len,
+                                             keyed_fc03,
+                                             sizeof(keyed_fc03),
+                                             &keyed_fc03_len)) {
+        return false;
+    }
+
+    bool changed = cache_scene_fc03_payload(endpoint, keyed_fc03, keyed_fc03_len);
+    if (changed) {
+        save_scene_fc03_cache();
+    }
+    bool matched_pending = take_pending_scene_recall(endpoint, group_id, scene_id);
+
+    ESP_LOGI(TAG,
+             "SCENES_MFG_COMPACT_SCENE: endpoint=%u group=0x%04x scene=0x%02x fc03_len=%u changed=%u pending=%u",
+             (unsigned)endpoint,
+             (unsigned)group_id,
+             (unsigned)scene_id,
+             (unsigned)(keyed_fc03_len - SCENES_KEY_PAYLOAD_LEN),
+             changed ? 1U : 0U,
+             matched_pending ? 1U : 0U);
+
+    handle_fc03_multicolor_command(endpoint,
+                                  keyed_fc03 + SCENES_KEY_PAYLOAD_LEN,
+                                  keyed_fc03_len - SCENES_KEY_PAYLOAD_LEN);
+    return true;
 }
 
 static esp_err_t deferred_driver_init(void)
@@ -2717,6 +3248,11 @@ static const char *zcl_cmd_name(const zb_zcl_parsed_hdr_t *hdr)
         hdr->cmd_id == FC03_MULTICOLOR_CMD_ID) {
         return "multi_color";
     }
+    if (!hdr->is_common_command &&
+        hdr->cluster_id == ESP_ZB_ZCL_CLUSTER_ID_SCENES &&
+        hdr->is_manuf_specific) {
+        return "mfg_scene_cmd";
+    }
     return zcl_global_cmd_name(hdr->cmd_id);
 }
 
@@ -2758,6 +3294,14 @@ static void log_zcl_payload_summary(const zb_zcl_parsed_hdr_t *hdr, const uint8_
             hdr->is_manuf_specific &&
             hdr->manuf_specific == SIGNIFY_MANUFACTURER_CODE) {
             print_hex_bytes("FC03_MULTICOLOR_HEX: ", payload, len);
+        } else if (hdr->is_manuf_specific &&
+                   hdr->cluster_id == ESP_ZB_ZCL_CLUSTER_ID_SCENES) {
+            print_hex_bytes("SCENES_MFG_CMD_HEX: ", payload, len);
+        } else if (hdr->is_manuf_specific) {
+            print_hex_bytes("ZCL_MFG_CMD_HEX: ", payload, len);
+        } else if (hdr->cluster_id == ESP_ZB_ZCL_CLUSTER_ID_SCENES &&
+                   hdr->cmd_id == SCENES_RECALL_SCENE_CMD_ID) {
+            print_hex_bytes("SCENES_RECALL_HEX: ", payload, len);
         }
         return;
     }
@@ -2942,6 +3486,33 @@ static bool zb_raw_command_handler(uint8_t bufid)
             handle_scenes_get_membership_raw(hdr, payload, payload_len)) {
             zb_buf_free(bufid);
             return true;
+        }
+        if (hdr->cluster_id == ESP_ZB_ZCL_CLUSTER_ID_SCENES &&
+            hdr->cmd_id == SCENES_MFG_COMPACT_SCENE_CMD_ID &&
+            !hdr->is_common_command &&
+            hdr->is_manuf_specific &&
+            hdr->manuf_specific == SIGNIFY_MANUFACTURER_CODE &&
+            hdr->cmd_direction == ESP_ZB_ZCL_CMD_DIRECTION_TO_SRV &&
+            handle_scenes_mfg_compact_scene_raw(hdr, payload, payload_len)) {
+            zb_buf_free(bufid);
+            return true;
+        }
+        if (hdr->cluster_id == ESP_ZB_ZCL_CLUSTER_ID_SCENES &&
+            hdr->cmd_id == SCENES_MFG_STORE_CMD_ID &&
+            !hdr->is_common_command &&
+            hdr->is_manuf_specific &&
+            hdr->manuf_specific == SIGNIFY_MANUFACTURER_CODE &&
+            hdr->cmd_direction == ESP_ZB_ZCL_CMD_DIRECTION_TO_SRV &&
+            handle_scenes_mfg_store_raw(hdr, payload, payload_len)) {
+            zb_buf_free(bufid);
+            return true;
+        }
+        if (hdr->cluster_id == ESP_ZB_ZCL_CLUSTER_ID_SCENES &&
+            hdr->cmd_id == SCENES_RECALL_SCENE_CMD_ID &&
+            !hdr->is_common_command &&
+            !hdr->is_manuf_specific &&
+            hdr->cmd_direction == ESP_ZB_ZCL_CMD_DIRECTION_TO_SRV) {
+            (void)apply_cached_scene_fc03(hdr->addr_data.common_data.dst_endpoint, payload, payload_len);
         }
         if (hdr->cluster_id == MFG_CLUSTER_GRADIENT_ID &&
             hdr->cmd_id == ZB_ZCL_CMD_READ_ATTRIB &&
@@ -3678,6 +4249,53 @@ static void serial_cmd_task(void *pvParameters)
             } else {
                 printf("USAGE: g <hex payload>\n");
             }
+        } else if (strncmp(line, "scene ", 6) == 0 ||
+                   strncmp(line, "scene-apply ", 12) == 0) {
+            bool apply = strncmp(line, "scene-apply ", 12) == 0;
+            const char *scene_hex = apply ? line + 12 : line + 6;
+            uint8_t payload[SCENES_KEY_PAYLOAD_LEN + SCENE_FC03_MAX_PAYLOAD_LEN];
+            size_t len = hex_to_bytes(scene_hex, payload, sizeof(payload));
+            uint16_t group_id = 0;
+            uint8_t scene_id = 0;
+            if (len < SCENES_KEY_PAYLOAD_LEN + 2 ||
+                !scene_payload_key(payload, len, &group_id, &scene_id)) {
+                printf("USAGE: scene <SCENES_MFG_CMD_HEX payload>\n");
+                printf("USAGE: scene-apply <SCENES_MFG_CMD_HEX payload>\n");
+                continue;
+            }
+            uint8_t keyed_fc03[SCENES_KEY_PAYLOAD_LEN + SCENE_FC03_MAX_PAYLOAD_LEN];
+            const uint8_t *cache_payload = payload;
+            uint16_t cache_payload_len = (uint16_t)len;
+            uint16_t keyed_fc03_len = 0;
+            if (!scene_fc03_payload_has_known_flags(payload + SCENES_KEY_PAYLOAD_LEN,
+                                                    (uint16_t)(len - SCENES_KEY_PAYLOAD_LEN))) {
+                if (!scene_compact_payload_to_keyed_fc03(payload,
+                                                         (uint16_t)len,
+                                                         keyed_fc03,
+                                                         sizeof(keyed_fc03),
+                                                         &keyed_fc03_len)) {
+                    printf("SCENE_CACHE: unsupported scene payload\n");
+                    continue;
+                }
+                cache_payload = keyed_fc03;
+                cache_payload_len = keyed_fc03_len;
+            }
+            bool changed = cache_scene_fc03_payload(HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE,
+                                                    cache_payload,
+                                                    cache_payload_len);
+            if (changed) {
+                save_scene_fc03_cache();
+            }
+            printf("SCENE_CACHE: group=0x%04x scene=0x%02x len=%u changed=%u\n",
+                   (unsigned)group_id,
+                   (unsigned)scene_id,
+                   (unsigned)(cache_payload_len - SCENES_KEY_PAYLOAD_LEN),
+                   changed ? 1U : 0U);
+            if (apply) {
+                handle_fc03_multicolor_command(HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE,
+                                              cache_payload + SCENES_KEY_PAYLOAD_LEN,
+                                              (uint16_t)(cache_payload_len - SCENES_KEY_PAYLOAD_LEN));
+            }
         } else if (strncmp(line, "group ", 6) == 0) {
             char *end = NULL;
             uint16_t group_id = (uint16_t)strtoul(line + 6, &end, 0);
@@ -3695,7 +4313,8 @@ static void serial_cmd_task(void *pvParameters)
             continue;
         } else if (strcmp(line, "help") == 0) {
             printf("Commands: g <hex>, gradient <hex>, group <id> [endpoint], state, "
-                   "discover/reset, led off, led solid <rrggbb>, led gradient, led chase, help\n");
+                   "discover/reset, scene <hex>, scene-apply <hex>, led off, "
+                   "led solid <rrggbb>, led gradient, led chase, help\n");
         }
     }
 }
@@ -3756,6 +4375,7 @@ void app_main(void)
         .host_config = ESP_ZB_DEFAULT_HOST_CONFIG(),
     };
     ESP_ERROR_CHECK(nvs_flash_init());
+    load_scene_fc03_cache();
     ESP_ERROR_CHECK(esp_zb_platform_config(&config));
     xTaskCreate(esp_zb_task, "Zigbee_main", 4096, NULL, 5, NULL);
     xTaskCreate(serial_cmd_task, "serial_cli", 8192, NULL, 1, NULL);

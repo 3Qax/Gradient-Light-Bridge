@@ -73,3 +73,40 @@ responses, FC03 command `0x15/0x16`, and OTA cluster behavior.
 This capture independently confirms the FC03 extended-discovery classifier:
 frame `537` is command `0x16` advertising attrs `0x0032` type `0x20` access
 `0x1c` and `0x2000` type `0x07` access `0x1c`.
+
+## Scenes Ground Truth
+
+The real LCX004 does not report stored scene IDs in Get Scene Membership, even
+after the bridge sends scene definitions:
+
+- frame `1075`: bridge sends standard Scenes cluster server command `0x06`
+  (Get Scene Membership) for group `0xe9d5`.
+- frame `1077`: LCX004 replies with Get Scene Membership Response:
+  `status=0x00`, `capacity=50`, `group_id=0xe9d5`, `scene_count=0`.
+
+So firmware should not invent a non-empty scene-membership list. The useful
+parity point is the manufacturer-specific scene-store acknowledgement:
+
+- frame `2090`: bridge sends manufacturer-specific Scenes cluster command
+  `0x02`, manufacturer `0x100b`, payload
+  `d5e9821b0001fe909f085c0400`.
+  - `d5e9` is group `0xe9d5`.
+  - `82` is scene id `0x82`.
+  - the remaining bytes are the embedded FC03 state payload.
+- frame `2092`: LCX004 replies on the same manufacturer command with payload
+  `00d5e982`: success status, same group id, same scene id.
+
+Implication for the ESP firmware: cache the embedded FC03 payload for fast
+Recall Scene handling, keep membership count at zero with capacity `50`, and
+explicitly respond to manufacturer-specific Scenes command `0x02` with
+`00 <group_lo> <group_hi> <scene_id>`.
+
+The capture also shows manufacturer-specific Scenes command `0x00` as a
+compact scene/update form. Example frame `1656` is a bridge groupcast with
+payload `d5e90e0c1350000000dbfd59866c6387cc6c49bc765c0a82ba`.
+The first three bytes are still `group_id=0xe9d5`, `scene_id=0x0e`; the body
+starts with `0c`, followed by a normal FC03 gradient color block
+(`13 50 ...`) and one trailing compact byte. This command has default response
+disabled, so the useful behavior is to translate the compact gradient body into
+the normal FC03 renderer/cache format and apply it, not to send an explicit
+response.
