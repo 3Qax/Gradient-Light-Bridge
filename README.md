@@ -208,112 +208,85 @@ launchctl start com.argb-to-hue.daemon
 - **Colors do not change in OpenRGB**: check that OpenRGB detects your devices and that they support a Direct/Custom mode. Set `set_direct_mode: true` in `config.yaml`.
 - **Wrong zone mapping**: use OpenRGB’s GUI to inspect device/zone names and indices, then update `config.yaml`.
 
-## Research
+## Research & References
+
+### Articles
+
+- [Getting Root on Philips Hue Bridge 2.0](https://colinoflynn.com/2016/07/getting-root-on-philips-hue-bridge-2-0/)
+  - Bridge 2.0 UART/root access context and bridge firmware
+    inspection starting point.
+
+- [Don't be silly - it's only a lightbulb](https://research.checkpoint.com/2020/dont-be-silly-its-only-a-lightbulb/)
+  - Hue bridge `ipbridge` reverse engineering and Zigbee-to-main-CPU
+    message processing.
+
+- [Make it Blink: Over-the-Air Exploitation of the Philips Hue Bridge](https://www.synacktiv.com/en/publications/make-it-blink-over-the-air-exploitation-of-the-philips-hue-bridge)
+  - Recent Hue bridge RE and Zigbee frame processing context.
+
+- [HAL9K, Sniffing Philips Hue Zigbee Traffic With Wireshark](https://www.hal9k.dk/sniffing-philips-hue-zigbee-traffic-with-wireshark/)
+  - How to decrypt sniffed Zigbee traffic via wireshark
+
+- [PeeVeeOne, "Breakout breakthrough"](https://peeveeone.com/2016/11/breakout-breakthrough/)
+  - Useful for the classical commissioning vs touchlink distinction. Do not
+    mirror this page into the repo because it publishes key material.
+
+- [PeeVeeOne, "Custom firmware Hue lights"](https://peeveeone.com/2016/11/custom-firmware-hue-lights/)
+  - Useful for historical custom ZLL/Hue-compatible light firmware behavior.
+
+- [Wejn, "Project intro: Reversing Philips Hue light driver"](https://wejn.org/2024/12/reversing-philips-hue-light-driver/)
+  - Useful for modern Hue light controller hardware context.
+
+- [Wejn, "Zigbee: Hue-llo world!"](https://wejn.org/2025/01/zigbee-hue-llo-world/)
+  - Useful because it overlaps with ESP32-C6 Hue-compatible device work.
 
 ### Papers
 
 - [All Your Bulbs Are Belong to Us:
 Investigating the Current State of Security in Connected Lighting Systems](https://arxiv.org/pdf/1608.03732)
-  - Relevance: ZLL security, touchlink attacks, Philips Hue/Osram/GE connected
+  - ZLL security, touchlink attacks, Philips Hue/Osram/GE connected
     lighting behavior. Useful background for commissioning assumptions.
 
 - [Insecure to the touch: attacking ZigBee 3.0 via touchlink commissioning
 ](https://doi.org/10.1145/3098243.3098254)
-  - Relevance: Zigbee 3.0 touchlink commissioning security. Useful for
+  - Zigbee 3.0 touchlink commissioning security. Useful for
     understanding why touchlink and classical commissioning need to be kept
     separate when reasoning about Hue pairing.
 
-- `papers/morgner-2018-security-economics-iot-standardization-arxiv-1810.12035.pdf`
-  - Source: https://arxiv.org/abs/1810.12035
-  - PDF: https://arxiv.org/pdf/1810.12035
-  - Relevance: background on Zigbee/ZLL standardization incentives and security
+- [Exploring Security Economics in IoT Standardization Efforts](https://arxiv.org/pdf/1810.12035)
+  - Background on Zigbee/ZLL standardization incentives and security
     economics. Useful for understanding why deprecated ZLL decisions still
     affect Zigbee 3.0 ecosystems.
 
-- `papers/oflynn-2016-a-lightbulb-worm-whitepaper.pdf`
-  - Source:
-    https://colinoflynn.com/2016/08/philips-hue-r-e-whitepaper-from-black-hat-2016/
-  - PDF:
-    https://blackhat.com/docs/us-16/materials/us-16-OFlynn-A-Lightbulb-Worm-wp.pdf
-  - Relevance: Hue bridge/bulb hardware reverse engineering, security model,
+- [A Lightbulb Worm? Details of the Philips Hue Smart Lighting Design](https://blackhat.com/docs/us-16/materials/us-16-OFlynn-A-Lightbulb-Worm-wp.pdf)
+  - Hue bridge/bulb hardware reverse engineering, security model,
     firmware update encryption/signing, and attack-surface notes.
 
-- `papers/ronen-2017-iot-goes-nuclear-ieee-sp.pdf`
-  - Source: https://www.eyalro.net/project/iotworm.html
-  - Local file source:
-    https://www.eyalro.net/project/iotworm/IotGoesNuclearIEEESP17.pdf
-  - Publication DOI: https://doi.org/10.1109/SP.2017.14
-  - Relevance: Philips Hue/ZLL chain-reaction work by Ronen, O'Flynn, Shamir,
+- [IoT Goes Nuclear: Creating a ZigBee Chain Reaction](https://doi.org/10.1109/SP.2017.14)
+  - Philips Hue/ZLL chain-reaction work by Ronen, O'Flynn, Shamir,
     and Weingarten. Useful for OTA/key/security background.
 
-- `papers/shafqat-2021-zleaks-zigbee-smart-homes-arxiv-2107.10830.pdf`
-  - Source: https://arxiv.org/abs/2107.10830
-  - PDF: https://arxiv.org/pdf/2107.10830
-  - Relevance: background on passive inference from Zigbee smart-home traffic.
+- [ZLeaks: Passive Inference Attacks on Zigbee based Smart Homes](https://arxiv.org/pdf/2107.10830)
+  - Background on passive inference from Zigbee smart-home traffic.
     Not Hue-certification specific, but useful for thinking about probe logs and
     recognizable command/reporting patterns.
 
-- `papers/rohilla-2024-security-concerns-iot-light-bulbs-arxiv-2408.14613.pdf`
-  - Source: https://arxiv.org/abs/2408.14613
-  - PDF: https://arxiv.org/pdf/2408.14613
-  - Relevance: background smart-light security/covert-channel paper. Lower
+- [Security Concerns in IoT Light Bulbs: Investigating Covert Channels](https://arxiv.org/pdf/2408.14613)
+  - Background smart-light security/covert-channel paper. Lower
     direct implementation value, but related to Hue-light security literature.
 
 ### Slides
 
-- `slides/oflynn-2016-a-lightbulb-worm-slides.pdf`
-  - Source:
-    https://blackhat.com/docs/us-16/materials/us-16-OFlynn-A-Lightbulb-Worm.pdf
-  - Relevance: presentation version of Colin O'Flynn's Hue teardown.
+- [A Lightbulb Worm? (Black Hat USA 2016 slides)](https://blackhat.com/docs/us-16/materials/us-16-OFlynn-A-Lightbulb-Worm.pdf)
+  - Presentation version of Colin O'Flynn's Hue teardown.
 
-### Articless
-
-- `articles/colin-oflynn-getting-root-on-philips-hue-bridge-2.0.pdf`
-  - Source:
-    https://colinoflynn.com/2016/07/getting-root-on-philips-hue-bridge-2-0/
-  - Relevance: bridge 2.0 UART/root access context and bridge firmware
-    inspection starting point.
-
-- `articles/checkpoint-dont-be-silly-its-only-a-lightbulb.pdf`
-  - Source:
-    https://research.checkpoint.com/2020/dont-be-silly-its-only-a-lightbulb/
-  - Relevance: Hue bridge `ipbridge` reverse engineering and Zigbee-to-main-CPU
-    message processing.
-
-- `articles/synacktiv-make-it-blink-philips-hue-bridge.pdf`
-  - Source:
-    https://www.synacktiv.com/en/publications/make-it-blink-over-the-air-exploitation-of-the-philips-hue-bridge
-  - Relevance: recent Hue bridge RE and Zigbee frame processing context.
-
-- `aricles/hal9k-snigging-philips-hue-zigbee-traffic-with-wireshark`
-    - Source: https://www.hal9k.dk/sniffing-philips-hue-zigbee-traffic-with-wireshark/
-    - Relevance: how to decrypt sniffed Zigbee traffic via wireshark
- 
-- PeeVeeOne, "Breakout breakthrough"
-  - https://peeveeone.com/2016/11/breakout-breakthrough/
-  - Useful for the classical commissioning vs touchlink distinction. Do not
-    mirror this page into the repo because it publishes key material.
-
-- PeeVeeOne, "Custom firmware Hue lights"
-  - https://peeveeone.com/2016/11/custom-firmware-hue-lights/
-  - Useful for historical custom ZLL/Hue-compatible light firmware behavior.
-
-- Wejn.org, "Project intro: Reversing Philips Hue light driver"
-  - https://wejn.org/2024/12/reversing-philips-hue-light-driver/
-  - Useful for modern Hue light controller hardware context.
-
-- Wejn.org, "Zigbee: Hue-llo world!"
-  - https://wejn.org/2025/01/zigbee-hue-llo-world/
-  - Useful because it overlaps with ESP32-C6 Hue-compatible device work.
-  
 ### Specs And Code Notes
 
-- [Bifrost's hue-zigbee-format.md](https://github.com/chrivers/bifrost/blob/12d9e37e6ea032fb0708ddcd2faaa6db0133d7c8/doc/hue-zigbee-format.md)
+- [Bifrost, hue-zigbee-format.md](https://github.com/chrivers/bifrost/blob/12d9e37e6ea032fb0708ddcd2faaa6db0133d7c8/doc/hue-zigbee-format.md)
   - Best current public documentation found for Hue
     manufacturer-specific cluster `0xFC03`, including gradient colors, effects,
     effect speed, scale, offset, and style fields.
-    
-- [Krzysztof Jagiełło's Hue Gradient command generator](https://kjagiello.github.io/hue-gradient-command-wizard/)
+
+- [Krzysztof Jagiełło, Hue Gradient command generator](https://github.com/kjagiello/hue-gradient-command-wizard/)
   - Implementation reference for the public Hue Gradient command
     wizard. Useful for comparing command payload generation against Bifrost and
     probe captures.
@@ -333,4 +306,4 @@ Investigating the Current State of Security in Connected Lighting Systems](https
 
 ## License
 
-MIT - 0 warranty, 0 liability, 0 resposibility for the damages. Use at your own risk.
+MIT. 0 warranty, 0 liability, 0 resposibility for the damages. Use at your own risk.
