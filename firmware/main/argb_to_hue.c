@@ -2,8 +2,8 @@
  * SPDX-FileCopyrightText: 2021-2022 Espressif Systems (Shanghai) CO LTD
  * SPDX-License-Identifier: CC0-1.0
  *
- * Derived from Espressif's HA_color_dimmable_light example and the fixes
- * documented in https://wejn.org/2025/01/zigbee-hue-llo-world/
+ * Derived from Espressif's HA_color_dimmable_light example and compatibility
+ * fixes documented by the reverse-engineering community.
  */
 
 #include "argb_to_hue.h"
@@ -38,98 +38,98 @@
 #error Define ZB_ZCZR in idf.py menuconfig to compile light (Router) source code.
 #endif
 
-static const char *TAG = "ARGB_TO_HUE";
+static const char *TAG = "ARGB_BRIDGE";
 
-/* Hue manufacturer-specific cluster IDs found on real gradient lights. */
-#define HUE_MANU_SPECIFIC_PHILIPS2_CLUSTER_ID  0xFC03 /* gradient / multiColor */
-#define HUE_MANU_SPECIFIC_PHILIPS3_CLUSTER_ID  0xFC01 /* certification/proprietary */
-#define HUE_MANU_SPECIFIC_PHILIPS4_CLUSTER_ID  0xFC04 /* unknown Philips */
-#define HUE_TOUCHLINK_CLUSTER_ID               0x1000 /* present on real gradient endpoint */
-#define HUE_GP_ENDPOINT                        242
-#define HUE_GP_PROFILE_ID                      0xA1E0
-#define HUE_GP_DEVICE_ID                       0x0061
-#define HUE_GP_CLUSTER_ID                      0x0021
-#define HUE_OTA_IMAGE_NOTIFY_CMD_ID            0x00
-#define HUE_OTA_QUERY_NEXT_IMAGE_REQ_CMD_ID    0x01
-#define HUE_OTA_LCX004_IMAGE_TYPE              0x0118
-#define HUE_OTA_FILE_VERSION                   0x01002000
+/* Manufacturer-specific cluster IDs found on real gradient lights. */
+#define MFG_CLUSTER_GRADIENT_ID         0xFC03 /* gradient / multiColor */
+#define MFG_CLUSTER_CERT_ID             0xFC01 /* certification/proprietary */
+#define MFG_CLUSTER_AUX_ID              0xFC04 /* unknown manufacturer-specific cluster */
+#define TOUCHLINK_CLUSTER_ID               0x1000 /* present on real gradient endpoint */
+#define GP_ENDPOINT                        242
+#define GP_PROFILE_ID                      0xA1E0
+#define GP_DEVICE_ID                       0x0061
+#define GP_CLUSTER_ID                      0x0021
+#define OTA_IMAGE_NOTIFY_CMD_ID            0x00
+#define OTA_QUERY_NEXT_IMAGE_REQ_CMD_ID    0x01
+#define OTA_LCX004_IMAGE_TYPE              0x0118
+#define OTA_FILE_VERSION                   0x01002000
 
-#define HUE_FC03_FLAG_ON_OFF                   0x0001
-#define HUE_FC03_FLAG_BRIGHTNESS               0x0002
-#define HUE_FC03_FLAG_COLOR_MIREK              0x0004
-#define HUE_FC03_FLAG_COLOR_XY                 0x0008
-#define HUE_FC03_FLAG_FADE_SPEED               0x0010
-#define HUE_FC03_FLAG_EFFECT_TYPE              0x0020
-#define HUE_FC03_FLAG_GRADIENT_PARAMS          0x0040
-#define HUE_FC03_FLAG_EFFECT_SPEED             0x0080
-#define HUE_FC03_FLAG_GRADIENT_COLORS          0x0100
+#define FC03_FLAG_ON_OFF                   0x0001
+#define FC03_FLAG_BRIGHTNESS               0x0002
+#define FC03_FLAG_COLOR_MIREK              0x0004
+#define FC03_FLAG_COLOR_XY                 0x0008
+#define FC03_FLAG_FADE_SPEED               0x0010
+#define FC03_FLAG_EFFECT_TYPE              0x0020
+#define FC03_FLAG_GRADIENT_PARAMS          0x0040
+#define FC03_FLAG_EFFECT_SPEED             0x0080
+#define FC03_FLAG_GRADIENT_COLORS          0x0100
 
-#define HUE_COLOR_POINT_RX_ID                  0x0032
-#define HUE_COLOR_POINT_RY_ID                  0x0033
-#define HUE_COLOR_POINT_GX_ID                  0x0036
-#define HUE_COLOR_POINT_GY_ID                  0x0037
-#define HUE_COLOR_POINT_BX_ID                  0x003A
-#define HUE_COLOR_POINT_BY_ID                  0x003B
+#define COLOR_POINT_RX_ID                  0x0032
+#define COLOR_POINT_RY_ID                  0x0033
+#define COLOR_POINT_GX_ID                  0x0036
+#define COLOR_POINT_GY_ID                  0x0037
+#define COLOR_POINT_BX_ID                  0x003A
+#define COLOR_POINT_BY_ID                  0x003B
 
-#define HUE_ZDO_NODE_DESC_REQ_CLUSTER_ID       0x0002
-#define HUE_ZDO_NODE_DESC_RSP_CLUSTER_ID       0x8002
-#define HUE_ZDO_ACTIVE_EP_REQ_CLUSTER_ID       0x0005
-#define HUE_ZDO_ACTIVE_EP_RSP_CLUSTER_ID       0x8005
-#define HUE_ZDO_SIMPLE_DESC_REQ_CLUSTER_ID     0x0004
-#define HUE_ZDO_SIMPLE_DESC_RSP_CLUSTER_ID     0x8004
-#define HUE_ZDO_SUCCESS_STATUS                 0x00
-#define HUE_ZCL_STATUS_INSUFFICIENT_SPACE      0x89
+#define ZDO_NODE_DESC_REQ_CLUSTER_ID       0x0002
+#define ZDO_NODE_DESC_RSP_CLUSTER_ID       0x8002
+#define ZDO_ACTIVE_EP_REQ_CLUSTER_ID       0x0005
+#define ZDO_ACTIVE_EP_RSP_CLUSTER_ID       0x8005
+#define ZDO_SIMPLE_DESC_REQ_CLUSTER_ID     0x0004
+#define ZDO_SIMPLE_DESC_RSP_CLUSTER_ID     0x8004
+#define ZDO_SUCCESS_STATUS                 0x00
+#define ZCL_STATUS_INSUFFICIENT_SPACE      0x89
 
 /* Experiment: bypass the local endpoint table for ZDO discovery and answer
  * like a real LCX004, including Green Power endpoint 242, without registering
  * endpoint 242 in the ESP-Zigbee endpoint list. */
-#define HUE_ZDO_DESCRIPTOR_OVERRIDE            1
-#define HUE_FC01_EXPLICIT_DEFAULT_RESPONSE     1
+#define ZDO_DESCRIPTOR_OVERRIDE            1
+#define FC01_EXPLICIT_DEFAULT_RESPONSE     1
 
-#ifndef HUE_SERIAL_DEBUG
-#define HUE_SERIAL_DEBUG                       0
+#ifndef ARGB_SERIAL_DEBUG
+#define ARGB_SERIAL_DEBUG               0
 #endif
 
 /* Real LCX004 devices also expose Green Power endpoint 242.
  *
  * Modes:
  *   0 - disabled; known discoverable baseline
- *   1 - ESP-Zigbee gateway endpoint; avoided crash, but Hue created no light
+ *   1 - ESP-Zigbee gateway endpoint; avoided crash, but no light was created
  *   2 - native ZBOSS Green Power Proxy Basic endpoint; current experiment
  */
-#define HUE_GP_ENDPOINT_MODE                   0
+#define GP_ENDPOINT_MODE                   0
 
 /* Manufacturer code for Signify Netherlands B.V. */
-#define HUE_SIGNIFY_MANUFACTURER_CODE 0x100B
+#define SIGNIFY_MANUFACTURER_CODE 0x100B
 
 /* Captured from real LCX004 frame 499 in
  * sniffer-capture-20260703-real-headboard-rejoin-rxidle. */
-static const uint8_t HUE_FC03_DISCOVERY_READ_ATTRS[] = {
+static const uint8_t FC03_DISCOVERY_READ_ATTRS[] = {
     0x01, 0x00, 0x02, 0x00, 0x10, 0x00, 0x11, 0x00,
     0x12, 0x00, 0x13, 0x00, 0x30, 0x00, 0x38, 0x00,
     0x37, 0x00, 0x33, 0x00, 0x32, 0x00,
 };
-static const uint8_t HUE_FC03_DISCOVERY_ATTR2_STATE[] = {
+static const uint8_t FC03_DISCOVERY_ATTR2_STATE[] = {
     0x06, 0x07, 0x00, 0x01, 0xFE, 0x6E, 0x01,
 };
 
-#ifndef HUE_EUI_SUFFIX
-#define HUE_EUI_SUFFIX "FF:FE:05"
+#ifndef ARGB_EUI_SUFFIX
+#define ARGB_EUI_SUFFIX "FF:FE:05"
 #endif
 
-/* Spoof a Signify Netherlands B.V. extended address so the Hue bridge treats
- * the device as a genuine Hue product. The displayed EUI-64 prefix remains
- * 00:17:88:01:0b; HUE_EUI_SUFFIX supplies the final three displayed bytes.
+/* Spoof a Signify Netherlands B.V. extended address so the bridge treats
+ * the device as a genuine product. The displayed EUI-64 prefix remains
+ * 00:17:88:01:0b; ARGB_EUI_SUFFIX supplies the final three displayed bytes.
  *
- * Use HUE_EUI_SUFFIX=auto for additional boards. In auto mode the suffix comes
+ * Use ARGB_EUI_SUFFIX=auto for additional boards. In auto mode the suffix comes
  * from the last three bytes of the ESP factory MAC, so one firmware image can
  * be flashed to multiple boards without Zigbee EUI collisions.
  *
  * esp_zb_set_long_address() stores the EUI-64 in little-endian order, so the
- * array passed to the stack is the reverse of the Hue uniqueid prefix. */
-static esp_zb_ieee_addr_t s_hue_spoofed_long_addr;
+ * array passed to the stack is the reverse of the displayed uniqueid prefix. */
+static esp_zb_ieee_addr_t s_spoofed_long_addr;
 
-static bool parse_hue_eui_suffix(const char *text, uint8_t suffix[3])
+static bool parse_eui_suffix(const char *text, uint8_t suffix[3])
 {
     if (!text || !suffix) {
         return false;
@@ -139,14 +139,14 @@ static bool parse_hue_eui_suffix(const char *text, uint8_t suffix[3])
         uint8_t factory_mac[6] = {0};
         esp_err_t err = esp_read_mac(factory_mac, ESP_MAC_BASE);
         if (err != ESP_OK) {
-            ESP_LOGE(TAG, "Failed to read ESP base MAC for Hue EUI suffix: %s", esp_err_to_name(err));
+            ESP_LOGE(TAG, "Failed to read ESP base MAC for EUI suffix: %s", esp_err_to_name(err));
             return false;
         }
         suffix[0] = factory_mac[3];
         suffix[1] = factory_mac[4];
         suffix[2] = factory_mac[5];
         ESP_LOGI(TAG,
-                 "Using ESP factory MAC suffix for Hue EUI: %02x:%02x:%02x from %02x:%02x:%02x:%02x:%02x:%02x",
+                 "Using ESP factory MAC suffix for EUI: %02x:%02x:%02x from %02x:%02x:%02x:%02x:%02x:%02x",
                  suffix[0],
                  suffix[1],
                  suffix[2],
@@ -163,13 +163,13 @@ static bool parse_hue_eui_suffix(const char *text, uint8_t suffix[3])
     if (sscanf(text, "%2x:%2x:%2x", &parsed[0], &parsed[1], &parsed[2]) != 3 &&
         sscanf(text, "%2x-%2x-%2x", &parsed[0], &parsed[1], &parsed[2]) != 3 &&
         sscanf(text, "%2x%2x%2x", &parsed[0], &parsed[1], &parsed[2]) != 3) {
-        ESP_LOGE(TAG, "Invalid HUE_EUI_SUFFIX `%s`; expected auto or three hex bytes", text);
+        ESP_LOGE(TAG, "Invalid ARGB_EUI_SUFFIX `%s`; expected auto or three hex bytes", text);
         return false;
     }
 
     for (int i = 0; i < 3; i++) {
         if (parsed[i] > 0xff) {
-            ESP_LOGE(TAG, "Invalid HUE_EUI_SUFFIX byte %u in `%s`", parsed[i], text);
+            ESP_LOGE(TAG, "Invalid ARGB_EUI_SUFFIX byte %u in `%s`", parsed[i], text);
             return false;
         }
         suffix[i] = (uint8_t)parsed[i];
@@ -177,24 +177,24 @@ static bool parse_hue_eui_suffix(const char *text, uint8_t suffix[3])
     return true;
 }
 
-static void init_hue_spoofed_long_addr(void)
+static void init_spoofed_long_addr(void)
 {
     uint8_t suffix[3] = {0xff, 0xfe, 0x05};
-    if (!parse_hue_eui_suffix(HUE_EUI_SUFFIX, suffix)) {
-        ESP_LOGW(TAG, "Falling back to legacy Hue EUI suffix FF:FE:05");
+    if (!parse_eui_suffix(ARGB_EUI_SUFFIX, suffix)) {
+        ESP_LOGW(TAG, "Falling back to legacy EUI suffix FF:FE:05");
     }
 
-    s_hue_spoofed_long_addr[0] = suffix[2];
-    s_hue_spoofed_long_addr[1] = suffix[1];
-    s_hue_spoofed_long_addr[2] = suffix[0];
-    s_hue_spoofed_long_addr[3] = 0x0b;
-    s_hue_spoofed_long_addr[4] = 0x01;
-    s_hue_spoofed_long_addr[5] = 0x88;
-    s_hue_spoofed_long_addr[6] = 0x17;
-    s_hue_spoofed_long_addr[7] = 0x00;
+    s_spoofed_long_addr[0] = suffix[2];
+    s_spoofed_long_addr[1] = suffix[1];
+    s_spoofed_long_addr[2] = suffix[0];
+    s_spoofed_long_addr[3] = 0x0b;
+    s_spoofed_long_addr[4] = 0x01;
+    s_spoofed_long_addr[5] = 0x88;
+    s_spoofed_long_addr[6] = 0x17;
+    s_spoofed_long_addr[7] = 0x00;
 
     ESP_LOGI(TAG,
-             "Hue spoofed EUI-64: 00:17:88:01:0b:%02x:%02x:%02x",
+             "Spoofed EUI-64: 00:17:88:01:0b:%02x:%02x:%02x",
              suffix[0],
              suffix[1],
              suffix[2]);
@@ -202,8 +202,8 @@ static void init_hue_spoofed_long_addr(void)
 
 /* Zigbee strings are octet strings: first byte is the length.
  * These values are from an active read of a real LCX004 Basic cluster. */
-static const char *HUE_MANUFACTURER_NAME = "\x18" "Signify Netherlands B.V.";
-static const char *HUE_MODEL_IDENTIFIER  = "\x06" "LCX004";
+static const char *BASIC_MANUFACTURER_NAME = "\x18" "Signify Netherlands B.V.";
+static const char *BASIC_MODEL_IDENTIFIER  = "\x06" "LCX004";
 
 /* Minimal initial gradient state for the FC03 cluster attribute 0x0002.
  * This is the raw mode-based format used by real gradient lights for the
@@ -217,7 +217,7 @@ static const char *HUE_MODEL_IDENTIFIER  = "\x06" "LCX004";
  * 1 (len) + 2 (mode) + 1 (onOff) + 1 (bri) + 4 (unknown) + 1 (len2) +
  * 1 (ncolors) + 1 (style) + 2 (reserved) + 3*N (colors) + 1 (segments) +
  * 1 (offset) = 16 + 3*N bytes.  For N=9 this is 43 bytes. */
-static uint8_t s_hue_state[ARGB_ENDPOINT_COUNT][64] = {
+static uint8_t s_fc03_state[ARGB_ENDPOINT_COUNT][64] = {
     {
         0x1E,                   /* length of payload (30 bytes) */
         0x4B, 0x01,             /* mode = gradient */
@@ -238,7 +238,7 @@ static uint8_t s_hue_state[ARGB_ENDPOINT_COUNT][64] = {
     },
 };
 
-/* manuSpecificPhilips3 (FC01) attributes observed on a real LCX004:
+/* FC01 certification/proprietary attributes observed on a real LCX004:
  *   0x0000 - 8-bit bitmap = 0x0B
  *   0x0001 - 8-bit enum  = 0x00
  *   0x0002 - 8-bit unsigned = 0x0A
@@ -264,14 +264,14 @@ static uint8_t s_basic_attr54[ARGB_ENDPOINT_COUNT][16] = {
     { 0xc7, 0x54, 0x2a, 0xfa, 0x34, 0x8c, 0xf3, 0x83,
       0x78, 0xa0, 0x2d, 0x5d, 0x1c, 0x74, 0xf1, 0xe6 },
 };
-static const uint8_t HUE_BASIC_POWER_ON_CONFIG[] = "\x09" "0:PWRON@1";
-static const uint8_t HUE_BASIC_PRODUCT_LABEL[] = "\x1A" "Philips-LCX004-1-GALSECLv1";
+static const uint8_t BASIC_POWER_ON_CONFIG[] = "\x09" "0:PWRON@1";
+static const uint8_t BASIC_PRODUCT_LABEL[] = "\x1A" "Philips-LCX004-1-GALSECLv1";
 static uint32_t s_basic_attr1[ARGB_ENDPOINT_COUNT] = { 0x00000000 };
 static uint32_t s_basic_attr21[ARGB_ENDPOINT_COUNT] = { 0x001517EC };
 static uint32_t s_basic_attr41[ARGB_ENDPOINT_COUNT] = { 0xC4C1C739 };
 static uint32_t s_basic_attr50[ARGB_ENDPOINT_COUNT] = { 0x00000001 };
 
-static const uint8_t HUE_BASIC_CMD_C1_RESPONSE[] = {
+static const uint8_t BASIC_CMD_C1_RESPONSE[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x55, 0x00,
     0x00, 0x00, 0x35, 0x0A, 0x53, 0x08, 0x01, 0x15,
     0x66, 0x04, 0x03, 0x3E, 0x1A, 0x4A, 0x0A, 0x06,
@@ -282,7 +282,7 @@ static const uint8_t HUE_BASIC_CMD_C1_RESPONSE[] = {
     0x42, 0x17, 0x48, 0x75, 0x65, 0x20, 0x67, 0x72,
 };
 
-static const uint8_t HUE_BASIC_CMD_C1_RESPONSE_0035[] = {
+static const uint8_t BASIC_CMD_C1_RESPONSE_0035[] = {
     0x00, 0x00, 0x35, 0x00, 0x00, 0x00, 0x55, 0x00,
     0x00, 0x00, 0x20, 0x61, 0x64, 0x69, 0x65, 0x6E,
     0x74, 0x20, 0x6C, 0x69, 0x67, 0x68, 0x74, 0x73,
@@ -317,13 +317,13 @@ static void send_basic_c1_response_raw(const zb_zcl_parsed_hdr_t *hdr,
         return;
     }
 
-    const uint8_t *resp_payload = HUE_BASIC_CMD_C1_RESPONSE;
-    uint16_t resp_payload_len = sizeof(HUE_BASIC_CMD_C1_RESPONSE);
+    const uint8_t *resp_payload = BASIC_CMD_C1_RESPONSE;
+    uint16_t resp_payload_len = sizeof(BASIC_CMD_C1_RESPONSE);
     static const uint8_t request_0035[] = { 0x00, 0x35, 0x00, 0x00, 0x00, 0x40 };
     if (payload && payload_len == sizeof(request_0035) &&
         memcmp(payload, request_0035, sizeof(request_0035)) == 0) {
-        resp_payload = HUE_BASIC_CMD_C1_RESPONSE_0035;
-        resp_payload_len = sizeof(HUE_BASIC_CMD_C1_RESPONSE_0035);
+        resp_payload = BASIC_CMD_C1_RESPONSE_0035;
+        resp_payload_len = sizeof(BASIC_CMD_C1_RESPONSE_0035);
     }
 
     uint8_t *cmd_ptr = ZB_ZCL_START_PACKET(out);
@@ -333,7 +333,7 @@ static void send_basic_c1_response_raw(const zb_zcl_parsed_hdr_t *hdr,
     ZB_ZCL_CONSTRUCT_COMMAND_HEADER_EXT(cmd_ptr,
                                         hdr->seq_number,
                                         ZB_TRUE,
-                                        HUE_SIGNIFY_MANUFACTURER_CODE,
+                                        SIGNIFY_MANUFACTURER_CODE,
                                         0xC1);
     ZB_ZCL_PACKET_PUT_DATA_N(cmd_ptr, resp_payload, resp_payload_len);
 
@@ -373,19 +373,19 @@ static void send_ota_query_next_image_raw(const zb_zcl_parsed_hdr_t *hdr)
                                                           ZB_ZCL_ENABLE_DEFAULT_RESPONSE);
     ZB_ZCL_CONSTRUCT_COMMAND_HEADER(cmd_ptr,
                                     ZB_ZCL_GET_SEQ_NUM(),
-                                    HUE_OTA_QUERY_NEXT_IMAGE_REQ_CMD_ID);
+                                    OTA_QUERY_NEXT_IMAGE_REQ_CMD_ID);
     ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, 0x00); /* field control: no hardware version */
-    ZB_ZCL_PACKET_PUT_DATA16_VAL(cmd_ptr, HUE_SIGNIFY_MANUFACTURER_CODE);
-    ZB_ZCL_PACKET_PUT_DATA16_VAL(cmd_ptr, HUE_OTA_LCX004_IMAGE_TYPE);
-    ZB_ZCL_PACKET_PUT_DATA32_VAL(cmd_ptr, HUE_OTA_FILE_VERSION);
+    ZB_ZCL_PACKET_PUT_DATA16_VAL(cmd_ptr, SIGNIFY_MANUFACTURER_CODE);
+    ZB_ZCL_PACKET_PUT_DATA16_VAL(cmd_ptr, OTA_LCX004_IMAGE_TYPE);
+    ZB_ZCL_PACKET_PUT_DATA32_VAL(cmd_ptr, OTA_FILE_VERSION);
 
     uint16_t dst_addr = hdr->addr_data.common_data.source.u.short_addr;
     ESP_LOGI(TAG, "OTA_QUERY_NEXT_IMAGE_REQ_RAW: to=0x%04x ep=%u manuf=0x%04x image=0x%04x file=0x%08lx",
              (unsigned)dst_addr,
              (unsigned)hdr->addr_data.common_data.src_endpoint,
-             (unsigned)HUE_SIGNIFY_MANUFACTURER_CODE,
-             (unsigned)HUE_OTA_LCX004_IMAGE_TYPE,
-             (unsigned long)HUE_OTA_FILE_VERSION);
+             (unsigned)SIGNIFY_MANUFACTURER_CODE,
+             (unsigned)OTA_LCX004_IMAGE_TYPE,
+             (unsigned long)OTA_FILE_VERSION);
     ZB_ZCL_FINISH_N_SEND_PACKET(out,
                                 cmd_ptr,
                                 dst_addr,
@@ -475,7 +475,7 @@ static bool handle_basic_write_attrs_raw(const zb_zcl_parsed_hdr_t *hdr,
     ZB_ZCL_CONSTRUCT_COMMAND_HEADER_EXT(cmd_ptr,
                                         hdr->seq_number,
                                         ZB_TRUE,
-                                        HUE_SIGNIFY_MANUFACTURER_CODE,
+                                        SIGNIFY_MANUFACTURER_CODE,
                                         ZB_ZCL_CMD_WRITE_ATTRIB_RESP);
     ZB_ZCL_GENERAL_SUCCESS_WRITE_ATTR_RESP(cmd_ptr);
 
@@ -549,7 +549,7 @@ static bool handle_basic_read_attrs_raw(const zb_zcl_parsed_hdr_t *hdr,
     ZB_ZCL_CONSTRUCT_COMMAND_HEADER_EXT(cmd_ptr,
                                         hdr->seq_number,
                                         ZB_TRUE,
-                                        HUE_SIGNIFY_MANUFACTURER_CODE,
+                                        SIGNIFY_MANUFACTURER_CODE,
                                         ZB_ZCL_CMD_READ_ATTRIB_RESP);
 
     for (uint16_t offset = 0; offset + 1 < payload_len; offset += 2) {
@@ -560,8 +560,8 @@ static bool handle_basic_read_attrs_raw(const zb_zcl_parsed_hdr_t *hdr,
         case 0x0020:
             ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ZB_ZCL_STATUS_SUCCESS);
             ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ESP_ZB_ZCL_ATTR_TYPE_CHAR_STRING);
-            ZB_ZCL_PACKET_PUT_DATA_N(cmd_ptr, HUE_BASIC_POWER_ON_CONFIG,
-                                     sizeof(HUE_BASIC_POWER_ON_CONFIG) - 1);
+            ZB_ZCL_PACKET_PUT_DATA_N(cmd_ptr, BASIC_POWER_ON_CONFIG,
+                                     sizeof(BASIC_POWER_ON_CONFIG) - 1);
             break;
         case 0x0021:
             ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ZB_ZCL_STATUS_SUCCESS);
@@ -576,8 +576,8 @@ static bool handle_basic_read_attrs_raw(const zb_zcl_parsed_hdr_t *hdr,
         case 0x0040:
             ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ZB_ZCL_STATUS_SUCCESS);
             ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ESP_ZB_ZCL_ATTR_TYPE_CHAR_STRING);
-            ZB_ZCL_PACKET_PUT_DATA_N(cmd_ptr, HUE_BASIC_PRODUCT_LABEL,
-                                     sizeof(HUE_BASIC_PRODUCT_LABEL) - 1);
+            ZB_ZCL_PACKET_PUT_DATA_N(cmd_ptr, BASIC_PRODUCT_LABEL,
+                                     sizeof(BASIC_PRODUCT_LABEL) - 1);
             break;
         case 0x0041:
             ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ZB_ZCL_STATUS_SUCCESS);
@@ -648,7 +648,7 @@ static bool handle_identify_read_attrs_raw(const zb_zcl_parsed_hdr_t *hdr,
     ZB_ZCL_CONSTRUCT_COMMAND_HEADER_EXT(cmd_ptr,
                                         hdr->seq_number,
                                         ZB_TRUE,
-                                        HUE_SIGNIFY_MANUFACTURER_CODE,
+                                        SIGNIFY_MANUFACTURER_CODE,
                                         ZB_ZCL_CMD_READ_ATTRIB_RESP);
     ZB_ZCL_PACKET_PUT_DATA16_VAL(cmd_ptr, attr_id);
     ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ZB_ZCL_STATUS_SUCCESS);
@@ -709,7 +709,7 @@ static bool handle_level_read_attrs_raw(const zb_zcl_parsed_hdr_t *hdr,
     ZB_ZCL_CONSTRUCT_COMMAND_HEADER_EXT(cmd_ptr,
                                         hdr->seq_number,
                                         ZB_TRUE,
-                                        HUE_SIGNIFY_MANUFACTURER_CODE,
+                                        SIGNIFY_MANUFACTURER_CODE,
                                         ZB_ZCL_CMD_READ_ATTRIB_RESP);
 
     for (uint16_t offset = 0; offset + 1 < payload_len; offset += 2) {
@@ -778,7 +778,7 @@ static bool handle_color_mfg_read_attrs_raw(const zb_zcl_parsed_hdr_t *hdr,
     ZB_ZCL_CONSTRUCT_COMMAND_HEADER_EXT(cmd_ptr,
                                         hdr->seq_number,
                                         ZB_TRUE,
-                                        HUE_SIGNIFY_MANUFACTURER_CODE,
+                                        SIGNIFY_MANUFACTURER_CODE,
                                         ZB_ZCL_CMD_READ_ATTRIB_RESP);
 
     for (uint16_t offset = 0; offset + 1 < payload_len; offset += 2) {
@@ -841,7 +841,7 @@ static bool handle_scenes_read_attrs_raw(const zb_zcl_parsed_hdr_t *hdr,
     ZB_ZCL_CONSTRUCT_COMMAND_HEADER_EXT(cmd_ptr,
                                         hdr->seq_number,
                                         ZB_TRUE,
-                                        HUE_SIGNIFY_MANUFACTURER_CODE,
+                                        SIGNIFY_MANUFACTURER_CODE,
                                         ZB_ZCL_CMD_READ_ATTRIB_RESP);
     ZB_ZCL_PACKET_PUT_DATA16_VAL(cmd_ptr, attr_id);
     ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ZB_ZCL_STATUS_SUCCESS);
@@ -918,7 +918,7 @@ static bool handle_scenes_get_membership_raw(const zb_zcl_parsed_hdr_t *hdr,
     return true;
 }
 
-static void hue_group_add_confirm_cb(zb_uint8_t param)
+static void group_add_confirm_cb(zb_uint8_t param)
 {
     zb_apsme_add_group_conf_t *conf = ZB_BUF_GET_PARAM(param, zb_apsme_add_group_conf_t);
     ESP_LOGI(TAG, "GROUPS_APS_ADD_CONFIRM: group=0x%04x ep=%u status=%d in_group=%u",
@@ -929,7 +929,7 @@ static void hue_group_add_confirm_cb(zb_uint8_t param)
     zb_buf_free(param);
 }
 
-static void hue_join_group(uint16_t group_id, uint8_t endpoint)
+static void join_group(uint16_t group_id, uint8_t endpoint)
 {
     if (zb_aps_is_endpoint_in_group(group_id, endpoint)) {
         ESP_LOGI(TAG, "GROUPS_APS_ADD: group=0x%04x ep=%u already present",
@@ -949,7 +949,7 @@ static void hue_join_group(uint16_t group_id, uint8_t endpoint)
     zb_apsme_add_group_req_t *req = ZB_BUF_GET_PARAM(group_buf, zb_apsme_add_group_req_t);
     req->group_address = group_id;
     req->endpoint = endpoint;
-    req->confirm_cb = hue_group_add_confirm_cb;
+    req->confirm_cb = group_add_confirm_cb;
     ESP_LOGI(TAG, "GROUPS_APS_ADD: requesting group=0x%04x ep=%u",
              (unsigned)group_id,
              (unsigned)endpoint);
@@ -977,7 +977,7 @@ static bool handle_groups_add_group_raw(const zb_zcl_parsed_hdr_t *hdr,
     if ((uint16_t)(3 + name_len) != payload_len) {
         return false;
     }
-    hue_join_group(group_id, endpoint);
+    join_group(group_id, endpoint);
 
     zb_bufid_t out = zb_buf_get_out();
     if (!out) {
@@ -1056,8 +1056,8 @@ static bool handle_fc03_read_attrs_raw(const zb_zcl_parsed_hdr_t *hdr,
         return false;
     }
     bool is_lcx004_discovery_read =
-        payload_len == sizeof(HUE_FC03_DISCOVERY_READ_ATTRS) &&
-        memcmp(payload, HUE_FC03_DISCOVERY_READ_ATTRS, sizeof(HUE_FC03_DISCOVERY_READ_ATTRS)) == 0;
+        payload_len == sizeof(FC03_DISCOVERY_READ_ATTRS) &&
+        memcmp(payload, FC03_DISCOVERY_READ_ATTRS, sizeof(FC03_DISCOVERY_READ_ATTRS)) == 0;
 
     zb_bufid_t out = zb_buf_get_out();
     if (!out) {
@@ -1072,7 +1072,7 @@ static bool handle_fc03_read_attrs_raw(const zb_zcl_parsed_hdr_t *hdr,
     ZB_ZCL_CONSTRUCT_COMMAND_HEADER_EXT(cmd_ptr,
                                         hdr->seq_number,
                                         ZB_TRUE,
-                                        HUE_SIGNIFY_MANUFACTURER_CODE,
+                                        SIGNIFY_MANUFACTURER_CODE,
                                         ZB_ZCL_CMD_READ_ATTRIB_RESP);
 
     for (uint16_t offset = 0; offset + 1 < payload_len; offset += 2) {
@@ -1090,10 +1090,10 @@ static bool handle_fc03_read_attrs_raw(const zb_zcl_parsed_hdr_t *hdr,
             ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ESP_ZB_ZCL_ATTR_TYPE_OCTET_STRING);
             if (is_lcx004_discovery_read) {
                 ZB_ZCL_PACKET_PUT_DATA_N(cmd_ptr,
-                                         HUE_FC03_DISCOVERY_ATTR2_STATE,
-                                         sizeof(HUE_FC03_DISCOVERY_ATTR2_STATE));
+                                         FC03_DISCOVERY_ATTR2_STATE,
+                                         sizeof(FC03_DISCOVERY_ATTR2_STATE));
             } else {
-                ZB_ZCL_PACKET_PUT_DATA_N(cmd_ptr, s_hue_state[idx], s_hue_state[idx][0] + 1);
+                ZB_ZCL_PACKET_PUT_DATA_N(cmd_ptr, s_fc03_state[idx], s_fc03_state[idx][0] + 1);
             }
             break;
         case 0x0010:
@@ -1118,7 +1118,7 @@ static bool handle_fc03_read_attrs_raw(const zb_zcl_parsed_hdr_t *hdr,
             break;
         case 0x0032:
             if (is_lcx004_discovery_read) {
-                ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, HUE_ZCL_STATUS_INSUFFICIENT_SPACE);
+                ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ZCL_STATUS_INSUFFICIENT_SPACE);
                 break;
             }
             ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ZB_ZCL_STATUS_SUCCESS);
@@ -1127,7 +1127,7 @@ static bool handle_fc03_read_attrs_raw(const zb_zcl_parsed_hdr_t *hdr,
             break;
         case 0x0033:
             if (is_lcx004_discovery_read) {
-                ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, HUE_ZCL_STATUS_INSUFFICIENT_SPACE);
+                ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ZCL_STATUS_INSUFFICIENT_SPACE);
                 break;
             }
             ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ZB_ZCL_STATUS_SUCCESS);
@@ -1204,7 +1204,7 @@ static bool handle_fc03_discover_attr_ext_raw(const zb_zcl_parsed_hdr_t *hdr,
     ZB_ZCL_CONSTRUCT_COMMAND_HEADER_EXT(cmd_ptr,
                                         hdr->seq_number,
                                         ZB_TRUE,
-                                        HUE_SIGNIFY_MANUFACTURER_CODE,
+                                        SIGNIFY_MANUFACTURER_CODE,
                                         ZB_ZCL_CMD_DISCOVER_ATTR_EXT_RES);
     ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, 0x00); /* discovery not complete */
     ZB_ZCL_PACKET_PUT_DATA16_VAL(cmd_ptr, 0x0032);
@@ -1231,7 +1231,7 @@ static bool handle_fc03_discover_attr_ext_raw(const zb_zcl_parsed_hdr_t *hdr,
     return true;
 }
 
-static uint16_t hue_u16_le(const uint8_t *p)
+static uint16_t u16_le(const uint8_t *p)
 {
     return (uint16_t)p[0] | ((uint16_t)p[1] << 8);
 }
@@ -1243,7 +1243,7 @@ static void sync_fc03_state_prefix(uint8_t idx)
     }
 
     light_state_t *st = &g_light_state[idx];
-    uint8_t *state = s_hue_state[idx];
+    uint8_t *state = s_fc03_state[idx];
     uint8_t effective_bri = st->bri ? st->bri : st->last_bri;
     if (effective_bri == 0) {
         effective_bri = 0xFE;
@@ -1274,7 +1274,7 @@ static void emit_state_json_internal(uint8_t endpoint,
 
     float xf = st->x / 65535.0f;
     float yf = st->y / 65535.0f;
-    /* When Hue sends "On" before a level command, bri can be 0 for one
+    /* When the bridge sends "On" before a level command, bri can be 0 for one
      * update. Use the last known non-zero brightness so the daemon doesn't
      * flicker the LEDs off. */
     uint8_t effective_bri = st->on ? (st->bri ? st->bri : st->last_bri) : 0;
@@ -1307,8 +1307,8 @@ void emit_state_json(uint8_t endpoint)
     emit_state_json_internal(endpoint, NULL, false, 0, false, 0);
 }
 
-#define HUE_FC03_MULTICOLOR_CMD_ID 0x00
-#define HUE_FC03_MAX_COLORS        9
+#define FC03_MULTICOLOR_CMD_ID 0x00
+#define FC03_MAX_COLORS        9
 
 typedef struct {
     float x;
@@ -1319,7 +1319,7 @@ typedef struct {
 } gradient_color_t;
 
 /* Decode the 3-byte scaled XY encoding used in FC03 multiColor payloads.
- * Real Hue gradient lights pack two 12-bit values into 3 octets:
+     * Real gradient lights pack two 12-bit values into 3 octets:
  *   x = (byte0 | (byte1 & 0x0F) << 8) * 0.7347 / 4095
  *   y = ((byte1 & 0xF0) >> 4 | byte2 << 4) * 0.8413 / 4095
  */
@@ -1342,7 +1342,7 @@ static float clamp_unit_float(float v)
     return v;
 }
 
-/* Convert Hue "mirek" color temperature (micro reciprocal kelvin) into the
+/* Convert "mirek" color temperature (micro reciprocal kelvin) into the
  * same xy state used by the rest of the FC03 path. The polynomial is the
  * common CCT-to-CIE approximation used for warm/cool white lamps. */
 static bool mirek_to_xy(uint16_t mirek, uint16_t *x_out, uint16_t *y_out)
@@ -1518,7 +1518,7 @@ static bool fc03_require_bytes(size_t offset, size_t need, size_t size, const ch
     return true;
 }
 
-/* Parse a Hue FC03 command-0 payload.
+/* Parse a FC03 command-0 payload.
  *
  * The first two bytes are a little-endian property bitset. Fields then appear
  * in the fixed order documented in references/specs/bifrost-hue-zigbee-format-
@@ -1526,9 +1526,9 @@ static bool fc03_require_bytes(size_t offset, size_t need, size_t size, const ch
  * flag combinations:
  *   0x0150: fade + gradient colors + gradient params
  *   0x0151: on/off + fade + gradient colors + gradient params
- *   0x0011: on/off + fade, used by the Hue app for on/off toggles
+ *   0x0011: on/off + fade, used by the app for on/off toggles
  */
-static void handle_hue_multicolor_command(uint8_t endpoint, const uint8_t *data, size_t size)
+static void handle_fc03_multicolor_command(uint8_t endpoint, const uint8_t *data, size_t size)
 {
     if (size < 2) {
         ESP_LOGW(TAG, "FC03 payload too short (%d bytes)", (int)size);
@@ -1543,16 +1543,16 @@ static void handle_hue_multicolor_command(uint8_t endpoint, const uint8_t *data,
 
     uint8_t idx = endpoint - HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE;
     light_state_t *st = &g_light_state[idx];
-    uint16_t flags = hue_u16_le(data);
-    uint16_t known_flags = HUE_FC03_FLAG_ON_OFF |
-                           HUE_FC03_FLAG_BRIGHTNESS |
-                           HUE_FC03_FLAG_COLOR_MIREK |
-                           HUE_FC03_FLAG_COLOR_XY |
-                           HUE_FC03_FLAG_FADE_SPEED |
-                           HUE_FC03_FLAG_EFFECT_TYPE |
-                           HUE_FC03_FLAG_GRADIENT_PARAMS |
-                           HUE_FC03_FLAG_EFFECT_SPEED |
-                           HUE_FC03_FLAG_GRADIENT_COLORS;
+    uint16_t flags = u16_le(data);
+    uint16_t known_flags = FC03_FLAG_ON_OFF |
+                           FC03_FLAG_BRIGHTNESS |
+                           FC03_FLAG_COLOR_MIREK |
+                           FC03_FLAG_COLOR_XY |
+                           FC03_FLAG_FADE_SPEED |
+                           FC03_FLAG_EFFECT_TYPE |
+                           FC03_FLAG_GRADIENT_PARAMS |
+                           FC03_FLAG_EFFECT_SPEED |
+                           FC03_FLAG_GRADIENT_COLORS;
     if (flags & ~known_flags) {
         ESP_LOGW(TAG, "FC03 update has unknown flags 0x%04x", (unsigned)(flags & ~known_flags));
     }
@@ -1575,10 +1575,10 @@ static void handle_hue_multicolor_command(uint8_t endpoint, const uint8_t *data,
     uint8_t style = 0;
     uint8_t scale_raw = 0;
     uint8_t offset_raw = 0;
-    gradient_color_t colors[HUE_FC03_MAX_COLORS];
+    gradient_color_t colors[FC03_MAX_COLORS];
     const uint8_t *gradient_color_bytes = NULL;
 
-    if (flags & HUE_FC03_FLAG_ON_OFF) {
+    if (flags & FC03_FLAG_ON_OFF) {
         if (!fc03_require_bytes(off, 1, size, "on/off")) {
             return;
         }
@@ -1586,13 +1586,13 @@ static void handle_hue_multicolor_command(uint8_t endpoint, const uint8_t *data,
         has_on = true;
     }
 
-    if (flags & HUE_FC03_FLAG_BRIGHTNESS) {
+    if (flags & FC03_FLAG_BRIGHTNESS) {
         if (!fc03_require_bytes(off, 1, size, "brightness")) {
             return;
         }
         uint8_t bri = data[off++];
         if (bri == 0 || bri == 0xff) {
-            ESP_LOGW(TAG, "FC03 brightness value out of Hue range: %u", (unsigned)bri);
+            ESP_LOGW(TAG, "FC03 brightness value out of expected range: %u", (unsigned)bri);
         } else {
             st->bri = bri;
             st->last_bri = bri;
@@ -1600,11 +1600,11 @@ static void handle_hue_multicolor_command(uint8_t endpoint, const uint8_t *data,
         }
     }
 
-    if (flags & HUE_FC03_FLAG_COLOR_MIREK) {
+    if (flags & FC03_FLAG_COLOR_MIREK) {
         if (!fc03_require_bytes(off, 2, size, "mirek")) {
             return;
         }
-        mirek = hue_u16_le(&data[off]);
+        mirek = u16_le(&data[off]);
         off += 2;
         if (mirek_to_xy(mirek, &st->x, &st->y)) {
             has_mirek = true;
@@ -1613,26 +1613,26 @@ static void handle_hue_multicolor_command(uint8_t endpoint, const uint8_t *data,
         }
     }
 
-    if (flags & HUE_FC03_FLAG_COLOR_XY) {
+    if (flags & FC03_FLAG_COLOR_XY) {
         if (!fc03_require_bytes(off, 4, size, "xy")) {
             return;
         }
-        st->x = hue_u16_le(&data[off]);
-        st->y = hue_u16_le(&data[off + 2]);
+        st->x = u16_le(&data[off]);
+        st->y = u16_le(&data[off + 2]);
         off += 4;
         has_xy = true;
     }
 
-    if (flags & HUE_FC03_FLAG_FADE_SPEED) {
+    if (flags & FC03_FLAG_FADE_SPEED) {
         if (!fc03_require_bytes(off, 2, size, "fade speed")) {
             return;
         }
-        fade = hue_u16_le(&data[off]);
+        fade = u16_le(&data[off]);
         off += 2;
         has_fade = true;
     }
 
-    if (flags & HUE_FC03_FLAG_EFFECT_TYPE) {
+    if (flags & FC03_FLAG_EFFECT_TYPE) {
         if (!fc03_require_bytes(off, 1, size, "effect type")) {
             return;
         }
@@ -1640,7 +1640,7 @@ static void handle_hue_multicolor_command(uint8_t endpoint, const uint8_t *data,
         has_effect = true;
     }
 
-    if (flags & HUE_FC03_FLAG_GRADIENT_COLORS) {
+    if (flags & FC03_FLAG_GRADIENT_COLORS) {
         if (!fc03_require_bytes(off, 5, size, "gradient color header")) {
             return;
         }
@@ -1655,7 +1655,7 @@ static void handle_hue_multicolor_command(uint8_t endpoint, const uint8_t *data,
             ESP_LOGW(TAG, "FC03 gradient color count low nibble is non-zero: 0x%02x",
                      (unsigned)data[off + 1]);
         }
-        if (n_colors == 0 || n_colors > HUE_FC03_MAX_COLORS) {
+        if (n_colors == 0 || n_colors > FC03_MAX_COLORS) {
             ESP_LOGW(TAG, "FC03 gradient unsupported color count %u", (unsigned)n_colors);
             return;
         }
@@ -1693,7 +1693,7 @@ static void handle_hue_multicolor_command(uint8_t endpoint, const uint8_t *data,
         has_gradient = true;
     }
 
-    if (flags & HUE_FC03_FLAG_EFFECT_SPEED) {
+    if (flags & FC03_FLAG_EFFECT_SPEED) {
         if (!fc03_require_bytes(off, 1, size, "effect speed")) {
             return;
         }
@@ -1701,7 +1701,7 @@ static void handle_hue_multicolor_command(uint8_t endpoint, const uint8_t *data,
         has_effect_speed = true;
     }
 
-    if (flags & HUE_FC03_FLAG_GRADIENT_PARAMS) {
+    if (flags & FC03_FLAG_GRADIENT_PARAMS) {
         if (!fc03_require_bytes(off, 2, size, "gradient params")) {
             return;
         }
@@ -1726,7 +1726,7 @@ static void handle_hue_multicolor_command(uint8_t endpoint, const uint8_t *data,
     /* Keep the FC03 state attribute in sync so ZHA/bridge reads reflect the
      * currently active gradient. */
     if (has_gradient) {
-        uint8_t *state = s_hue_state[idx];
+        uint8_t *state = s_fc03_state[idx];
         uint8_t payload_len = 15 + 3 * n_colors;
         state[0] = payload_len;
         state[1] = 0x4B;
@@ -1779,7 +1779,7 @@ static esp_err_t deferred_driver_init(void)
     return ESP_OK;
 }
 
-#if HUE_ZDO_DESCRIPTOR_OVERRIDE
+#if ZDO_DESCRIPTOR_OVERRIDE
 static uint16_t get_le16(const uint8_t *p)
 {
     return (uint16_t)p[0] | ((uint16_t)p[1] << 8);
@@ -1821,7 +1821,7 @@ static bool send_node_desc_response(const esp_zb_apsde_data_ind_t *ind, uint8_t 
 {
     uint8_t payload[] = {
         tsn,
-        HUE_ZDO_SUCCESS_STATUS,
+        ZDO_SUCCESS_STATUS,
         0x00, 0x00, /* nwk_addr */
         0x01, 0x40, /* node_desc_flags = 0x4001 */
         0x8e,       /* mac_capability_flags */
@@ -1836,7 +1836,7 @@ static bool send_node_desc_response(const esp_zb_apsde_data_ind_t *ind, uint8_t 
 
     ESP_LOGI(TAG, "ZDO override: Node_Desc_rsp nwk=0x%04x flags=0x4001 mac=0x8e server=0x2c00 to=0x%04x",
              (unsigned)nwk_addr, (unsigned)ind->src_short_addr);
-    return send_zdo_response(ind->src_short_addr, HUE_ZDO_NODE_DESC_RSP_CLUSTER_ID,
+    return send_zdo_response(ind->src_short_addr, ZDO_NODE_DESC_RSP_CLUSTER_ID,
                              payload, sizeof(payload)) == ESP_OK;
 }
 
@@ -1844,20 +1844,20 @@ static bool send_active_ep_response(const esp_zb_apsde_data_ind_t *ind, uint8_t 
 {
     uint8_t payload[] = {
         tsn,
-        HUE_ZDO_SUCCESS_STATUS,
+        ZDO_SUCCESS_STATUS,
         0x00, 0x00, /* nwk_addr */
         0x02,
         HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE,
-        HUE_GP_ENDPOINT,
+        GP_ENDPOINT,
     };
     put_le16(&payload[2], nwk_addr);
 
     ESP_LOGI(TAG, "ZDO override: Active_EP_rsp nwk=0x%04x eps=[%u,%u] to=0x%04x",
              (unsigned)nwk_addr,
              (unsigned)HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE,
-             (unsigned)HUE_GP_ENDPOINT,
+             (unsigned)GP_ENDPOINT,
              (unsigned)ind->src_short_addr);
-    return send_zdo_response(ind->src_short_addr, HUE_ZDO_ACTIVE_EP_RSP_CLUSTER_ID,
+    return send_zdo_response(ind->src_short_addr, ZDO_ACTIVE_EP_RSP_CLUSTER_ID,
                              payload, sizeof(payload)) == ESP_OK;
 }
 
@@ -1879,15 +1879,15 @@ static bool send_simple_desc_response(const esp_zb_apsde_data_ind_t *ind,
         0x06, 0x00, /* On/Off */
         0x08, 0x00, /* Level Control */
         0x00, 0x10, /* Touchlink */
-        0x03, 0xfc, /* Philips FC03 */
+        0x03, 0xfc, /* FC03 gradient */
         0x00, 0x03, /* Color Control */
-        0x01, 0xfc, /* Philips FC01 */
-        0x04, 0xfc, /* Philips FC04 */
+        0x01, 0xfc, /* FC01 certification/proprietary */
+        0x04, 0xfc, /* FC04 auxiliary */
         0x01,
         0x19, 0x00, /* OTA Upgrade client */
     };
     static const uint8_t ep242_simple_desc[] = {
-        HUE_GP_ENDPOINT,
+        GP_ENDPOINT,
         0xe0, 0xa1, /* Green Power profile */
         0x61, 0x00, /* Green Power Proxy Basic */
         0x00,
@@ -1901,7 +1901,7 @@ static bool send_simple_desc_response(const esp_zb_apsde_data_ind_t *ind,
     if (endpoint == HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE) {
         desc = ep11_simple_desc;
         desc_len = sizeof(ep11_simple_desc);
-    } else if (endpoint == HUE_GP_ENDPOINT) {
+    } else if (endpoint == GP_ENDPOINT) {
         desc = ep242_simple_desc;
         desc_len = sizeof(ep242_simple_desc);
     } else {
@@ -1910,7 +1910,7 @@ static bool send_simple_desc_response(const esp_zb_apsde_data_ind_t *ind,
 
     uint8_t payload[4 + 1 + sizeof(ep11_simple_desc)] = {
         tsn,
-        HUE_ZDO_SUCCESS_STATUS,
+        ZDO_SUCCESS_STATUS,
         0x00, 0x00, /* nwk_addr */
         desc_len,
     };
@@ -1920,11 +1920,11 @@ static bool send_simple_desc_response(const esp_zb_apsde_data_ind_t *ind,
     ESP_LOGI(TAG, "ZDO override: Simple_Desc_rsp nwk=0x%04x ep=%u len=%u to=0x%04x",
              (unsigned)nwk_addr, (unsigned)endpoint, (unsigned)desc_len,
              (unsigned)ind->src_short_addr);
-    return send_zdo_response(ind->src_short_addr, HUE_ZDO_SIMPLE_DESC_RSP_CLUSTER_ID,
+    return send_zdo_response(ind->src_short_addr, ZDO_SIMPLE_DESC_RSP_CLUSTER_ID,
                              payload, (uint8_t)(5 + desc_len)) == ESP_OK;
 }
 
-static bool hue_zdo_descriptor_override_cb(esp_zb_apsde_data_ind_t ind)
+static bool zdo_descriptor_override_cb(esp_zb_apsde_data_ind_t ind)
 {
     if (ind.profile_id != ZB_AF_ZDO_PROFILE_ID ||
         ind.dst_endpoint != 0 ||
@@ -1941,19 +1941,19 @@ static bool hue_zdo_descriptor_override_cb(esp_zb_apsde_data_ind_t ind)
         return false;
     }
 
-    if (ind.cluster_id == HUE_ZDO_NODE_DESC_REQ_CLUSTER_ID) {
+    if (ind.cluster_id == ZDO_NODE_DESC_REQ_CLUSTER_ID) {
         ESP_LOGI(TAG, "ZDO override: Node_Desc_req nwk=0x%04x from=0x%04x",
                  (unsigned)nwk_addr, (unsigned)ind.src_short_addr);
         return send_node_desc_response(&ind, tsn, nwk_addr);
     }
 
-    if (ind.cluster_id == HUE_ZDO_ACTIVE_EP_REQ_CLUSTER_ID) {
+    if (ind.cluster_id == ZDO_ACTIVE_EP_REQ_CLUSTER_ID) {
         ESP_LOGI(TAG, "ZDO override: Active_EP_req nwk=0x%04x from=0x%04x",
                  (unsigned)nwk_addr, (unsigned)ind.src_short_addr);
         return send_active_ep_response(&ind, tsn, nwk_addr);
     }
 
-    if (ind.cluster_id == HUE_ZDO_SIMPLE_DESC_REQ_CLUSTER_ID && ind.asdu_length >= 4) {
+    if (ind.cluster_id == ZDO_SIMPLE_DESC_REQ_CLUSTER_ID && ind.asdu_length >= 4) {
         uint8_t endpoint = ind.asdu[3];
         ESP_LOGI(TAG, "ZDO override: Simple_Desc_req nwk=0x%04x ep=%u from=0x%04x",
                  (unsigned)nwk_addr, (unsigned)endpoint, (unsigned)ind.src_short_addr);
@@ -1985,7 +1985,7 @@ void esp_zb_app_signal_handler(esp_zb_app_signal_t *signal_struct)
         if (err_status == ESP_OK) {
             ESP_LOGI(TAG, "Deferred driver initialization %s", deferred_driver_init() ? "failed" : "successful");
             ESP_LOGI(TAG, "Device started up in %s factory-reset mode", esp_zb_bdb_is_factory_new() ? "" : "non");
-            /* Always attempt steering/rejoin on startup. When the Hue bridge is
+            /* Always attempt steering/rejoin on startup. When the bridge is
              * in "add light" mode the network is open; otherwise the stack
              * retries until it succeeds. */
             ESP_LOGI(TAG, "Start network steering");
@@ -2203,7 +2203,7 @@ static esp_err_t zb_custom_cluster_handler(const esp_zb_zcl_custom_cluster_comma
              (unsigned)message->info.command.id,
              (unsigned)message->info.header.manuf_code,
              (unsigned)message->data.size);
-    if (message->info.cluster == HUE_MANU_SPECIFIC_PHILIPS3_CLUSTER_ID) {
+    if (message->info.cluster == MFG_CLUSTER_CERT_ID) {
         ESP_LOGI(TAG, "FC01_CMD: cmd=0x%02x tsn=0x%02x fc=0x%02x disable_default_resp=%u manuf=0x%04x size=%u",
                  (unsigned)message->info.command.id,
                  (unsigned)message->info.header.tsn,
@@ -2217,17 +2217,17 @@ static esp_err_t zb_custom_cluster_handler(const esp_zb_zcl_custom_cluster_comma
         }
     }
 
-    if (message->info.cluster == HUE_MANU_SPECIFIC_PHILIPS2_CLUSTER_ID &&
-        message->info.command.id == HUE_FC03_MULTICOLOR_CMD_ID &&
-        message->info.header.manuf_code == HUE_SIGNIFY_MANUFACTURER_CODE) {
-        handle_hue_multicolor_command(message->info.dst_endpoint,
+    if (message->info.cluster == MFG_CLUSTER_GRADIENT_ID &&
+        message->info.command.id == FC03_MULTICOLOR_CMD_ID &&
+        message->info.header.manuf_code == SIGNIFY_MANUFACTURER_CODE) {
+        handle_fc03_multicolor_command(message->info.dst_endpoint,
                                       (const uint8_t *)message->data.value,
                                       message->data.size);
     }
 
     if (message->info.cluster == ESP_ZB_ZCL_CLUSTER_ID_BASIC &&
         message->info.command.id == 0xC0 &&
-        message->info.header.manuf_code == HUE_SIGNIFY_MANUFACTURER_CODE) {
+        message->info.header.manuf_code == SIGNIFY_MANUFACTURER_CODE) {
         esp_zb_zcl_custom_cluster_cmd_resp_t resp = {
             .zcl_basic_cmd = {
                 .dst_addr_u.addr_short = message->info.src_address.u.short_addr,
@@ -2240,17 +2240,17 @@ static esp_err_t zb_custom_cluster_handler(const esp_zb_zcl_custom_cluster_comma
             .manuf_specific = 1,
             .direction = ESP_ZB_ZCL_CMD_DIRECTION_TO_CLI,
             .dis_default_resp = 1,
-            .manuf_code = HUE_SIGNIFY_MANUFACTURER_CODE,
+            .manuf_code = SIGNIFY_MANUFACTURER_CODE,
             .custom_cmd_id = 0xC1,
             .data = {
                 .type = ESP_ZB_ZCL_ATTR_TYPE_SET,
-                .size = sizeof(HUE_BASIC_CMD_C1_RESPONSE),
-                .value = (void *)HUE_BASIC_CMD_C1_RESPONSE,
+                .size = sizeof(BASIC_CMD_C1_RESPONSE),
+                .value = (void *)BASIC_CMD_C1_RESPONSE,
             },
         };
         ESP_LOGI(TAG, "BASIC_CMD_C0_RESP_C1: tsn=0x%02x size=%u",
                  (unsigned)message->info.header.tsn,
-                 (unsigned)sizeof(HUE_BASIC_CMD_C1_RESPONSE));
+                 (unsigned)sizeof(BASIC_CMD_C1_RESPONSE));
         esp_zb_zcl_custom_cluster_cmd_resp(&resp);
     }
 
@@ -2286,7 +2286,7 @@ static esp_err_t zb_action_handler(esp_zb_core_action_callback_id_t callback_id,
         ret = zb_custom_cluster_handler((esp_zb_zcl_custom_cluster_command_message_t *)message);
         break;
     default:
-#if HUE_SERIAL_DEBUG
+#if ARGB_SERIAL_DEBUG
         ESP_LOGW(TAG, "Receive Zigbee action(0x%x) callback", callback_id);
 #endif
         break;
@@ -2326,8 +2326,8 @@ static const char *zcl_cmd_name(const zb_zcl_parsed_hdr_t *hdr)
         return "other";
     }
     if (!hdr->is_common_command &&
-        hdr->cluster_id == HUE_MANU_SPECIFIC_PHILIPS2_CLUSTER_ID &&
-        hdr->cmd_id == HUE_FC03_MULTICOLOR_CMD_ID) {
+        hdr->cluster_id == MFG_CLUSTER_GRADIENT_ID &&
+        hdr->cmd_id == FC03_MULTICOLOR_CMD_ID) {
         return "multi_color";
     }
     return zcl_global_cmd_name(hdr->cmd_id);
@@ -2335,7 +2335,7 @@ static const char *zcl_cmd_name(const zb_zcl_parsed_hdr_t *hdr)
 
 static void print_hex_bytes(const char *prefix, const uint8_t *payload, uint16_t len)
 {
-#if HUE_SERIAL_DEBUG
+#if ARGB_SERIAL_DEBUG
     uint16_t shown = len < 48 ? len : 48;
     printf("%s", prefix);
     for (uint16_t i = 0; i < shown; i++) {
@@ -2354,7 +2354,7 @@ static void print_hex_bytes(const char *prefix, const uint8_t *payload, uint16_t
 
 static void log_zcl_payload_summary(const zb_zcl_parsed_hdr_t *hdr, const uint8_t *payload, uint16_t len)
 {
-#if !HUE_SERIAL_DEBUG
+#if !ARGB_SERIAL_DEBUG
     (void)hdr;
     (void)payload;
     (void)len;
@@ -2366,10 +2366,10 @@ static void log_zcl_payload_summary(const zb_zcl_parsed_hdr_t *hdr, const uint8_
     }
 
     if (!hdr->is_common_command) {
-        if (hdr->cluster_id == HUE_MANU_SPECIFIC_PHILIPS2_CLUSTER_ID &&
-            hdr->cmd_id == HUE_FC03_MULTICOLOR_CMD_ID &&
+        if (hdr->cluster_id == MFG_CLUSTER_GRADIENT_ID &&
+            hdr->cmd_id == FC03_MULTICOLOR_CMD_ID &&
             hdr->is_manuf_specific &&
-            hdr->manuf_specific == HUE_SIGNIFY_MANUFACTURER_CODE) {
+            hdr->manuf_specific == SIGNIFY_MANUFACTURER_CODE) {
             print_hex_bytes("FC03_MULTICOLOR_HEX: ", payload, len);
         }
         return;
@@ -2410,7 +2410,7 @@ static void log_zcl_payload_summary(const zb_zcl_parsed_hdr_t *hdr, const uint8_
 }
 
 /* Low-level ZBoss device-callback logger.  This runs before the SDK's own
- * handler and lets us see every ZCL command the Hue bridge sends during
+ * handler and lets us see every ZCL command the bridge sends during
  * discovery: read attributes, discover attributes, cluster commands, etc.
  * Returning false means "not handled, let the stack process it normally". */
 static bool zb_device_cb_id_handler(uint8_t bufid)
@@ -2468,11 +2468,11 @@ static bool zb_raw_command_handler(uint8_t bufid)
                  hdr->is_common_command ? 1 : 0,
                  (unsigned)payload_len);
         log_zcl_payload_summary(hdr, payload, payload_len);
-#if HUE_FC01_EXPLICIT_DEFAULT_RESPONSE
-        if (hdr->cluster_id == HUE_MANU_SPECIFIC_PHILIPS3_CLUSTER_ID &&
+#if FC01_EXPLICIT_DEFAULT_RESPONSE
+        if (hdr->cluster_id == MFG_CLUSTER_CERT_ID &&
             hdr->cmd_id == 0x03 &&
             hdr->is_manuf_specific &&
-            hdr->manuf_specific == HUE_SIGNIFY_MANUFACTURER_CODE &&
+            hdr->manuf_specific == SIGNIFY_MANUFACTURER_CODE &&
             hdr->cmd_direction == ESP_ZB_ZCL_CMD_DIRECTION_TO_SRV) {
             ESP_LOGI(TAG, "FC01_EXPLICIT_DEFAULT_RESP: cmd=0x03 tsn=0x%02x status=0x00",
                      (unsigned)zb_zcl_get_tsn_from_packet(bufid));
@@ -2484,14 +2484,14 @@ static bool zb_raw_command_handler(uint8_t bufid)
             hdr->cmd_id == ZB_ZCL_CMD_READ_ATTRIB &&
             hdr->is_common_command &&
             hdr->is_manuf_specific &&
-            hdr->manuf_specific == HUE_SIGNIFY_MANUFACTURER_CODE &&
+            hdr->manuf_specific == SIGNIFY_MANUFACTURER_CODE &&
             hdr->cmd_direction == ESP_ZB_ZCL_CMD_DIRECTION_TO_SRV &&
             handle_basic_read_attrs_raw(hdr, payload, payload_len)) {
             zb_buf_free(bufid);
             return true;
         }
         if (hdr->cluster_id == ESP_ZB_ZCL_CLUSTER_ID_OTA_UPGRADE &&
-            hdr->cmd_id == HUE_OTA_IMAGE_NOTIFY_CMD_ID &&
+            hdr->cmd_id == OTA_IMAGE_NOTIFY_CMD_ID &&
             !hdr->is_common_command &&
             hdr->cmd_direction == ESP_ZB_ZCL_CMD_DIRECTION_TO_CLI) {
             send_ota_query_next_image_raw(hdr);
@@ -2502,7 +2502,7 @@ static bool zb_raw_command_handler(uint8_t bufid)
             hdr->cmd_id == ZB_ZCL_CMD_READ_ATTRIB &&
             hdr->is_common_command &&
             hdr->is_manuf_specific &&
-            hdr->manuf_specific == HUE_SIGNIFY_MANUFACTURER_CODE &&
+            hdr->manuf_specific == SIGNIFY_MANUFACTURER_CODE &&
             hdr->cmd_direction == ESP_ZB_ZCL_CMD_DIRECTION_TO_SRV &&
             handle_identify_read_attrs_raw(hdr, payload, payload_len)) {
             zb_buf_free(bufid);
@@ -2512,7 +2512,7 @@ static bool zb_raw_command_handler(uint8_t bufid)
             hdr->cmd_id == ZB_ZCL_CMD_READ_ATTRIB &&
             hdr->is_common_command &&
             hdr->is_manuf_specific &&
-            hdr->manuf_specific == HUE_SIGNIFY_MANUFACTURER_CODE &&
+            hdr->manuf_specific == SIGNIFY_MANUFACTURER_CODE &&
             hdr->cmd_direction == ESP_ZB_ZCL_CMD_DIRECTION_TO_SRV &&
             handle_level_read_attrs_raw(hdr, payload, payload_len)) {
             zb_buf_free(bufid);
@@ -2522,7 +2522,7 @@ static bool zb_raw_command_handler(uint8_t bufid)
             hdr->cmd_id == ZB_ZCL_CMD_READ_ATTRIB &&
             hdr->is_common_command &&
             hdr->is_manuf_specific &&
-            hdr->manuf_specific == HUE_SIGNIFY_MANUFACTURER_CODE &&
+            hdr->manuf_specific == SIGNIFY_MANUFACTURER_CODE &&
             hdr->cmd_direction == ESP_ZB_ZCL_CMD_DIRECTION_TO_SRV &&
             handle_color_mfg_read_attrs_raw(hdr, payload, payload_len)) {
             zb_buf_free(bufid);
@@ -2532,7 +2532,7 @@ static bool zb_raw_command_handler(uint8_t bufid)
             hdr->cmd_id == ZB_ZCL_CMD_READ_ATTRIB &&
             hdr->is_common_command &&
             hdr->is_manuf_specific &&
-            hdr->manuf_specific == HUE_SIGNIFY_MANUFACTURER_CODE &&
+            hdr->manuf_specific == SIGNIFY_MANUFACTURER_CODE &&
             hdr->cmd_direction == ESP_ZB_ZCL_CMD_DIRECTION_TO_SRV &&
             handle_scenes_read_attrs_raw(hdr, payload, payload_len)) {
             zb_buf_free(bufid);
@@ -2556,21 +2556,21 @@ static bool zb_raw_command_handler(uint8_t bufid)
             zb_buf_free(bufid);
             return true;
         }
-        if (hdr->cluster_id == HUE_MANU_SPECIFIC_PHILIPS2_CLUSTER_ID &&
+        if (hdr->cluster_id == MFG_CLUSTER_GRADIENT_ID &&
             hdr->cmd_id == ZB_ZCL_CMD_READ_ATTRIB &&
             hdr->is_common_command &&
             hdr->is_manuf_specific &&
-            hdr->manuf_specific == HUE_SIGNIFY_MANUFACTURER_CODE &&
+            hdr->manuf_specific == SIGNIFY_MANUFACTURER_CODE &&
             hdr->cmd_direction == ESP_ZB_ZCL_CMD_DIRECTION_TO_SRV &&
             handle_fc03_read_attrs_raw(hdr, payload, payload_len)) {
             zb_buf_free(bufid);
             return true;
         }
-        if (hdr->cluster_id == HUE_MANU_SPECIFIC_PHILIPS2_CLUSTER_ID &&
+        if (hdr->cluster_id == MFG_CLUSTER_GRADIENT_ID &&
             hdr->cmd_id == ZB_ZCL_CMD_DISCOVER_ATTR_EXT &&
             hdr->is_common_command &&
             hdr->is_manuf_specific &&
-            hdr->manuf_specific == HUE_SIGNIFY_MANUFACTURER_CODE &&
+            hdr->manuf_specific == SIGNIFY_MANUFACTURER_CODE &&
             hdr->cmd_direction == ESP_ZB_ZCL_CMD_DIRECTION_TO_SRV &&
             handle_fc03_discover_attr_ext_raw(hdr, payload, payload_len)) {
             zb_buf_free(bufid);
@@ -2580,7 +2580,7 @@ static bool zb_raw_command_handler(uint8_t bufid)
             hdr->cmd_id == ZB_ZCL_CMD_WRITE_ATTRIB &&
             hdr->is_common_command &&
             hdr->is_manuf_specific &&
-            hdr->manuf_specific == HUE_SIGNIFY_MANUFACTURER_CODE &&
+            hdr->manuf_specific == SIGNIFY_MANUFACTURER_CODE &&
             hdr->cmd_direction == ESP_ZB_ZCL_CMD_DIRECTION_TO_SRV &&
             handle_basic_write_attrs_raw(hdr, payload, payload_len)) {
             zb_buf_free(bufid);
@@ -2589,7 +2589,7 @@ static bool zb_raw_command_handler(uint8_t bufid)
         if (hdr->cluster_id == ESP_ZB_ZCL_CLUSTER_ID_BASIC &&
             hdr->cmd_id == 0xC0 &&
             hdr->is_manuf_specific &&
-            hdr->manuf_specific == HUE_SIGNIFY_MANUFACTURER_CODE &&
+            hdr->manuf_specific == SIGNIFY_MANUFACTURER_CODE &&
             hdr->cmd_direction == ESP_ZB_ZCL_CMD_DIRECTION_TO_SRV) {
             send_basic_c1_response_raw(hdr, payload, payload_len);
             zb_buf_free(bufid);
@@ -2605,101 +2605,101 @@ static bool zb_raw_command_handler(uint8_t bufid)
     return false;
 }
 
-static void add_hue_proprietary_clusters(esp_zb_cluster_list_t *cluster_list, uint8_t idx)
+static void add_proprietary_clusters(esp_zb_cluster_list_t *cluster_list, uint8_t idx)
 {
-    /* manuSpecificPhilips2 (0xFC03): the gradient cluster. */
-    esp_zb_attribute_list_t *philips2_attr_list =
-        esp_zb_zcl_attr_list_create(HUE_MANU_SPECIFIC_PHILIPS2_CLUSTER_ID);
-    esp_zb_custom_cluster_add_custom_attr(philips2_attr_list, 0x0002,
+    /* FC03: the gradient cluster. */
+    esp_zb_attribute_list_t *fc03_attr_list =
+        esp_zb_zcl_attr_list_create(MFG_CLUSTER_GRADIENT_ID);
+    esp_zb_custom_cluster_add_custom_attr(fc03_attr_list, 0x0002,
                                           ESP_ZB_ZCL_ATTR_TYPE_OCTET_STRING,
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_WRITE,
-                                          s_hue_state[idx]);
-    esp_zb_custom_cluster_add_custom_attr(philips2_attr_list, 0x0001,
+                                          s_fc03_state[idx]);
+    esp_zb_custom_cluster_add_custom_attr(fc03_attr_list, 0x0001,
                                           ESP_ZB_ZCL_ATTR_TYPE_32BITMAP,
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_ONLY,
                                           &s_fc03_attr1[idx]);
-    esp_zb_custom_cluster_add_custom_attr(philips2_attr_list, 0x0010,
+    esp_zb_custom_cluster_add_custom_attr(fc03_attr_list, 0x0010,
                                           ESP_ZB_ZCL_ATTR_TYPE_16BITMAP,
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_ONLY,
                                           &s_fc03_attr10[idx]);
-    esp_zb_custom_cluster_add_custom_attr(philips2_attr_list, 0x0011,
+    esp_zb_custom_cluster_add_custom_attr(fc03_attr_list, 0x0011,
                                           ESP_ZB_ZCL_ATTR_TYPE_64BITMAP,
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_ONLY,
                                           &s_fc03_attr11[idx]);
-    esp_zb_custom_cluster_add_custom_attr(philips2_attr_list, 0x0012,
+    esp_zb_custom_cluster_add_custom_attr(fc03_attr_list, 0x0012,
                                           ESP_ZB_ZCL_ATTR_TYPE_32BITMAP,
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_ONLY,
                                           &s_fc03_attr12[idx]);
-    esp_zb_custom_cluster_add_custom_attr(philips2_attr_list, 0x0013,
+    esp_zb_custom_cluster_add_custom_attr(fc03_attr_list, 0x0013,
                                           ESP_ZB_ZCL_ATTR_TYPE_16BITMAP,
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_ONLY,
                                           &s_fc03_attr13[idx]);
-    esp_zb_custom_cluster_add_custom_attr(philips2_attr_list, 0x0032,
+    esp_zb_custom_cluster_add_custom_attr(fc03_attr_list, 0x0032,
                                           ESP_ZB_ZCL_ATTR_TYPE_U8,
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_WRITE | ESP_ZB_ZCL_ATTR_ACCESS_REPORTING,
                                           &s_fc03_attr32[idx]);
-    esp_zb_custom_cluster_add_custom_attr(philips2_attr_list, 0x0033,
+    esp_zb_custom_cluster_add_custom_attr(fc03_attr_list, 0x0033,
                                           ESP_ZB_ZCL_ATTR_TYPE_U8,
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_WRITE | ESP_ZB_ZCL_ATTR_ACCESS_REPORTING,
                                           &s_fc03_attr33[idx]);
-    esp_zb_custom_cluster_add_custom_attr(philips2_attr_list, 0x0034,
+    esp_zb_custom_cluster_add_custom_attr(fc03_attr_list, 0x0034,
                                           ESP_ZB_ZCL_ATTR_TYPE_U8,
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_WRITE | ESP_ZB_ZCL_ATTR_ACCESS_REPORTING,
                                           &s_fc03_attr34[idx]);
-    esp_zb_custom_cluster_add_custom_attr(philips2_attr_list, 0x0038,
+    esp_zb_custom_cluster_add_custom_attr(fc03_attr_list, 0x0038,
                                           ESP_ZB_ZCL_ATTR_TYPE_U16,
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_ONLY,
                                           &s_fc03_attr38[idx]);
-    esp_zb_cluster_list_add_custom_cluster(cluster_list, philips2_attr_list,
+    esp_zb_cluster_list_add_custom_cluster(cluster_list, fc03_attr_list,
                                            ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
 
-    /* manuSpecificPhilips3 (0xFC01): Signify certification/proprietary cluster.
-     * A real Hue gradient lightstrip returns:
+    /* FC01: Signify certification/proprietary cluster.
+     * A real gradient lightstrip returns:
      *   0x0000 - 8-bit bitmap = 0x0B
      *   0x0001 - 8-bit enum  = 0x00
      */
-    esp_zb_attribute_list_t *philips3_attr_list =
-        esp_zb_zcl_attr_list_create(HUE_MANU_SPECIFIC_PHILIPS3_CLUSTER_ID);
-    esp_zb_custom_cluster_add_custom_attr(philips3_attr_list, 0x0000,
+    esp_zb_attribute_list_t *fc01_attr_list =
+        esp_zb_zcl_attr_list_create(MFG_CLUSTER_CERT_ID);
+    esp_zb_custom_cluster_add_custom_attr(fc01_attr_list, 0x0000,
                                           ESP_ZB_ZCL_ATTR_TYPE_8BITMAP,
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_ONLY,
                                           &s_fc01_attr0[idx]);
-    esp_zb_custom_cluster_add_custom_attr(philips3_attr_list, 0x0001,
+    esp_zb_custom_cluster_add_custom_attr(fc01_attr_list, 0x0001,
                                           ESP_ZB_ZCL_ATTR_TYPE_8BIT_ENUM,
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_ONLY,
                                           &s_fc01_attr1[idx]);
-    esp_zb_custom_cluster_add_custom_attr(philips3_attr_list, 0x0002,
+    esp_zb_custom_cluster_add_custom_attr(fc01_attr_list, 0x0002,
                                           ESP_ZB_ZCL_ATTR_TYPE_U8,
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_ONLY,
                                           &s_fc01_attr2[idx]);
-    esp_zb_custom_cluster_add_custom_attr(philips3_attr_list, 0x0003,
+    esp_zb_custom_cluster_add_custom_attr(fc01_attr_list, 0x0003,
                                           ESP_ZB_ZCL_ATTR_TYPE_U8,
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_ONLY,
                                           &s_fc01_attr3[idx]);
-    esp_zb_cluster_list_add_custom_cluster(cluster_list, philips3_attr_list,
+    esp_zb_cluster_list_add_custom_cluster(cluster_list, fc01_attr_list,
                                            ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
 
-    /* manuSpecificPhilips4 (0xFC04): present on real devices, purpose unknown. */
-    esp_zb_attribute_list_t *philips4_attr_list =
-        esp_zb_zcl_attr_list_create(HUE_MANU_SPECIFIC_PHILIPS4_CLUSTER_ID);
-    esp_zb_custom_cluster_add_custom_attr(philips4_attr_list, 0x0000,
+    /* FC04: present on real devices, purpose unknown. */
+    esp_zb_attribute_list_t *fc04_attr_list =
+        esp_zb_zcl_attr_list_create(MFG_CLUSTER_AUX_ID);
+    esp_zb_custom_cluster_add_custom_attr(fc04_attr_list, 0x0000,
                                           ESP_ZB_ZCL_ATTR_TYPE_16BITMAP,
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_ONLY,
                                           &s_fc04_attr0[idx]);
-    esp_zb_cluster_list_add_custom_cluster(cluster_list, philips4_attr_list,
+    esp_zb_cluster_list_add_custom_cluster(cluster_list, fc04_attr_list,
                                            ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
 
     /* Real gradient endpoints also expose the Touchlink/ZLL commissioning
      * cluster as a server cluster in their simple descriptor. */
     esp_zb_attribute_list_t *touchlink_attr_list =
-        esp_zb_zcl_attr_list_create(HUE_TOUCHLINK_CLUSTER_ID);
+        esp_zb_zcl_attr_list_create(TOUCHLINK_CLUSTER_ID);
     esp_zb_cluster_list_add_custom_cluster(cluster_list, touchlink_attr_list,
                                            ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
 }
 
 static void log_fake_simple_descriptor(uint8_t endpoint)
 {
-#if HUE_SERIAL_DEBUG
+#if ARGB_SERIAL_DEBUG
     printf("FAKE_DESCRIPTOR: endpoint=%u profile=0x%04x device=0x%04x version=%u "
            "server_clusters=[0x0000,0x0003,0x0004,0x0005,0x0006,0x0008,0x1000,0xfc03,0x0300,0xfc01,0xfc04] "
            "client_clusters=[0x0019]\n",
@@ -2712,33 +2712,33 @@ static void log_fake_simple_descriptor(uint8_t endpoint)
 #endif
 }
 
-#if HUE_GP_ENDPOINT_MODE == 1
+#if GP_ENDPOINT_MODE == 1
 static void add_green_power_endpoint(esp_zb_ep_list_t *ep_list)
 {
     esp_zb_cluster_list_t *cluster_list = esp_zb_zcl_cluster_list_create();
-    esp_zb_attribute_list_t *gp_attr_list = esp_zb_zcl_attr_list_create(HUE_GP_CLUSTER_ID);
+    esp_zb_attribute_list_t *gp_attr_list = esp_zb_zcl_attr_list_create(GP_CLUSTER_ID);
     esp_zb_cluster_list_add_custom_cluster(cluster_list, gp_attr_list,
                                            ESP_ZB_ZCL_CLUSTER_CLIENT_ROLE);
 
     esp_zb_endpoint_config_t endpoint_config = {
-        .endpoint = HUE_GP_ENDPOINT,
-        .app_profile_id = HUE_GP_PROFILE_ID,
-        .app_device_id = HUE_GP_DEVICE_ID,
+        .endpoint = GP_ENDPOINT,
+        .app_profile_id = GP_PROFILE_ID,
+        .app_device_id = GP_DEVICE_ID,
         .app_device_version = 0,
     };
     ESP_ERROR_CHECK(esp_zb_ep_list_add_gateway_ep(ep_list, cluster_list, endpoint_config));
 
-    if (HUE_SERIAL_DEBUG) {
+    if (ARGB_SERIAL_DEBUG) {
         printf("FAKE_DESCRIPTOR: endpoint=%u profile=0x%04x device=0x%04x version=%u "
                "server_clusters=[] client_clusters=[0x%04x]\n",
-               HUE_GP_ENDPOINT,
-               HUE_GP_PROFILE_ID,
-               HUE_GP_DEVICE_ID,
+               GP_ENDPOINT,
+               GP_PROFILE_ID,
+               GP_DEVICE_ID,
                0,
-               HUE_GP_CLUSTER_ID);
+               GP_CLUSTER_ID);
     }
 }
-#elif HUE_GP_ENDPOINT_MODE == 2
+#elif GP_ENDPOINT_MODE == 2
 static zb_uint8_t s_gp_shared_security_key_type;
 static zb_uint8_t s_gp_shared_security_key[16];
 static zb_uint8_t s_gp_link_key[16];
@@ -2747,7 +2747,7 @@ static zb_uint32_t s_gp_functionality = 0x0009ac2f;
 static zb_uint32_t s_gp_active_functionality = 0x0009ac2f;
 static zb_uint8_t s_gp_proxy_table[1] = { 0 };
 
-ZB_ZCL_DECLARE_GPPB_ATTRIB_LIST_CLI(s_hue_gp_attr_list_cli,
+ZB_ZCL_DECLARE_GPPB_ATTRIB_LIST_CLI(s_gp_attr_list_cli,
                                     &s_gp_shared_security_key_type,
                                     s_gp_shared_security_key,
                                     s_gp_link_key,
@@ -2758,13 +2758,13 @@ ZB_ZCL_DECLARE_GPPB_ATTRIB_LIST_CLI(s_hue_gp_attr_list_cli,
 
 ZB_ZCL_START_DECLARE_CLUSTER_LIST(s_gp_cluster_list)
     ZB_ZCL_CLUSTER_DESC(ZB_ZCL_CLUSTER_ID_GREEN_POWER,
-                        ZB_ZCL_ARRAY_SIZE(s_hue_gp_attr_list_cli, zb_zcl_attr_t),
-                        s_hue_gp_attr_list_cli,
+                        ZB_ZCL_ARRAY_SIZE(s_gp_attr_list_cli, zb_zcl_attr_t),
+                        s_gp_attr_list_cli,
                         ZB_ZCL_CLUSTER_CLIENT_ROLE,
                         ZB_ZCL_MANUF_CODE_INVALID)
 ZB_ZCL_FINISH_DECLARE_CLUSTER_LIST;
 
-ZB_ZCL_DECLARE_GPPB_EP(s_gp_endpoint_desc, HUE_GP_ENDPOINT, s_gp_cluster_list);
+ZB_ZCL_DECLARE_GPPB_EP(s_gp_endpoint_desc, GP_ENDPOINT, s_gp_cluster_list);
 
 static zb_af_endpoint_desc_t *s_device_ep_list_with_gp[2];
 static zb_af_device_ctx_t s_device_ctx_with_gp = {
@@ -2785,14 +2785,14 @@ static void register_native_green_power_endpoint(void)
     s_device_ep_list_with_gp[1] = &s_gp_endpoint_desc;
     ZB_AF_REGISTER_DEVICE_CTX(&s_device_ctx_with_gp);
 
-    if (HUE_SERIAL_DEBUG) {
+    if (ARGB_SERIAL_DEBUG) {
         printf("FAKE_DESCRIPTOR: endpoint=%u profile=0x%04x device=0x%04x version=%u "
                "server_clusters=[] client_clusters=[0x%04x] source=zboss_gppb\n",
-               HUE_GP_ENDPOINT,
-               HUE_GP_PROFILE_ID,
-               HUE_GP_DEVICE_ID,
+               GP_ENDPOINT,
+               GP_PROFILE_ID,
+               GP_DEVICE_ID,
                0,
-               HUE_GP_CLUSTER_ID);
+               GP_CLUSTER_ID);
     }
 }
 #endif
@@ -2809,7 +2809,7 @@ static void add_color_dimmable_light_endpoint(esp_zb_ep_list_t *ep_list, uint8_t
     light_cfg.color_cfg.enhanced_color_mode = 0x00;
     light_cfg.color_cfg.color_capabilities = 0x001F;
 
-    /* Extended color light (0x010D) is what Hue uses for gradient-capable lights. */
+    /* Extended color light (0x010D) is what gradient-capable lights use. */
     esp_zb_endpoint_config_t endpoint_config = {
         .endpoint = endpoint,
         .app_profile_id = ESP_ZB_AF_HA_PROFILE_ID,
@@ -2821,17 +2821,17 @@ static void add_color_dimmable_light_endpoint(esp_zb_ep_list_t *ep_list, uint8_t
                           endpoint_config);
 
     zcl_basic_manufacturer_info_t info = {
-        .manufacturer_name = (char *)HUE_MANUFACTURER_NAME,
-        .model_identifier = (char *)HUE_MODEL_IDENTIFIER,
+        .manufacturer_name = (char *)BASIC_MANUFACTURER_NAME,
+        .model_identifier = (char *)BASIC_MODEL_IDENTIFIER,
     };
     esp_zcl_utility_add_ep_basic_manufacturer_info(ep_list, endpoint, &info);
 
-    /* Add extra Basic cluster attributes so Hue shows a more complete device
+    /* Add extra Basic cluster attributes so the bridge shows a more complete device
      * record (date code, software build). */
     esp_zb_cluster_list_t *basic_cluster_list = esp_zb_ep_list_get_ep(ep_list, endpoint);
     esp_zb_attribute_list_t *basic_attr_list = esp_zb_cluster_list_get_cluster(
         basic_cluster_list, ESP_ZB_ZCL_CLUSTER_ID_BASIC, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
-    /* Spoof the firmware identifiers of a real LCX004 so the Hue bridge looks
+    /* Spoof the firmware identifiers of a real LCX004 so the bridge looks
      * up the product record and enables the gradient UI. */
     char date_code[] = "\x08" "20251117";
     char product_code[] = "\x00";
@@ -2846,7 +2846,7 @@ static void add_color_dimmable_light_endpoint(esp_zb_ep_list_t *ep_list, uint8_t
     esp_zb_custom_cluster_add_custom_attr(basic_attr_list, 0x0020,
                                           ESP_ZB_ZCL_ATTR_TYPE_CHAR_STRING,
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_ONLY,
-                                          (void *)HUE_BASIC_POWER_ON_CONFIG);
+                                          (void *)BASIC_POWER_ON_CONFIG);
     esp_zb_custom_cluster_add_custom_attr(basic_attr_list, 0x0021,
                                           ESP_ZB_ZCL_ATTR_TYPE_U32,
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_ONLY,
@@ -2854,7 +2854,7 @@ static void add_color_dimmable_light_endpoint(esp_zb_ep_list_t *ep_list, uint8_t
     esp_zb_custom_cluster_add_custom_attr(basic_attr_list, 0x0040,
                                           ESP_ZB_ZCL_ATTR_TYPE_CHAR_STRING,
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_ONLY,
-                                          (void *)HUE_BASIC_PRODUCT_LABEL);
+                                          (void *)BASIC_PRODUCT_LABEL);
     esp_zb_custom_cluster_add_custom_attr(basic_attr_list, 0x0041,
                                           ESP_ZB_ZCL_ATTR_TYPE_U32,
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_ONLY,
@@ -2876,7 +2876,7 @@ static void add_color_dimmable_light_endpoint(esp_zb_ep_list_t *ep_list, uint8_t
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_WRITE,
                                           s_basic_attr54[endpoint - HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE]);
 
-    // Fix "Off with effect" command from Hue bridge.
+    // Fix "Off with effect" command from the bridge.
     // https://github.com/espressif/esp-zigbee-sdk/issues/457#issuecomment-2426128314
     uint16_t on_off_on_time = 0;
     uint16_t on_off_off_wait_time = 0;
@@ -2896,7 +2896,7 @@ static void add_color_dimmable_light_endpoint(esp_zb_ep_list_t *ep_list, uint8_t
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_ONLY,
                                           &on_off_startup_on_off);
 
-    // Restore previous brightness when Hue sends "On" without a level command.
+    // Restore previous brightness when the bridge sends "On" without a level command.
     uint8_t level_on_level = 0xFF; /* 0xFF == use previous level */
     uint16_t level_on_transition_time = 0;
     uint16_t level_off_transition_time = 0;
@@ -2977,32 +2977,32 @@ static void add_color_dimmable_light_endpoint(esp_zb_ep_list_t *ep_list, uint8_t
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_ONLY,
                                           &color_attr4010);
     esp_zb_custom_cluster_add_custom_attr(color_attr_list,
-                                          HUE_COLOR_POINT_RX_ID,
+                                          COLOR_POINT_RX_ID,
                                           ESP_ZB_ZCL_ATTR_TYPE_U16,
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_ONLY,
                                           &color_point_rx);
     esp_zb_custom_cluster_add_custom_attr(color_attr_list,
-                                          HUE_COLOR_POINT_RY_ID,
+                                          COLOR_POINT_RY_ID,
                                           ESP_ZB_ZCL_ATTR_TYPE_U16,
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_ONLY,
                                           &color_point_ry);
     esp_zb_custom_cluster_add_custom_attr(color_attr_list,
-                                          HUE_COLOR_POINT_GX_ID,
+                                          COLOR_POINT_GX_ID,
                                           ESP_ZB_ZCL_ATTR_TYPE_U16,
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_ONLY,
                                           &color_point_gx);
     esp_zb_custom_cluster_add_custom_attr(color_attr_list,
-                                          HUE_COLOR_POINT_GY_ID,
+                                          COLOR_POINT_GY_ID,
                                           ESP_ZB_ZCL_ATTR_TYPE_U16,
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_ONLY,
                                           &color_point_gy);
     esp_zb_custom_cluster_add_custom_attr(color_attr_list,
-                                          HUE_COLOR_POINT_BX_ID,
+                                          COLOR_POINT_BX_ID,
                                           ESP_ZB_ZCL_ATTR_TYPE_U16,
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_ONLY,
                                           &color_point_bx);
     esp_zb_custom_cluster_add_custom_attr(color_attr_list,
-                                          HUE_COLOR_POINT_BY_ID,
+                                          COLOR_POINT_BY_ID,
                                           ESP_ZB_ZCL_ATTR_TYPE_U16,
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_ONLY,
                                           &color_point_by);
@@ -3026,7 +3026,7 @@ static void add_color_dimmable_light_endpoint(esp_zb_ep_list_t *ep_list, uint8_t
         static uint32_t ota_downloaded_file_version = 0xFFFFFFFF;
         static uint16_t ota_downloaded_stack_version = 0xFFFF;
         static uint8_t ota_image_status = 0x00;
-        static uint16_t ota_manufacturer = HUE_SIGNIFY_MANUFACTURER_CODE;
+        static uint16_t ota_manufacturer = SIGNIFY_MANUFACTURER_CODE;
         static uint16_t ota_image_type = 0xFFFF;
         static uint16_t ota_min_block_period = 0;
 
@@ -3066,9 +3066,9 @@ static void add_color_dimmable_light_endpoint(esp_zb_ep_list_t *ep_list, uint8_t
                                                ESP_ZB_ZCL_CLUSTER_CLIENT_ROLE);
     }
 
-    /* Add Signify proprietary clusters (FC01/FC03/FC04) so the Hue bridge
+    /* Add Signify proprietary clusters (FC01/FC03/FC04) so the bridge
      * recognises this as a certified gradient light. */
-    add_hue_proprietary_clusters(cluster_list, endpoint - HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE);
+    add_proprietary_clusters(cluster_list, endpoint - HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE);
     log_fake_simple_descriptor(endpoint);
 }
 
@@ -3120,7 +3120,7 @@ static size_t hex_to_bytes(const char *hex, uint8_t *out, size_t out_len)
 }
 
 /* Minimal serial CLI for self-testing the gradient parser without re-pairing
- * the device through the Hue app every time.  Typing:
+     * the device through the app every time.  Typing:
  *   g 51010104001350000000c2ad57c2ad57c2ad57c2ad57c2ad572800
  * will emit the same DATA line the daemon will see when the bridge/ZHA sends
  * an FC03 multiColor command. */
@@ -3149,7 +3149,7 @@ static void serial_cmd_task(void *pvParameters)
             uint8_t payload[64];
             size_t len = hex_to_bytes(gradient_hex, payload, sizeof(payload));
             if (len) {
-                handle_hue_multicolor_command(HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE,
+                handle_fc03_multicolor_command(HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE,
                                               payload, len);
             } else {
                 printf("USAGE: g <hex payload>\n");
@@ -3161,7 +3161,7 @@ static void serial_cmd_task(void *pvParameters)
             if (end && *end) {
                 endpoint = (uint8_t)strtoul(end, NULL, 0);
             }
-            hue_join_group(group_id, endpoint);
+            join_group(group_id, endpoint);
         } else if (strcmp(line, "state") == 0) {
             emit_state_json(HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE);
         } else if (strcmp(line, "discover") == 0 || strcmp(line, "reset") == 0) {
@@ -3179,21 +3179,21 @@ static void esp_zb_task(void *pvParameters)
     esp_zb_init(&zb_nwk_cfg);
 
     /* Pretend to be a Signify device at the Zigbee MAC and node-descriptor level. */
-    init_hue_spoofed_long_addr();
-    ESP_ERROR_CHECK(esp_zb_set_long_address(s_hue_spoofed_long_addr));
-    esp_zb_set_node_descriptor_manufacturer_code(HUE_SIGNIFY_MANUFACTURER_CODE);
-    ESP_LOGI(TAG, "Node descriptor manufacturer code set to 0x%04x", (unsigned)HUE_SIGNIFY_MANUFACTURER_CODE);
+    init_spoofed_long_addr();
+    ESP_ERROR_CHECK(esp_zb_set_long_address(s_spoofed_long_addr));
+    esp_zb_set_node_descriptor_manufacturer_code(SIGNIFY_MANUFACTURER_CODE);
+    ESP_LOGI(TAG, "Node descriptor manufacturer code set to 0x%04x", (unsigned)SIGNIFY_MANUFACTURER_CODE);
 
-    // Allow joining Philips Hue networks.
+    // Allow joining distributed-security Zigbee networks.
     esp_zb_enable_joining_to_distributed(true);
-    esp_zb_secur_TC_standard_distributed_key_set(HUE_TRUST_CENTER_KEY);
+    esp_zb_secur_TC_standard_distributed_key_set(ZIGBEE_TRUST_CENTER_KEY);
 
     esp_zb_ep_list_t *ep_list = esp_zb_ep_list_create();
     for (uint8_t i = 0; i < ARGB_ENDPOINT_COUNT; i++) {
         uint8_t endpoint = HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE + i;
         add_color_dimmable_light_endpoint(ep_list, endpoint);
     }
-#if HUE_GP_ENDPOINT_MODE == 1
+#if GP_ENDPOINT_MODE == 1
     add_green_power_endpoint(ep_list);
 #endif
 
@@ -3201,16 +3201,16 @@ static void esp_zb_task(void *pvParameters)
     for (uint8_t i = 0; i < ARGB_ENDPOINT_COUNT; i++) {
         set_real_lcx004_discovery_attrs(HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE + i);
     }
-#if HUE_GP_ENDPOINT_MODE == 2
+#if GP_ENDPOINT_MODE == 2
     register_native_green_power_endpoint();
 #endif
     esp_zb_core_action_handler_register(zb_action_handler);
     esp_zb_device_cb_id_handler_register(zb_device_cb_id_handler);
     esp_zb_raw_command_handler_register(zb_raw_command_handler);
-#if HUE_ZDO_DESCRIPTOR_OVERRIDE
-    esp_zb_aps_data_indication_handler_register(hue_zdo_descriptor_override_cb);
+#if ZDO_DESCRIPTOR_OVERRIDE
+    esp_zb_aps_data_indication_handler_register(zdo_descriptor_override_cb);
     ESP_LOGI(TAG, "ZDO descriptor override enabled: endpoint list will advertise [%u,%u]",
-             (unsigned)HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE, (unsigned)HUE_GP_ENDPOINT);
+             (unsigned)HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE, (unsigned)GP_ENDPOINT);
 #endif
     esp_zb_set_primary_network_channel_set(ESP_ZB_PRIMARY_CHANNEL_MASK);
     ESP_ERROR_CHECK(esp_zb_start(false));
@@ -3219,7 +3219,7 @@ static void esp_zb_task(void *pvParameters)
 
 void app_main(void)
 {
-#if !HUE_SERIAL_DEBUG
+#if !ARGB_SERIAL_DEBUG
     esp_log_level_set("*", ESP_LOG_WARN);
     esp_log_level_set(TAG, ESP_LOG_WARN);
 #endif

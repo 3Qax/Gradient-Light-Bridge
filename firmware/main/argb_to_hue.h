@@ -5,7 +5,7 @@
 
 #define ARGB_ENDPOINT_COUNT 1
 
-/* Hue gradient-capable lights expose their light endpoint as 11 (0x0B).
+/* The gradient-capable device profile exposes its light endpoint as 11 (0x0B).
  * This matches the uniqueid suffix (-0b) seen on real Signify gradient
  * lights and is the endpoint ZHA/Home Assistant use for the FC03 cluster. */
 #define HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE 11

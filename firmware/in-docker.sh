@@ -1,6 +1,6 @@
 #!/bin/bash
 # Build the ESP32-C6 firmware inside the official ESP-IDF Docker image.
-# Based on https://wejn.org/2025/01/zigbee-hue-llo-world/
+# Keeps ESP-IDF setup inside the official Docker image.
 set -euo pipefail
 
 IDFVER="${IDFVER:-v5.3.2}"
@@ -20,12 +20,12 @@ if [[ -n "${PORT:-}" ]]; then
     DOCKER_ARGS+=(--device "$PORT")
 fi
 
-if [[ -n "${HUE_EUI_SUFFIX:-}" ]]; then
-    DOCKER_ARGS+=(-e HUE_EUI_SUFFIX)
+if [[ -n "${ARGB_EUI_SUFFIX:-}" ]]; then
+    DOCKER_ARGS+=(-e ARGB_EUI_SUFFIX)
 fi
 
-if [[ -n "${HUE_SERIAL_DEBUG:-}" ]]; then
-    DOCKER_ARGS+=(-e HUE_SERIAL_DEBUG)
+if [[ -n "${ARGB_SERIAL_DEBUG:-}" ]]; then
+    DOCKER_ARGS+=(-e ARGB_SERIAL_DEBUG)
 fi
 
 # Only allocate a TTY when stdin is a terminal (interactive use).

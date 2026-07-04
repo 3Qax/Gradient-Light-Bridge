@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bridge argb-to-hue USB-CDC output to OpenRGB.
+"""Bridge serial USB-CDC output to OpenRGB.
 
 Developed on macOS, intended to run on modern Linux.
 """
@@ -27,7 +27,7 @@ from openrgb.orgb import Device, Segment, Zone
 from openrgb.utils import RGBColor
 
 
-logger = logging.getLogger("argb-to-hue")
+logger = logging.getLogger("argb-bridge")
 
 RGBTriplet = tuple[float, float, float]
 
@@ -93,7 +93,7 @@ def find_serial_port(preferred: str | None) -> str:
 
 
 def connect_openrgb(host: str, port: int) -> OpenRGBClient:
-    client = OpenRGBClient(host, port, name="argb-to-hue")
+    client = OpenRGBClient(host, port, name="argb-bridge")
     logger.info("Connected to OpenRGB SDK at %s:%d", host, port)
     for dev in client.devices:
         logger.info("OpenRGB device: %s (type=%s, zones=%d)", dev.name, dev.type, len(dev.zones))
@@ -287,14 +287,14 @@ TargetGroup = list[OpenRGBTarget]
 TargetColorSet = tuple[OpenRGBTarget, list[RGBColor]]
 QueuedColorSet = tuple[OpenRGBTarget, list[RGBColor], bool]
 
-HUE_STYLE_LINEAR = 0x00
-HUE_STYLE_SCATTERED = 0x02
-HUE_STYLE_MIRRORED = 0x04
-HUE_STYLE_SEGMENTED = 0x06
+GRADIENT_STYLE_LINEAR = 0x00
+GRADIENT_STYLE_SCATTERED = 0x02
+GRADIENT_STYLE_MIRRORED = 0x04
+GRADIENT_STYLE_SEGMENTED = 0x06
 
-HUE_FC03_FLAG_ON_OFF = 0x0001
-HUE_FC03_FLAG_COLOR_MIREK = 0x0004
-HUE_FC03_FLAG_COLOR_XY = 0x0008
+FC03_FLAG_ON_OFF = 0x0001
+FC03_FLAG_COLOR_MIREK = 0x0004
+FC03_FLAG_COLOR_XY = 0x0008
 
 ZONE_COLOR_CACHE: dict[int, list[RGBColor]] = {}
 TARGET_COLOR_CACHE: dict[int, list[RGBColor]] = {}
@@ -702,7 +702,7 @@ def coerce_int(value: Any, default: int) -> int:
         return default
 
 
-def coerce_hue_bri(value: Any, default: int) -> int:
+def coerce_brightness_254(value: Any, default: int) -> int:
     return max(0, min(254, coerce_int(value, default)))
 
 
@@ -803,22 +803,22 @@ def render_gradient(
     if scale <= 0.0:
         scale = float(len(colors))
 
-    if style == HUE_STYLE_MIRRORED:
+    if style == GRADIENT_STYLE_MIRRORED:
         return render_mirrored_gradient(colors, led_count, scale, offset, wrap)
-    if style == HUE_STYLE_SCATTERED:
+    if style == GRADIENT_STYLE_SCATTERED:
         return render_scattered_gradient(colors, led_count, offset)
-    if style == HUE_STYLE_SEGMENTED:
+    if style == GRADIENT_STYLE_SEGMENTED:
         return render_segmented_gradient(colors, led_count, scale, offset, wrap)
 
-    if style != HUE_STYLE_LINEAR:
-        logger.debug("Unknown Hue gradient style %s; rendering as linear", style)
+    if style != GRADIENT_STYLE_LINEAR:
+        logger.debug("Unknown gradient style %s; rendering as linear", style)
     return render_linear_gradient(colors, led_count, scale, offset, wrap)
 
 
 def dynamic_cycle_seconds(effect_speed: int | None, min_seconds: float, max_seconds: float) -> float:
     speed = max(1, min(254, coerce_int(effect_speed, 1)))
     speed_ratio = speed / 254.0
-    # Hue's "extreme" dynamic-scene speed has been observed as 224 rather
+    # The app's "extreme" dynamic-scene speed has been observed as 224 rather
     # than 254. Use an eased curve so high app speeds feel fast instead of
     # landing near the middle of a long linear cycle.
     remaining_ratio = 1.0 - speed_ratio
@@ -844,9 +844,9 @@ def render_gradient_for_target(
     bri: int = 254,
     wrap: bool = False,
 ) -> list[RGBColor] | None:
-    """Render a Hue FC03 multiColor gradient for one mapped OpenRGB target.
+    """Render a FC03 multiColor gradient for one mapped OpenRGB target.
 
-    The firmware emits one RGB sample per received Hue gradient point. The
+    The firmware emits one RGB sample per received gradient point. The
     daemon renders those points across the actual OpenRGB LED count.
     """
     if target is None:
@@ -1187,7 +1187,7 @@ def color_state_cache_path(config: Mapping[str, Any]) -> Path | None:
         return None
     if value:
         return Path(str(value)).expanduser()
-    return Path.home() / ".cache" / "argb-to-hue" / "last-colors.json"
+    return Path.home() / ".cache" / "argb-bridge" / "last-colors.json"
 
 
 def set_color_state_cache_path(path: Path | None) -> None:
@@ -1412,8 +1412,8 @@ def handle_data_event(
             colors = []
         previous = source.gradient_states.get(endpoint)
         default_bri = previous.bri if previous else 254
-        bri = coerce_hue_bri(data.get("bri"), default_bri)
-        style = coerce_int(data.get("style"), HUE_STYLE_LINEAR)
+        bri = coerce_brightness_254(data.get("bri"), default_bri)
+        style = coerce_int(data.get("style"), GRADIENT_STYLE_LINEAR)
         scale = fixed_eighths_to_float(
             data.get("scale_raw"),
             coerce_float(data.get("scale", data.get("segments")), float(len(colors))),
@@ -1459,9 +1459,9 @@ def handle_data_event(
     stored_gradient = source.gradient_states.get(endpoint)
     fc03_changed_color = bool(
         fc03_flags is not None
-        and (fc03_flags & (HUE_FC03_FLAG_COLOR_MIREK | HUE_FC03_FLAG_COLOR_XY))
+        and (fc03_flags & (FC03_FLAG_COLOR_MIREK | FC03_FLAG_COLOR_XY))
     )
-    fc03_changed_on = fc03_flags is None or bool(fc03_flags & HUE_FC03_FLAG_ON_OFF)
+    fc03_changed_on = fc03_flags is None or bool(fc03_flags & FC03_FLAG_ON_OFF)
     if (
         data.get("source") == "fc03"
         and stored_gradient is not None
@@ -1469,7 +1469,7 @@ def handle_data_event(
         and ("bri" in data or "on" in data)
     ):
         if "bri" in data:
-            stored_gradient.bri = coerce_hue_bri(data.get("bri"), stored_gradient.bri)
+            stored_gradient.bri = coerce_brightness_254(data.get("bri"), stored_gradient.bri)
         if "on" in data and fc03_changed_on:
             stored_gradient.on = bool(data.get("on"))
         logger.debug(
@@ -1588,7 +1588,7 @@ def run(config_path: Path, config: dict[str, Any]) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Bridge argb-to-hue firmware to OpenRGB")
+    parser = argparse.ArgumentParser(description="Bridge serial firmware output to OpenRGB")
     parser.add_argument("-c", "--config", type=Path, default=Path("config.yaml"),
                         help="Path to config.yaml")
     parser.add_argument("-v", "--verbose", action="store_true", help="Verbose logging")

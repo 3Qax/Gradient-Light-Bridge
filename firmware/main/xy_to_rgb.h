@@ -9,7 +9,7 @@ typedef struct {
 } rgb_t;
 
 /**
- * @brief Convert Hue-style CIE xy + brightness (0..254) to sRGB.
+ * @brief Convert CIE xy + brightness (0..254) to sRGB.
  *
  * @param x CIE 1931 x coordinate (0..1)
  * @param y CIE 1931 y coordinate (0..1)

@@ -1,4 +1,4 @@
-# argb-to-hue daemon configuration
+# argb-bridge daemon configuration
 # Developed on macOS, intended to run on modern Linux.
 
 openrgb:
@@ -83,11 +83,11 @@ inputs:
 set_direct_mode: true
 
 # Persists raw, uncorrected target colors so color_correction edits can be
-# reapplied after daemon restarts without waiting for a fresh Hue scene packet.
-color_state_cache: ~/.cache/argb-to-hue/last-colors.json
+# reapplied after daemon restarts without waiting for a fresh scene packet.
+color_state_cache: ~/.cache/argb-bridge/last-colors.json
 
 dynamic:
-  # Hue dynamic-scene speed is mapped to one full palette cycle. Extreme speed
+  # bridge dynamic-scene speed is mapped to one full palette cycle. Extreme speed
   # has been observed as effect_speed=224, so the daemon uses a non-linear
   # curve and this short minimum to keep max-speed scenes visibly active.
   frame_interval_seconds: 0.05
@@ -95,7 +95,7 @@ dynamic:
   max_cycle_seconds: 90.0
 
 # Reloaded live when this file changes. Start with FastLED's common SMD5050
-# correction, then tweak gain/gamma while comparing against real Hue lights.
+# correction, then tweak gain/gamma while comparing against real gradient lights.
 # Supported presets:
 #   TypicalSMD5050, TypicalLEDStrip, Typical8mmPixel, TypicalPixelString,
 #   UncorrectedColor

@@ -1,15 +1,14 @@
 #pragma once
 
-// Trust Center link key used by Philips Hue bridges for Zigbee network joining.
+// Trust-center link key used by the target Zigbee bridge for network joining.
 //
-// The actual key is not included in this repository. It is widely documented in
-// the Zigbee/Philips Hue reverse-engineering community (for example, in the
-// esp32-huello-world project and related blog posts).
+// The actual key is not included in this repository. Keep the local copy
+// untracked.
 //
 // Copy this file to trust_center_key.h and replace the placeholder bytes below
-// with the real 16-byte Hue trust center link key.
+// with the real 16-byte trust-center link key.
 
-static uint8_t HUE_TRUST_CENTER_KEY[16] = {
+static uint8_t ZIGBEE_TRUST_CENTER_KEY[16] = {
     0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
     0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF
 };

@@ -22,6 +22,9 @@
 - Flash on Linux:
   - `cd firmware`
   - `PORT=/dev/ttyACM0 ./in-docker.sh idf.py -p /dev/ttyACM0 flash`
+- Additional board identity/debug build knobs:
+  - `ARGB_EUI_SUFFIX=auto ./in-docker.sh idf.py build`
+  - `ARGB_SERIAL_DEBUG=1 ./in-docker.sh idf.py build`
 - Gradient probe:
   - `cd firmware/gradient_probe`
   - `../in-docker.sh idf.py build`
