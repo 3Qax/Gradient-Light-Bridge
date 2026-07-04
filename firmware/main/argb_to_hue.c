@@ -23,6 +23,7 @@
 #include "nvs.h"
 #include "nvs_flash.h"
 #include "freertos/FreeRTOS.h"
+#include "freertos/semphr.h"
 #include "freertos/task.h"
 #include "aps/esp_zigbee_aps.h"
 #include "ha/esp_zigbee_ha_standard.h"
@@ -71,6 +72,7 @@ static const char *TAG = "ARGB_BRIDGE";
 #define POWER_RECOVERY_NVS_KEY             "state_v1"
 #define POWER_RECOVERY_NVS_MAGIC           0x50575231U /* PWR1 */
 #define POWER_RECOVERY_NVS_VERSION         1
+#define STANDARD_ZCL_FADE_TENTHS           4
 
 #define FC03_FLAG_ON_OFF                   0x0001
 #define FC03_FLAG_BRIGHTNESS               0x0002
@@ -1497,6 +1499,10 @@ static rgb_t light_state_rgb(const light_state_t *st)
 
 #if ARGB_BACKEND == ARGB_BACKEND_LOCAL_LED
 static void local_led_stop_dynamic(uint8_t endpoint);
+static esp_err_t local_led_start_solid_transition(uint8_t endpoint,
+                                                  rgb_t color,
+                                                  bool has_fade,
+                                                  uint16_t fade);
 #endif
 
 static void sync_fc03_state_prefix(uint8_t idx)
@@ -1555,13 +1561,11 @@ static void emit_state_json_internal(uint8_t endpoint,
            (unsigned)rgb.b);
 #else
     local_led_stop_dynamic(endpoint);
-    esp_err_t err = local_led_backend_show_solid(rgb);
+    esp_err_t err = local_led_start_solid_transition(endpoint, rgb, has_fade, fade);
     if (err != ESP_OK) {
         ESP_LOGW(TAG, "local LED solid update failed: %s", esp_err_to_name(err));
     }
     (void)source;
-    (void)has_fade;
-    (void)fade;
     (void)has_fc03_flags;
     (void)fc03_flags;
 #endif
@@ -1780,6 +1784,8 @@ static void render_gradient_pixels(const gradient_color_t *colors,
 #define LOCAL_DYNAMIC_FRAME_MS          33
 #define LOCAL_DYNAMIC_MIN_CYCLE_SECONDS 1.5f
 #define LOCAL_DYNAMIC_MAX_CYCLE_SECONDS 90.0f
+#define LOCAL_FADE_UNIT_MS             100U
+#define LOCAL_FADE_MAX_MS              10000U
 
 typedef struct {
     bool active;
@@ -1793,8 +1799,141 @@ typedef struct {
     TickType_t started_tick;
 } local_led_gradient_runtime_t;
 
+typedef struct {
+    bool active;
+    rgb_t start[ARGB_LED_COUNT];
+    rgb_t target[ARGB_LED_COUNT];
+    TickType_t started_tick;
+    uint32_t duration_ms;
+} local_led_fade_runtime_t;
+
 static local_led_gradient_runtime_t s_local_gradient_runtime[ARGB_ENDPOINT_COUNT];
+static local_led_fade_runtime_t s_local_fade_runtime[ARGB_ENDPOINT_COUNT];
+static rgb_t s_local_current_pixels[ARGB_LED_COUNT];
+static bool s_local_current_pixels_valid;
+static SemaphoreHandle_t s_local_animation_lock;
 static TaskHandle_t s_local_dynamic_task;
+
+static void local_led_ensure_dynamic_task(void);
+
+static bool local_led_take_animation_lock(void)
+{
+    if (!s_local_animation_lock) {
+        s_local_animation_lock = xSemaphoreCreateMutex();
+        if (!s_local_animation_lock) {
+            ESP_LOGW(TAG, "failed to create local LED animation mutex");
+            return false;
+        }
+    }
+
+    xSemaphoreTake(s_local_animation_lock, portMAX_DELAY);
+    return true;
+}
+
+static void local_led_give_animation_lock(void)
+{
+    if (s_local_animation_lock) {
+        xSemaphoreGive(s_local_animation_lock);
+    }
+}
+
+static uint32_t local_fade_duration_ms(bool has_fade, uint16_t fade)
+{
+    if (!has_fade || fade == 0) {
+        return 0;
+    }
+
+    uint32_t duration_ms = (uint32_t)fade * LOCAL_FADE_UNIT_MS;
+    return duration_ms > LOCAL_FADE_MAX_MS ? LOCAL_FADE_MAX_MS : duration_ms;
+}
+
+static void local_led_fill_pixels(rgb_t *pixels, size_t led_count, rgb_t color)
+{
+    for (size_t i = 0; i < led_count; i++) {
+        pixels[i] = color;
+    }
+}
+
+static void local_led_full_pixels_from_partial(rgb_t *out, const rgb_t *pixels, size_t count)
+{
+    rgb_t off = {0, 0, 0};
+    size_t led_count = local_led_backend_pixel_count();
+    for (size_t i = 0; i < led_count; i++) {
+        out[i] = (pixels && i < count) ? pixels[i] : off;
+    }
+}
+
+static void local_led_current_pixels_locked(rgb_t *out, size_t led_count)
+{
+    rgb_t off = {0, 0, 0};
+    if (!s_local_current_pixels_valid) {
+        local_led_fill_pixels(out, led_count, off);
+        return;
+    }
+
+    memcpy(out, s_local_current_pixels, led_count * sizeof(out[0]));
+}
+
+static esp_err_t local_led_show_pixels_now_locked(const rgb_t *pixels, size_t count)
+{
+    rgb_t full_pixels[ARGB_LED_COUNT];
+    size_t led_count = local_led_backend_pixel_count();
+    local_led_full_pixels_from_partial(full_pixels, pixels, count);
+
+    esp_err_t err = local_led_backend_show_pixels(full_pixels, led_count);
+    if (err == ESP_OK) {
+        memcpy(s_local_current_pixels, full_pixels, led_count * sizeof(full_pixels[0]));
+        s_local_current_pixels_valid = true;
+    }
+    return err;
+}
+
+static esp_err_t local_led_start_pixel_transition(uint8_t endpoint,
+                                                  const rgb_t *target,
+                                                  size_t count,
+                                                  bool has_fade,
+                                                  uint16_t fade)
+{
+    uint8_t idx = 0;
+    if (!get_light_state_for_endpoint(endpoint, &idx, NULL)) {
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    rgb_t target_pixels[ARGB_LED_COUNT];
+    size_t led_count = local_led_backend_pixel_count();
+    local_led_full_pixels_from_partial(target_pixels, target, count);
+    uint32_t duration_ms = local_fade_duration_ms(has_fade, fade);
+
+    if (!local_led_take_animation_lock()) {
+        return ESP_ERR_NO_MEM;
+    }
+
+    s_local_fade_runtime[idx].active = false;
+    if (duration_ms == 0) {
+        esp_err_t err = local_led_show_pixels_now_locked(target_pixels, led_count);
+        local_led_give_animation_lock();
+        return err;
+    }
+
+    local_led_current_pixels_locked(s_local_fade_runtime[idx].start, led_count);
+    memcpy(s_local_fade_runtime[idx].target, target_pixels, led_count * sizeof(target_pixels[0]));
+    s_local_fade_runtime[idx].started_tick = xTaskGetTickCount();
+    s_local_fade_runtime[idx].duration_ms = duration_ms;
+    s_local_fade_runtime[idx].active = true;
+    local_led_give_animation_lock();
+    local_led_ensure_dynamic_task();
+    return ESP_OK;
+}
+
+static esp_err_t local_led_start_solid_transition(uint8_t endpoint,
+                                                  rgb_t color,
+                                                  bool has_fade,
+                                                  uint16_t fade)
+{
+    rgb_t pixels[ARGB_LED_COUNT];
+    local_led_fill_pixels(pixels, local_led_backend_pixel_count(), color);
+    return local_led_start_pixel_transition(endpoint, pixels, local_led_backend_pixel_count(), has_fade, fade);
+}
 
 static float local_dynamic_cycle_seconds(uint8_t effect_speed)
 {
@@ -1820,29 +1959,13 @@ static float local_dynamic_offset(const local_led_gradient_runtime_t *state, Tic
         return state->offset;
     }
 
+    if ((int32_t)(now - state->started_tick) <= 0) {
+        return state->offset;
+    }
+
     TickType_t elapsed_ticks = now - state->started_tick;
     float elapsed_seconds = ((float)pdTICKS_TO_MS(elapsed_ticks)) / 1000.0f;
     return state->offset + (elapsed_seconds / cycle_seconds) * (float)state->n_colors;
-}
-
-static void local_led_render_gradient_frame(const local_led_gradient_runtime_t *state,
-                                            float offset,
-                                            bool wrap)
-{
-    rgb_t pixels[ARGB_LED_COUNT];
-    render_gradient_pixels(state->colors,
-                           state->n_colors,
-                           state->style,
-                           state->scale,
-                           offset,
-                           wrap,
-                           state->on,
-                           pixels,
-                           local_led_backend_pixel_count());
-    esp_err_t err = local_led_backend_show_pixels(pixels, local_led_backend_pixel_count());
-    if (err != ESP_OK) {
-        ESP_LOGW(TAG, "local LED dynamic frame failed: %s", esp_err_to_name(err));
-    }
 }
 
 static void local_led_dynamic_task(void *arg)
@@ -1851,12 +1974,51 @@ static void local_led_dynamic_task(void *arg)
 
     while (true) {
         TickType_t now = xTaskGetTickCount();
-        for (uint8_t i = 0; i < ARGB_ENDPOINT_COUNT; i++) {
-            local_led_gradient_runtime_t state = s_local_gradient_runtime[i];
-            if (!state.active || !state.on) {
-                continue;
+        if (local_led_take_animation_lock()) {
+            for (uint8_t i = 0; i < ARGB_ENDPOINT_COUNT; i++) {
+                if (s_local_fade_runtime[i].active) {
+                    rgb_t pixels[ARGB_LED_COUNT];
+                    uint32_t elapsed_ms = (uint32_t)pdTICKS_TO_MS(now - s_local_fade_runtime[i].started_tick);
+                    float t = s_local_fade_runtime[i].duration_ms
+                        ? (float)elapsed_ms / (float)s_local_fade_runtime[i].duration_ms
+                        : 1.0f;
+                    if (t >= 1.0f) {
+                        t = 1.0f;
+                        s_local_fade_runtime[i].active = false;
+                    }
+                    for (size_t led = 0; led < local_led_backend_pixel_count(); led++) {
+                        pixels[led] = interpolate_rgb(s_local_fade_runtime[i].start[led],
+                                                      s_local_fade_runtime[i].target[led],
+                                                      t);
+                    }
+                    esp_err_t err = local_led_show_pixels_now_locked(pixels, local_led_backend_pixel_count());
+                    if (err != ESP_OK) {
+                        ESP_LOGW(TAG, "local LED fade frame failed: %s", esp_err_to_name(err));
+                    }
+                    break;
+                }
+
+                local_led_gradient_runtime_t state = s_local_gradient_runtime[i];
+                if (!state.active || !state.on) {
+                    continue;
+                }
+                rgb_t pixels[ARGB_LED_COUNT];
+                render_gradient_pixels(state.colors,
+                                       state.n_colors,
+                                       state.style,
+                                       state.scale,
+                                       local_dynamic_offset(&state, now),
+                                       true,
+                                       state.on,
+                                       pixels,
+                                       local_led_backend_pixel_count());
+                esp_err_t err = local_led_show_pixels_now_locked(pixels, local_led_backend_pixel_count());
+                if (err != ESP_OK) {
+                    ESP_LOGW(TAG, "local LED dynamic frame failed: %s", esp_err_to_name(err));
+                }
+                break;
             }
-            local_led_render_gradient_frame(&state, local_dynamic_offset(&state, now), true);
+            local_led_give_animation_lock();
         }
         vTaskDelay(pdMS_TO_TICKS(LOCAL_DYNAMIC_FRAME_MS));
     }
@@ -1886,7 +2048,11 @@ static void local_led_stop_dynamic(uint8_t endpoint)
     if (!get_light_state_for_endpoint(endpoint, &idx, NULL)) {
         return;
     }
+    if (!local_led_take_animation_lock()) {
+        return;
+    }
     s_local_gradient_runtime[idx].active = false;
+    local_led_give_animation_lock();
 }
 
 static void local_led_update_dynamic_speed(uint8_t endpoint, uint8_t effect_speed)
@@ -1897,7 +2063,11 @@ static void local_led_update_dynamic_speed(uint8_t endpoint, uint8_t effect_spee
     }
 
     local_led_gradient_runtime_t *state = &s_local_gradient_runtime[idx];
+    if (!local_led_take_animation_lock()) {
+        return;
+    }
     if (state->n_colors == 0) {
+        local_led_give_animation_lock();
         return;
     }
 
@@ -1909,9 +2079,9 @@ static void local_led_update_dynamic_speed(uint8_t endpoint, uint8_t effect_spee
     state->started_tick = now;
     state->active = state->on;
 
-    local_led_gradient_runtime_t snapshot = *state;
-    local_led_render_gradient_frame(&snapshot, snapshot.offset, true);
-    if (state->active) {
+    bool active = state->active;
+    local_led_give_animation_lock();
+    if (active) {
         local_led_ensure_dynamic_task();
     }
 }
@@ -1923,6 +2093,8 @@ static void local_led_show_gradient_update(uint8_t endpoint,
                                            uint8_t style,
                                            uint8_t scale_raw,
                                            uint8_t offset_raw,
+                                           bool has_fade,
+                                           uint16_t fade,
                                            bool has_effect_speed,
                                            uint8_t effect_speed)
 {
@@ -1932,19 +2104,53 @@ static void local_led_show_gradient_update(uint8_t endpoint,
     }
 
     local_led_gradient_runtime_t *state = &s_local_gradient_runtime[idx];
-    state->active = has_effect_speed && on;
-    state->on = on;
-    state->n_colors = n_colors;
-    memcpy(state->colors, colors, n_colors * sizeof(colors[0]));
-    state->style = style;
-    state->scale = (float)scale_raw / 8.0f;
-    state->offset = (float)offset_raw / 8.0f;
-    state->effect_speed = effect_speed;
-    state->started_tick = xTaskGetTickCount();
+    uint32_t fade_ms = local_fade_duration_ms(has_fade, fade);
+    TickType_t now = xTaskGetTickCount();
+    local_led_gradient_runtime_t snapshot = {
+        .active = has_effect_speed && on,
+        .on = on,
+        .n_colors = n_colors,
+        .style = style,
+        .scale = (float)scale_raw / 8.0f,
+        .offset = (float)offset_raw / 8.0f,
+        .effect_speed = effect_speed,
+        .started_tick = now + pdMS_TO_TICKS(fade_ms),
+    };
+    memcpy(snapshot.colors, colors, n_colors * sizeof(colors[0]));
 
-    local_led_gradient_runtime_t snapshot = *state;
-    local_led_render_gradient_frame(&snapshot, snapshot.offset, has_effect_speed);
-    if (state->active) {
+    rgb_t target_pixels[ARGB_LED_COUNT];
+    render_gradient_pixels(snapshot.colors,
+                           snapshot.n_colors,
+                           snapshot.style,
+                           snapshot.scale,
+                           snapshot.offset,
+                           has_effect_speed,
+                           snapshot.on,
+                           target_pixels,
+                           local_led_backend_pixel_count());
+
+    if (!local_led_take_animation_lock()) {
+        return;
+    }
+    *state = snapshot;
+    s_local_fade_runtime[idx].active = false;
+    if (fade_ms == 0) {
+        esp_err_t err = local_led_show_pixels_now_locked(target_pixels, local_led_backend_pixel_count());
+        if (err != ESP_OK) {
+            ESP_LOGW(TAG, "local LED gradient update failed: %s", esp_err_to_name(err));
+        }
+    } else {
+        local_led_current_pixels_locked(s_local_fade_runtime[idx].start, local_led_backend_pixel_count());
+        memcpy(s_local_fade_runtime[idx].target,
+               target_pixels,
+               local_led_backend_pixel_count() * sizeof(target_pixels[0]));
+        s_local_fade_runtime[idx].started_tick = now;
+        s_local_fade_runtime[idx].duration_ms = fade_ms;
+        s_local_fade_runtime[idx].active = true;
+    }
+    local_led_give_animation_lock();
+
+    if (snapshot.active || fade_ms > 0) {
         local_led_ensure_dynamic_task();
     }
 }
@@ -2336,12 +2542,12 @@ static void emit_gradient_json(uint8_t endpoint,
                                    style,
                                    scale_raw,
                                    offset_raw,
+                                   has_fade,
+                                   fade,
                                    has_effect_speed,
                                    effect_speed);
     (void)fc03_flags;
     (void)bri;
-    (void)has_fade;
-    (void)fade;
 #endif
 }
 
@@ -3808,7 +4014,7 @@ static esp_err_t zb_attribute_handler(const esp_zb_zcl_set_attr_value_message_t 
     case ESP_ZB_ZCL_CLUSTER_ID_ON_OFF:
     case ESP_ZB_ZCL_CLUSTER_ID_LEVEL_CONTROL:
     case ESP_ZB_ZCL_CLUSTER_ID_COLOR_CONTROL:
-        emit_state_json(endpoint);
+        emit_state_json_internal(endpoint, NULL, true, STANDARD_ZCL_FADE_TENTHS, false, 0);
         save_power_recovery_state("zcl_attr");
         break;
     default:
@@ -4876,7 +5082,12 @@ static void run_led_gradient_test(void)
             : interpolate_rgb(green, blue, (t - 0.5f) * 2.0f);
     }
 
-    print_led_result("gradient", local_led_backend_show_pixels(pixels, led_count));
+    print_led_result("gradient",
+                     local_led_start_pixel_transition(HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE,
+                                                      pixels,
+                                                      led_count,
+                                                      false,
+                                                      0));
 }
 
 static void run_led_chase_test(void)
@@ -4896,7 +5107,11 @@ static void run_led_chase_test(void)
         for (size_t pos = 0; pos < led_count; pos++) {
             memset(pixels, 0, sizeof(pixels));
             pixels[pos] = colors[color_i];
-            esp_err_t err = local_led_backend_show_pixels(pixels, led_count);
+            esp_err_t err = local_led_start_pixel_transition(HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE,
+                                                             pixels,
+                                                             led_count,
+                                                             false,
+                                                             0);
             if (err != ESP_OK) {
                 print_led_result("chase", err);
                 return;
@@ -4921,7 +5136,11 @@ static bool handle_led_cli_command(const char *line)
     if (strcmp(cmd, "off") == 0) {
         rgb_t off = {0, 0, 0};
         local_led_stop_dynamic(HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE);
-        print_led_result("off", local_led_backend_show_solid(off));
+        print_led_result("off",
+                         local_led_start_solid_transition(HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE,
+                                                          off,
+                                                          false,
+                                                          0));
     } else if (strncmp(cmd, "solid ", 6) == 0) {
         rgb_t color;
         if (!parse_rgb_hex_arg(cmd + 6, &color)) {
@@ -4929,7 +5148,11 @@ static bool handle_led_cli_command(const char *line)
             return true;
         }
         local_led_stop_dynamic(HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE);
-        print_led_result("solid", local_led_backend_show_solid(color));
+        print_led_result("solid",
+                         local_led_start_solid_transition(HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE,
+                                                          color,
+                                                          false,
+                                                          0));
     } else if (strcmp(cmd, "gradient") == 0) {
         run_led_gradient_test();
     } else if (strcmp(cmd, "chase") == 0) {
