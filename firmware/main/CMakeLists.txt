@@ -1,11 +1,3 @@
-idf_component_register(
-    SRC_DIRS "."
-    INCLUDE_DIRS "."
-                 "../managed_components/espressif__esp-zigbee-lib/include"
-                 "../managed_components/espressif__esp-zboss-lib/include"
-    PRIV_REQUIRES nvs_flash esp_driver_uart ieee802154
-)
-
 set(ARGB_EUI_SUFFIX_VALUE "FF:FE:05")
 if(DEFINED ARGB_EUI_SUFFIX)
     set(ARGB_EUI_SUFFIX_VALUE "${ARGB_EUI_SUFFIX}")
@@ -20,7 +12,89 @@ elseif(DEFINED ENV{ARGB_SERIAL_DEBUG})
     set(ARGB_SERIAL_DEBUG_VALUE "$ENV{ARGB_SERIAL_DEBUG}")
 endif()
 
+set(ARGB_BACKEND_VALUE "ARGB_BACKEND_SERIAL_JSON")
+if(DEFINED ARGB_BACKEND)
+    set(ARGB_BACKEND_VALUE "${ARGB_BACKEND}")
+elseif(DEFINED ENV{ARGB_BACKEND})
+    set(ARGB_BACKEND_VALUE "$ENV{ARGB_BACKEND}")
+endif()
+
+string(TOLOWER "${ARGB_BACKEND_VALUE}" ARGB_BACKEND_VALUE)
+if(ARGB_BACKEND_VALUE STREQUAL "argb_backend_serial_json" OR ARGB_BACKEND_VALUE STREQUAL "serial_json")
+    set(ARGB_BACKEND_ID 1)
+elseif(ARGB_BACKEND_VALUE STREQUAL "argb_backend_local_led" OR ARGB_BACKEND_VALUE STREQUAL "local_led")
+    set(ARGB_BACKEND_ID 2)
+else()
+    message(FATAL_ERROR "Unsupported ARGB_BACKEND=${ARGB_BACKEND_VALUE}; expected ARGB_BACKEND_SERIAL_JSON or ARGB_BACKEND_LOCAL_LED")
+endif()
+
+set(ARGB_LED_GPIO_VALUE "-1")
+if(DEFINED ARGB_LED_GPIO)
+    set(ARGB_LED_GPIO_VALUE "${ARGB_LED_GPIO}")
+elseif(DEFINED ENV{ARGB_LED_GPIO})
+    set(ARGB_LED_GPIO_VALUE "$ENV{ARGB_LED_GPIO}")
+endif()
+
+set(ARGB_LED_COUNT_VALUE "12")
+if(DEFINED ARGB_LED_COUNT)
+    set(ARGB_LED_COUNT_VALUE "${ARGB_LED_COUNT}")
+elseif(DEFINED ENV{ARGB_LED_COUNT})
+    set(ARGB_LED_COUNT_VALUE "$ENV{ARGB_LED_COUNT}")
+endif()
+
+set(ARGB_COLOR_ORDER_VALUE "GRB")
+if(DEFINED ARGB_COLOR_ORDER)
+    set(ARGB_COLOR_ORDER_VALUE "${ARGB_COLOR_ORDER}")
+elseif(DEFINED ENV{ARGB_COLOR_ORDER})
+    set(ARGB_COLOR_ORDER_VALUE "$ENV{ARGB_COLOR_ORDER}")
+endif()
+string(TOUPPER "${ARGB_COLOR_ORDER_VALUE}" ARGB_COLOR_ORDER_VALUE)
+
+if(ARGB_COLOR_ORDER_VALUE STREQUAL "RGB")
+    set(ARGB_COLOR_ORDER_ID 0)
+elseif(ARGB_COLOR_ORDER_VALUE STREQUAL "GRB")
+    set(ARGB_COLOR_ORDER_ID 1)
+elseif(ARGB_COLOR_ORDER_VALUE STREQUAL "BRG")
+    set(ARGB_COLOR_ORDER_ID 2)
+elseif(ARGB_COLOR_ORDER_VALUE STREQUAL "RBG")
+    set(ARGB_COLOR_ORDER_ID 3)
+elseif(ARGB_COLOR_ORDER_VALUE STREQUAL "GBR")
+    set(ARGB_COLOR_ORDER_ID 4)
+elseif(ARGB_COLOR_ORDER_VALUE STREQUAL "BGR")
+    set(ARGB_COLOR_ORDER_ID 5)
+elseif(ARGB_BACKEND_ID EQUAL 2)
+    message(FATAL_ERROR "Unsupported ARGB_COLOR_ORDER=${ARGB_COLOR_ORDER_VALUE}; expected RGB, GRB, BRG, RBG, GBR, or BGR")
+else()
+    set(ARGB_COLOR_ORDER_ID 1)
+endif()
+
+set(ARG_MAIN_SRCS argb_to_hue.c xy_to_rgb.c zcl_utility.c)
+set(ARG_MAIN_PRIV_REQUIRES nvs_flash esp_driver_uart ieee802154)
+
+if(ARGB_BACKEND_ID EQUAL 2)
+    if(ARGB_LED_GPIO_VALUE LESS 0)
+        message(FATAL_ERROR "ARGB_BACKEND_LOCAL_LED requires ARGB_LED_GPIO=<gpio>")
+    endif()
+    if(ARGB_LED_COUNT_VALUE LESS 1)
+        message(FATAL_ERROR "ARGB_BACKEND_LOCAL_LED requires ARGB_LED_COUNT >= 1")
+    endif()
+    list(APPEND ARG_MAIN_SRCS local_led_backend.c)
+    list(APPEND ARG_MAIN_PRIV_REQUIRES esp_driver_rmt)
+endif()
+
+idf_component_register(
+    SRCS ${ARG_MAIN_SRCS}
+    INCLUDE_DIRS "."
+                 "../managed_components/espressif__esp-zigbee-lib/include"
+                 "../managed_components/espressif__esp-zboss-lib/include"
+    PRIV_REQUIRES ${ARG_MAIN_PRIV_REQUIRES}
+)
+
 target_compile_definitions(${COMPONENT_LIB} PRIVATE
     ARGB_EUI_SUFFIX="${ARGB_EUI_SUFFIX_VALUE}"
     ARGB_SERIAL_DEBUG=${ARGB_SERIAL_DEBUG_VALUE}
+    ARGB_BACKEND=${ARGB_BACKEND_ID}
+    ARGB_LED_GPIO=${ARGB_LED_GPIO_VALUE}
+    ARGB_LED_COUNT=${ARGB_LED_COUNT_VALUE}
+    ARGB_COLOR_ORDER=${ARGB_COLOR_ORDER_ID}
 )

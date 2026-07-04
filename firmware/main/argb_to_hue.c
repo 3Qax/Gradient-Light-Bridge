@@ -7,6 +7,7 @@
  */
 
 #include "argb_to_hue.h"
+#include "local_led_backend.h"
 #include "xy_to_rgb.h"
 #include "trust_center_key.h"
 
@@ -64,6 +65,11 @@ static const char *TAG = "ARGB_BRIDGE";
 #define FC03_FLAG_EFFECT_SPEED             0x0080
 #define FC03_FLAG_GRADIENT_COLORS          0x0100
 
+#define GRADIENT_STYLE_LINEAR              0x00
+#define GRADIENT_STYLE_SCATTERED           0x02
+#define GRADIENT_STYLE_MIRRORED            0x04
+#define GRADIENT_STYLE_SEGMENTED           0x06
+
 #define COLOR_POINT_RX_ID                  0x0032
 #define COLOR_POINT_RY_ID                  0x0033
 #define COLOR_POINT_GX_ID                  0x0036
@@ -88,6 +94,17 @@ static const char *TAG = "ARGB_BRIDGE";
 
 #ifndef ARGB_SERIAL_DEBUG
 #define ARGB_SERIAL_DEBUG               0
+#endif
+
+#define ARGB_BACKEND_SERIAL_JSON        1
+#define ARGB_BACKEND_LOCAL_LED          2
+
+#ifndef ARGB_BACKEND
+#define ARGB_BACKEND                    ARGB_BACKEND_SERIAL_JSON
+#endif
+
+#if ARGB_BACKEND != ARGB_BACKEND_SERIAL_JSON && ARGB_BACKEND != ARGB_BACKEND_LOCAL_LED
+#error Unsupported ARGB_BACKEND value
 #endif
 
 /* Real LCX004 devices also expose Green Power endpoint 242.
@@ -1236,6 +1253,43 @@ static uint16_t u16_le(const uint8_t *p)
     return (uint16_t)p[0] | ((uint16_t)p[1] << 8);
 }
 
+static bool get_light_state_for_endpoint(uint8_t endpoint, uint8_t *idx_out, light_state_t **st_out)
+{
+    if (endpoint < HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE ||
+        endpoint >= HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE + ARGB_ENDPOINT_COUNT) {
+        return false;
+    }
+
+    uint8_t idx = endpoint - HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE;
+    if (idx_out) {
+        *idx_out = idx;
+    }
+    if (st_out) {
+        *st_out = &g_light_state[idx];
+    }
+    return true;
+}
+
+static uint8_t remembered_brightness(const light_state_t *st)
+{
+    uint8_t bri = st->bri ? st->bri : st->last_bri;
+    return bri ? bri : 0xFE;
+}
+
+static uint8_t output_brightness(const light_state_t *st)
+{
+    return st->on ? remembered_brightness(st) : 0;
+}
+
+static rgb_t light_state_rgb(const light_state_t *st)
+{
+    return xy_to_rgb(st->x / 65535.0f, st->y / 65535.0f, output_brightness(st));
+}
+
+#if ARGB_BACKEND == ARGB_BACKEND_LOCAL_LED
+static void local_led_stop_dynamic(uint8_t endpoint);
+#endif
+
 static void sync_fc03_state_prefix(uint8_t idx)
 {
     if (idx >= ARGB_ENDPOINT_COUNT) {
@@ -1244,10 +1298,7 @@ static void sync_fc03_state_prefix(uint8_t idx)
 
     light_state_t *st = &g_light_state[idx];
     uint8_t *state = s_fc03_state[idx];
-    uint8_t effective_bri = st->bri ? st->bri : st->last_bri;
-    if (effective_bri == 0) {
-        effective_bri = 0xFE;
-    }
+    uint8_t effective_bri = remembered_brightness(st);
 
     state[3] = st->on ? 0x01 : 0x00;
     state[4] = effective_bri;
@@ -1264,24 +1315,17 @@ static void emit_state_json_internal(uint8_t endpoint,
                                      bool has_fc03_flags,
                                      uint16_t fc03_flags)
 {
-    if (endpoint < HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE ||
-        endpoint >= HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE + ARGB_ENDPOINT_COUNT) {
+    light_state_t *st = NULL;
+    if (!get_light_state_for_endpoint(endpoint, NULL, &st)) {
         return;
     }
 
-    uint8_t idx = endpoint - HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE;
-    light_state_t *st = &g_light_state[idx];
+    rgb_t rgb = light_state_rgb(st);
 
+#if ARGB_BACKEND == ARGB_BACKEND_SERIAL_JSON
     float xf = st->x / 65535.0f;
     float yf = st->y / 65535.0f;
-    /* When the bridge sends "On" before a level command, bri can be 0 for one
-     * update. Use the last known non-zero brightness so the daemon doesn't
-     * flicker the LEDs off. */
-    uint8_t effective_bri = st->on ? (st->bri ? st->bri : st->last_bri) : 0;
-
-    rgb_t rgb = xy_to_rgb(xf, yf, effective_bri);
-
-    // Prefix with DATA: so the PC daemon can ignore regular log lines.
+    /* Prefix with DATA: so the PC daemon can ignore regular log lines. */
     printf("DATA: {\"endpoint\":%u", (unsigned)endpoint);
     if (source) {
         printf(",\"source\":\"%s\"", source);
@@ -1300,6 +1344,18 @@ static void emit_state_json_internal(uint8_t endpoint,
            (unsigned)rgb.r,
            (unsigned)rgb.g,
            (unsigned)rgb.b);
+#else
+    local_led_stop_dynamic(endpoint);
+    esp_err_t err = local_led_backend_show_solid(rgb);
+    if (err != ESP_OK) {
+        ESP_LOGW(TAG, "local LED solid update failed: %s", esp_err_to_name(err));
+    }
+    (void)source;
+    (void)has_fade;
+    (void)fade;
+    (void)has_fc03_flags;
+    (void)fc03_flags;
+#endif
 }
 
 void emit_state_json(uint8_t endpoint)
@@ -1341,6 +1397,317 @@ static float clamp_unit_float(float v)
     }
     return v;
 }
+
+#if ARGB_BACKEND == ARGB_BACKEND_LOCAL_LED
+static uint8_t clamp_u8_from_float(float v)
+{
+    if (v <= 0.0f) {
+        return 0;
+    }
+    if (v >= 255.0f) {
+        return 255;
+    }
+    return (uint8_t)lroundf(v);
+}
+
+static rgb_t interpolate_rgb(rgb_t a, rgb_t b, float t)
+{
+    t = clamp_unit_float(t);
+    return (rgb_t) {
+        .r = clamp_u8_from_float((float)a.r + ((float)b.r - (float)a.r) * t),
+        .g = clamp_u8_from_float((float)a.g + ((float)b.g - (float)a.g) * t),
+        .b = clamp_u8_from_float((float)a.b + ((float)b.b - (float)a.b) * t),
+    };
+}
+
+static rgb_t gradient_sample_at(const gradient_color_t *colors,
+                                uint8_t n_colors,
+                                float position,
+                                bool wrap)
+{
+    rgb_t off = {0, 0, 0};
+    if (!colors || n_colors == 0) {
+        return off;
+    }
+    if (n_colors == 1) {
+        return (rgb_t) {colors[0].r, colors[0].g, colors[0].b};
+    }
+
+    if (wrap) {
+        position = fmodf(position, (float)n_colors);
+        if (position < 0.0f) {
+            position += (float)n_colors;
+        }
+        uint8_t idx = (uint8_t)position;
+        uint8_t next_idx = (idx + 1) % n_colors;
+        return interpolate_rgb((rgb_t) {colors[idx].r, colors[idx].g, colors[idx].b},
+                               (rgb_t) {colors[next_idx].r, colors[next_idx].g, colors[next_idx].b},
+                               position - (float)idx);
+    }
+
+    position = fmaxf(0.0f, fminf((float)n_colors - 1.0f, position));
+    uint8_t idx = (uint8_t)position;
+    if (idx >= n_colors - 1) {
+        return (rgb_t) {colors[n_colors - 1].r, colors[n_colors - 1].g, colors[n_colors - 1].b};
+    }
+    return interpolate_rgb((rgb_t) {colors[idx].r, colors[idx].g, colors[idx].b},
+                           (rgb_t) {colors[idx + 1].r, colors[idx + 1].g, colors[idx + 1].b},
+                           position - (float)idx);
+}
+
+static uint8_t gcd_u8(uint8_t a, uint8_t b)
+{
+    while (b != 0) {
+        uint8_t r = a % b;
+        a = b;
+        b = r;
+    }
+    return a ? a : 1;
+}
+
+static uint8_t coprime_palette_step(uint8_t n_colors)
+{
+    if (n_colors <= 1) {
+        return 1;
+    }
+
+    uint8_t step = (uint8_t)lroundf((float)n_colors * 0.61803398875f);
+    if (step == 0) {
+        step = 1;
+    }
+    while (gcd_u8(step, n_colors) != 1) {
+        step++;
+    }
+    return step;
+}
+
+static void render_gradient_pixels(const gradient_color_t *colors,
+                                   uint8_t n_colors,
+                                   uint8_t style,
+                                   float scale,
+                                   float offset,
+                                   bool wrap,
+                                   bool on,
+                                   rgb_t *pixels,
+                                   size_t led_count)
+{
+    rgb_t off = {0, 0, 0};
+    if (!pixels || led_count == 0) {
+        return;
+    }
+    if (!on || !colors || n_colors == 0) {
+        for (size_t i = 0; i < led_count; i++) {
+            pixels[i] = off;
+        }
+        return;
+    }
+
+    if (scale <= 0.0f) {
+        scale = (float)n_colors;
+    }
+
+    if (style == GRADIENT_STYLE_SCATTERED) {
+        int phase_i = (int)floorf(offset);
+        phase_i %= n_colors;
+        if (phase_i < 0) {
+            phase_i += n_colors;
+        }
+        uint8_t phase = (uint8_t)phase_i;
+        uint8_t step = coprime_palette_step(n_colors);
+        for (size_t i = 0; i < led_count; i++) {
+            uint8_t idx = (uint8_t)((phase + i * step) % n_colors);
+            pixels[i] = (rgb_t) {colors[idx].r, colors[idx].g, colors[idx].b};
+        }
+        return;
+    }
+
+    if (style == GRADIENT_STYLE_SEGMENTED) {
+        float visible_segments = fmaxf(1.0f, scale);
+        for (size_t i = 0; i < led_count; i++) {
+            float position = offset + ((float)i / (float)led_count) * visible_segments;
+            int idx = (int)floorf(position);
+            if (wrap) {
+                idx %= n_colors;
+                if (idx < 0) {
+                    idx += n_colors;
+                }
+            } else if (idx < 0) {
+                idx = 0;
+            } else if (idx >= n_colors) {
+                idx = n_colors - 1;
+            }
+            pixels[i] = (rgb_t) {colors[idx].r, colors[idx].g, colors[idx].b};
+        }
+        return;
+    }
+
+    if (style == GRADIENT_STYLE_MIRRORED) {
+        float center = ((float)led_count - 1.0f) / 2.0f;
+        float max_distance = fmaxf(center, 1.0f);
+        float span = fmaxf(0.0f, scale - 1.0f);
+        for (size_t i = 0; i < led_count; i++) {
+            float position = offset + (fabsf((float)i - center) / max_distance) * span;
+            pixels[i] = gradient_sample_at(colors, n_colors, position, wrap);
+        }
+        return;
+    }
+
+    float span = fmaxf(0.0f, scale - 1.0f);
+    if (led_count <= 1) {
+        pixels[0] = gradient_sample_at(colors, n_colors, offset, wrap);
+        return;
+    }
+    for (size_t i = 0; i < led_count; i++) {
+        float position = offset + ((float)i / ((float)led_count - 1.0f)) * span;
+        pixels[i] = gradient_sample_at(colors, n_colors, position, wrap);
+    }
+}
+
+#define LOCAL_DYNAMIC_FRAME_MS          33
+#define LOCAL_DYNAMIC_MIN_CYCLE_SECONDS 1.5f
+#define LOCAL_DYNAMIC_MAX_CYCLE_SECONDS 90.0f
+
+typedef struct {
+    bool active;
+    bool on;
+    uint8_t n_colors;
+    gradient_color_t colors[FC03_MAX_COLORS];
+    uint8_t style;
+    float scale;
+    float offset;
+    uint8_t effect_speed;
+    TickType_t started_tick;
+} local_led_gradient_runtime_t;
+
+static local_led_gradient_runtime_t s_local_gradient_runtime[ARGB_ENDPOINT_COUNT];
+static TaskHandle_t s_local_dynamic_task;
+
+static float local_dynamic_cycle_seconds(uint8_t effect_speed)
+{
+    uint8_t speed = effect_speed;
+    if (speed == 0) {
+        speed = 1;
+    } else if (speed > 254) {
+        speed = 254;
+    }
+
+    float speed_ratio = (float)speed / 254.0f;
+    float remaining_ratio = 1.0f - speed_ratio;
+    return LOCAL_DYNAMIC_MIN_CYCLE_SECONDS +
+           ((LOCAL_DYNAMIC_MAX_CYCLE_SECONDS - LOCAL_DYNAMIC_MIN_CYCLE_SECONDS) *
+            remaining_ratio *
+            remaining_ratio);
+}
+
+static float local_dynamic_offset(const local_led_gradient_runtime_t *state, TickType_t now)
+{
+    float cycle_seconds = local_dynamic_cycle_seconds(state->effect_speed);
+    if (cycle_seconds <= 0.0f || state->n_colors == 0) {
+        return state->offset;
+    }
+
+    TickType_t elapsed_ticks = now - state->started_tick;
+    float elapsed_seconds = ((float)pdTICKS_TO_MS(elapsed_ticks)) / 1000.0f;
+    return state->offset + (elapsed_seconds / cycle_seconds) * (float)state->n_colors;
+}
+
+static void local_led_render_gradient_frame(const local_led_gradient_runtime_t *state,
+                                            float offset,
+                                            bool wrap)
+{
+    rgb_t pixels[ARGB_LED_COUNT];
+    render_gradient_pixels(state->colors,
+                           state->n_colors,
+                           state->style,
+                           state->scale,
+                           offset,
+                           wrap,
+                           state->on,
+                           pixels,
+                           local_led_backend_pixel_count());
+    esp_err_t err = local_led_backend_show_pixels(pixels, local_led_backend_pixel_count());
+    if (err != ESP_OK) {
+        ESP_LOGW(TAG, "local LED dynamic frame failed: %s", esp_err_to_name(err));
+    }
+}
+
+static void local_led_dynamic_task(void *arg)
+{
+    (void)arg;
+
+    while (true) {
+        TickType_t now = xTaskGetTickCount();
+        for (uint8_t i = 0; i < ARGB_ENDPOINT_COUNT; i++) {
+            local_led_gradient_runtime_t state = s_local_gradient_runtime[i];
+            if (!state.active || !state.on) {
+                continue;
+            }
+            local_led_render_gradient_frame(&state, local_dynamic_offset(&state, now), true);
+        }
+        vTaskDelay(pdMS_TO_TICKS(LOCAL_DYNAMIC_FRAME_MS));
+    }
+}
+
+static void local_led_ensure_dynamic_task(void)
+{
+    if (s_local_dynamic_task) {
+        return;
+    }
+
+    BaseType_t ok = xTaskCreate(local_led_dynamic_task,
+                                "local_led_dyn",
+                                4096,
+                                NULL,
+                                1,
+                                &s_local_dynamic_task);
+    if (ok != pdPASS) {
+        ESP_LOGW(TAG, "failed to start local LED dynamic task");
+        s_local_dynamic_task = NULL;
+    }
+}
+
+static void local_led_stop_dynamic(uint8_t endpoint)
+{
+    uint8_t idx = 0;
+    if (!get_light_state_for_endpoint(endpoint, &idx, NULL)) {
+        return;
+    }
+    s_local_gradient_runtime[idx].active = false;
+}
+
+static void local_led_show_gradient_update(uint8_t endpoint,
+                                           const gradient_color_t *colors,
+                                           uint8_t n_colors,
+                                           bool on,
+                                           uint8_t style,
+                                           uint8_t scale_raw,
+                                           uint8_t offset_raw,
+                                           bool has_effect_speed,
+                                           uint8_t effect_speed)
+{
+    uint8_t idx = 0;
+    if (!get_light_state_for_endpoint(endpoint, &idx, NULL)) {
+        return;
+    }
+
+    local_led_gradient_runtime_t *state = &s_local_gradient_runtime[idx];
+    state->active = has_effect_speed && on;
+    state->on = on;
+    state->n_colors = n_colors;
+    memcpy(state->colors, colors, n_colors * sizeof(colors[0]));
+    state->style = style;
+    state->scale = (float)scale_raw / 8.0f;
+    state->offset = (float)offset_raw / 8.0f;
+    state->effect_speed = effect_speed;
+    state->started_tick = xTaskGetTickCount();
+
+    local_led_gradient_runtime_t snapshot = *state;
+    local_led_render_gradient_frame(&snapshot, snapshot.offset, has_effect_speed);
+    if (state->active) {
+        local_led_ensure_dynamic_task();
+    }
+}
+#endif
 
 /* Convert "mirek" color temperature (micro reciprocal kelvin) into the
  * same xy state used by the rest of the FC03 path. The polynomial is the
@@ -1478,6 +1845,7 @@ static void emit_gradient_json(uint8_t endpoint,
                                bool has_effect_speed,
                                uint8_t effect_speed)
 {
+#if ARGB_BACKEND == ARGB_BACKEND_SERIAL_JSON
     printf("DATA: {\"endpoint\":%u,\"source\":\"fc03\",\"fc03_flags\":%u,\"on\":%s,\"bri\":%u,\"gradient\":true,\"n\":%u,\"style\":%u,\"segments\":%u,\"scale\":%.3f,\"scale_raw\":%u,\"offset\":%u,\"offset_raw\":%u",
            (unsigned)endpoint,
            (unsigned)fc03_flags,
@@ -1506,6 +1874,21 @@ static void emit_gradient_json(uint8_t endpoint,
                (unsigned)colors[i].r, (unsigned)colors[i].g, (unsigned)colors[i].b);
     }
     printf("]}\n");
+#else
+    local_led_show_gradient_update(endpoint,
+                                   colors,
+                                   n_colors,
+                                   on,
+                                   style,
+                                   scale_raw,
+                                   offset_raw,
+                                   has_effect_speed,
+                                   effect_speed);
+    (void)fc03_flags;
+    (void)bri;
+    (void)has_fade;
+    (void)fade;
+#endif
 }
 
 static bool fc03_require_bytes(size_t offset, size_t need, size_t size, const char *field)
@@ -1776,7 +2159,11 @@ static void handle_fc03_multicolor_command(uint8_t endpoint, const uint8_t *data
 
 static esp_err_t deferred_driver_init(void)
 {
+#if ARGB_BACKEND == ARGB_BACKEND_LOCAL_LED
+    return local_led_backend_init();
+#else
     return ESP_OK;
+#endif
 }
 
 #if ZDO_DESCRIPTOR_OVERRIDE

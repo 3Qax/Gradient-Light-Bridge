@@ -25,6 +25,16 @@
 - Additional board identity/debug build knobs:
   - `ARGB_EUI_SUFFIX=auto ./in-docker.sh idf.py build`
   - `ARGB_SERIAL_DEBUG=1 ./in-docker.sh idf.py build`
+  - `ARGB_BACKEND=ARGB_BACKEND_SERIAL_JSON ./in-docker.sh idf.py build`
+  - `ARGB_BACKEND=ARGB_BACKEND_LOCAL_LED ARGB_LED_GPIO=<gpio> ARGB_LED_COUNT=12 ARGB_COLOR_ORDER=GRB ./in-docker.sh idf.py build`
+  - `ARGB_BACKEND` is a single selector, not a set of independent feature
+    toggles. Use `ARGB_BACKEND_SERIAL_JSON` for the current daemon/OpenRGB
+    flow. Use `ARGB_BACKEND_LOCAL_LED` for the direct GPIO/RMT backend.
+  - Local LED backend knobs:
+    - `ARGB_LED_GPIO`: required GPIO for the 5 V 3-pin addressable data line.
+    - `ARGB_LED_COUNT`: physical LED count; default is `12`.
+    - `ARGB_COLOR_ORDER`: `RGB`, `GRB`, `BRG`, `RBG`, `GBR`, or `BGR`; default
+      is `GRB`, which is common for WS2812/SK6812-compatible strips.
 - Gradient probe:
   - `cd firmware/gradient_probe`
   - `../in-docker.sh idf.py build`
