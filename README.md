@@ -208,16 +208,17 @@ launchctl start com.argb-to-hue.daemon
 - **Colors do not change in OpenRGB**: check that OpenRGB detects your devices and that they support a Direct/Custom mode. Set `set_direct_mode: true` in `config.yaml`.
 - **Wrong zone mapping**: use OpenRGB’s GUI to inspect device/zone names and indices, then update `config.yaml`.
 
-## References
+## Research
 
 ### Papers
 
-- [`papers/morgner-2016-all-your-bulbs-are-belong-to-us-arxiv-1608.03732.pdf`](https://arxiv.org/pdf/1608.03732)
+- [All Your Bulbs Are Belong to Us:
+Investigating the Current State of Security in Connected Lighting Systems](https://arxiv.org/pdf/1608.03732)
   - Relevance: ZLL security, touchlink attacks, Philips Hue/Osram/GE connected
     lighting behavior. Useful background for commissioning assumptions.
 
-- `papers/morgner-2017-insecure-to-the-touch-wisec.pdf`
-  - Source: https://doi.org/10.1145/3098243.3098254
+- [Insecure to the touch: attacking ZigBee 3.0 via touchlink commissioning
+](https://doi.org/10.1145/3098243.3098254)
   - Relevance: Zigbee 3.0 touchlink commissioning security. Useful for
     understanding why touchlink and classical commissioning need to be kept
     separate when reasoning about Hue pairing.
@@ -265,10 +266,7 @@ launchctl start com.argb-to-hue.daemon
     https://blackhat.com/docs/us-16/materials/us-16-OFlynn-A-Lightbulb-Worm.pdf
   - Relevance: presentation version of Colin O'Flynn's Hue teardown.
 
-### Article PDFs
-
-These are local browser-saved PDFs moved from the NAS into
-`references/articles/`. They are ignored by git.
+### Articless
 
 - `articles/colin-oflynn-getting-root-on-philips-hue-bridge-2.0.pdf`
   - Source:
@@ -290,27 +288,7 @@ These are local browser-saved PDFs moved from the NAS into
 - `aricles/hal9k-snigging-philips-hue-zigbee-traffic-with-wireshark`
     - Source: https://www.hal9k.dk/sniffing-philips-hue-zigbee-traffic-with-wireshark/
     - Relevance: how to decrypt sniffed Zigbee traffic via wireshark
-### Specs And Code Notes
-
-- `specs/bifrost-hue-zigbee-format-fc03.md`
-  - Source:
-    https://github.com/chrivers/bifrost/blob/master/doc/hue-zigbee-format.md
-  - Relevance: best current public documentation found for Hue
-    manufacturer-specific cluster `0xFC03`, including gradient colors, effects,
-    effect speed, scale, offset, and style fields.
-
-- `specs/hue-gradient-command-wizard-custom-gradient-utils.tsx`
-  - Source:
-    https://github.com/kjagiello/hue-gradient-command-wizard/blob/main/src/modes/CustomGradient/utils.tsx
-  - Relevance: implementation reference for the public Hue Gradient command
-    wizard. Useful for comparing command payload generation against Bifrost and
-    probe captures.
-
-## Linked-Only Sources
-
-These were not mirrored locally, either because they may include sensitive key
-material or because direct automated download was blocked.
-
+ 
 - PeeVeeOne, "Breakout breakthrough"
   - https://peeveeone.com/2016/11/breakout-breakthrough/
   - Useful for the classical commissioning vs touchlink distinction. Do not
@@ -327,10 +305,18 @@ material or because direct automated download was blocked.
 - Wejn.org, "Zigbee: Hue-llo world!"
   - https://wejn.org/2025/01/zigbee-hue-llo-world/
   - Useful because it overlaps with ESP32-C6 Hue-compatible device work.
+  
+### Specs And Code Notes
 
-- Hue Gradient command generator
-  - https://kjagiello.github.io/hue-gradient-command-wizard/
-  - Interactive UI for building Hue gradient payloads.
+- [Bifrost's hue-zigbee-format.md](https://github.com/chrivers/bifrost/blob/12d9e37e6ea032fb0708ddcd2faaa6db0133d7c8/doc/hue-zigbee-format.md)
+  - Best current public documentation found for Hue
+    manufacturer-specific cluster `0xFC03`, including gradient colors, effects,
+    effect speed, scale, offset, and style fields.
+    
+- [Krzysztof Jagiełło's Hue Gradient command generator](https://kjagiello.github.io/hue-gradient-command-wizard/)
+  - Implementation reference for the public Hue Gradient command
+    wizard. Useful for comparing command payload generation against Bifrost and
+    probe captures.
 
 ## Practical Takeaways For This Repo
 
@@ -343,10 +329,6 @@ material or because direct automated download was blocked.
   classification logic, not something explained by the public ZLL papers.
 - If exact certification behavior becomes necessary, the most relevant RE path
   is bridge firmware / `ipbridge` discovery and product-mapping logic.
-
-## Integrity
-
-`SHA256SUMS` contains checksums for the downloaded local files.
 
 
 ## License
