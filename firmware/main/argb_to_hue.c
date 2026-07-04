@@ -2447,6 +2447,7 @@ static bool take_pending_scene_recall(uint8_t endpoint, uint16_t group_id, uint8
 
 static bool scene_compact_payload_to_keyed_fc03(const uint8_t *payload,
                                                 uint16_t payload_len,
+                                                bool include_effect_speed,
                                                 uint8_t *out,
                                                 uint16_t out_size,
                                                 uint16_t *out_len)
@@ -2483,7 +2484,7 @@ static bool scene_compact_payload_to_keyed_fc03(const uint8_t *payload,
     }
 
     uint16_t trailing_len = body_len - (1 + color_block_len);
-    bool has_effect_speed = trailing_len >= 1;
+    bool has_effect_speed = include_effect_speed && trailing_len >= 1;
     if (trailing_len > 1) {
         ESP_LOGW(TAG,
                  "SCENES_MFG_COMPACT has %u trailing byte(s); using first as effect speed",
@@ -2517,6 +2518,100 @@ static bool scene_compact_payload_to_keyed_fc03(const uint8_t *payload,
     fc03[off++] = 0x00;
 
     *out_len = keyed_len;
+    return true;
+}
+
+static bool fc03_copy_without_effect_speed(const uint8_t *fc03,
+                                           uint16_t fc03_len,
+                                           uint8_t *out,
+                                           uint16_t out_size,
+                                           uint16_t *out_len)
+{
+    if (!fc03 || !out || !out_len ||
+        fc03_len < 2 ||
+        fc03_len > out_size ||
+        !scene_fc03_payload_has_known_flags(fc03, fc03_len)) {
+        return false;
+    }
+
+    uint16_t flags = u16_le(fc03);
+    if (!(flags & FC03_FLAG_EFFECT_SPEED)) {
+        memcpy(out, fc03, fc03_len);
+        *out_len = fc03_len;
+        return true;
+    }
+
+    size_t off = 2;
+    if (flags & FC03_FLAG_ON_OFF) {
+        if (!fc03_require_bytes(off, 1, fc03_len, "cached on/off")) {
+            return false;
+        }
+        off += 1;
+    }
+    if (flags & FC03_FLAG_BRIGHTNESS) {
+        if (!fc03_require_bytes(off, 1, fc03_len, "cached brightness")) {
+            return false;
+        }
+        off += 1;
+    }
+    if (flags & FC03_FLAG_COLOR_MIREK) {
+        if (!fc03_require_bytes(off, 2, fc03_len, "cached mirek")) {
+            return false;
+        }
+        off += 2;
+    }
+    if (flags & FC03_FLAG_COLOR_XY) {
+        if (!fc03_require_bytes(off, 4, fc03_len, "cached xy")) {
+            return false;
+        }
+        off += 4;
+    }
+    if (flags & FC03_FLAG_FADE_SPEED) {
+        if (!fc03_require_bytes(off, 2, fc03_len, "cached fade")) {
+            return false;
+        }
+        off += 2;
+    }
+    if (flags & FC03_FLAG_EFFECT_TYPE) {
+        if (!fc03_require_bytes(off, 1, fc03_len, "cached effect type")) {
+            return false;
+        }
+        off += 1;
+    }
+    if (flags & FC03_FLAG_GRADIENT_COLORS) {
+        if (!fc03_require_bytes(off, 1, fc03_len, "cached gradient length")) {
+            return false;
+        }
+        uint8_t color_payload_len = fc03[off];
+        if (!fc03_require_bytes(off, 1 + color_payload_len, fc03_len, "cached gradient colors")) {
+            return false;
+        }
+        off += 1 + color_payload_len;
+    }
+
+    if (!fc03_require_bytes(off, 1, fc03_len, "cached effect speed")) {
+        return false;
+    }
+    size_t speed_off = off;
+    off += 1;
+    if (flags & FC03_FLAG_GRADIENT_PARAMS) {
+        if (!fc03_require_bytes(off, 2, fc03_len, "cached gradient params")) {
+            return false;
+        }
+        off += 2;
+    }
+
+    uint16_t static_len = fc03_len - 1;
+    if (static_len > out_size) {
+        return false;
+    }
+    memcpy(out, fc03, speed_off);
+    memcpy(out + speed_off, fc03 + speed_off + 1, fc03_len - speed_off - 1);
+
+    uint16_t static_flags = flags & ~FC03_FLAG_EFFECT_SPEED;
+    out[0] = (uint8_t)(static_flags & 0xff);
+    out[1] = (uint8_t)(static_flags >> 8);
+    *out_len = static_len;
     return true;
 }
 
@@ -2618,7 +2713,26 @@ static bool apply_cached_scene_fc03(uint8_t endpoint, const uint8_t *payload, ui
                  (unsigned)scene_id,
                  (unsigned)entry->fc03_len);
         entry->age = ++s_scene_fc03_cache_age;
-        handle_fc03_multicolor_command(endpoint, entry->fc03, entry->fc03_len);
+        uint8_t static_fc03[SCENE_FC03_MAX_PAYLOAD_LEN];
+        uint16_t static_fc03_len = 0;
+        if (fc03_copy_without_effect_speed(entry->fc03,
+                                           entry->fc03_len,
+                                           static_fc03,
+                                           sizeof(static_fc03),
+                                           &static_fc03_len)) {
+            if (static_fc03_len != entry->fc03_len) {
+                ESP_LOGI(TAG,
+                         "SCENE_FC03_CACHE_STATIC_RECALL: endpoint=%u group=0x%04x scene=0x%02x fc03_len=%u static_len=%u",
+                         (unsigned)endpoint,
+                         (unsigned)group_id,
+                         (unsigned)scene_id,
+                         (unsigned)entry->fc03_len,
+                         (unsigned)static_fc03_len);
+            }
+            handle_fc03_multicolor_command(endpoint, static_fc03, static_fc03_len);
+        } else {
+            handle_fc03_multicolor_command(endpoint, entry->fc03, entry->fc03_len);
+        }
         return true;
     }
 
@@ -2727,34 +2841,47 @@ static bool handle_scenes_mfg_compact_scene_raw(const zb_zcl_parsed_hdr_t *hdr,
         return false;
     }
 
-    uint8_t keyed_fc03[SCENES_KEY_PAYLOAD_LEN + SCENE_FC03_MAX_PAYLOAD_LEN];
-    uint16_t keyed_fc03_len = 0;
+    uint8_t live_keyed_fc03[SCENES_KEY_PAYLOAD_LEN + SCENE_FC03_MAX_PAYLOAD_LEN];
+    uint16_t live_keyed_fc03_len = 0;
     if (!scene_compact_payload_to_keyed_fc03(payload,
                                              payload_len,
-                                             keyed_fc03,
-                                             sizeof(keyed_fc03),
-                                             &keyed_fc03_len)) {
+                                             true,
+                                             live_keyed_fc03,
+                                             sizeof(live_keyed_fc03),
+                                             &live_keyed_fc03_len)) {
         return false;
     }
 
-    bool changed = cache_scene_fc03_payload(endpoint, keyed_fc03, keyed_fc03_len);
+    uint8_t static_keyed_fc03[SCENES_KEY_PAYLOAD_LEN + SCENE_FC03_MAX_PAYLOAD_LEN];
+    uint16_t static_keyed_fc03_len = 0;
+    if (!scene_compact_payload_to_keyed_fc03(payload,
+                                             payload_len,
+                                             false,
+                                             static_keyed_fc03,
+                                             sizeof(static_keyed_fc03),
+                                             &static_keyed_fc03_len)) {
+        return false;
+    }
+
+    bool changed = cache_scene_fc03_payload(endpoint, static_keyed_fc03, static_keyed_fc03_len);
     if (changed) {
         save_scene_fc03_cache();
     }
     bool matched_pending = take_pending_scene_recall(endpoint, group_id, scene_id);
 
     ESP_LOGI(TAG,
-             "SCENES_MFG_COMPACT_SCENE: endpoint=%u group=0x%04x scene=0x%02x fc03_len=%u changed=%u pending=%u",
+             "SCENES_MFG_COMPACT_SCENE: endpoint=%u group=0x%04x scene=0x%02x live_len=%u cache_len=%u changed=%u pending=%u",
              (unsigned)endpoint,
              (unsigned)group_id,
              (unsigned)scene_id,
-             (unsigned)(keyed_fc03_len - SCENES_KEY_PAYLOAD_LEN),
+             (unsigned)(live_keyed_fc03_len - SCENES_KEY_PAYLOAD_LEN),
+             (unsigned)(static_keyed_fc03_len - SCENES_KEY_PAYLOAD_LEN),
              changed ? 1U : 0U,
              matched_pending ? 1U : 0U);
 
     handle_fc03_multicolor_command(endpoint,
-                                  keyed_fc03 + SCENES_KEY_PAYLOAD_LEN,
-                                  keyed_fc03_len - SCENES_KEY_PAYLOAD_LEN);
+                                  live_keyed_fc03 + SCENES_KEY_PAYLOAD_LEN,
+                                  live_keyed_fc03_len - SCENES_KEY_PAYLOAD_LEN);
     return true;
 }
 
@@ -4333,22 +4460,35 @@ static void serial_cmd_task(void *pvParameters)
                 printf("USAGE: scene-apply <SCENES_MFG_CMD_HEX payload>\n");
                 continue;
             }
-            uint8_t keyed_fc03[SCENES_KEY_PAYLOAD_LEN + SCENE_FC03_MAX_PAYLOAD_LEN];
+            uint8_t cache_keyed_fc03[SCENES_KEY_PAYLOAD_LEN + SCENE_FC03_MAX_PAYLOAD_LEN];
+            uint8_t apply_keyed_fc03[SCENES_KEY_PAYLOAD_LEN + SCENE_FC03_MAX_PAYLOAD_LEN];
             const uint8_t *cache_payload = payload;
+            const uint8_t *apply_payload = payload;
             uint16_t cache_payload_len = (uint16_t)len;
-            uint16_t keyed_fc03_len = 0;
+            uint16_t apply_payload_len = (uint16_t)len;
+            uint16_t cache_keyed_fc03_len = 0;
+            uint16_t apply_keyed_fc03_len = 0;
             if (!scene_fc03_payload_has_known_flags(payload + SCENES_KEY_PAYLOAD_LEN,
                                                     (uint16_t)(len - SCENES_KEY_PAYLOAD_LEN))) {
                 if (!scene_compact_payload_to_keyed_fc03(payload,
                                                          (uint16_t)len,
-                                                         keyed_fc03,
-                                                         sizeof(keyed_fc03),
-                                                         &keyed_fc03_len)) {
+                                                         false,
+                                                         cache_keyed_fc03,
+                                                         sizeof(cache_keyed_fc03),
+                                                         &cache_keyed_fc03_len) ||
+                    !scene_compact_payload_to_keyed_fc03(payload,
+                                                         (uint16_t)len,
+                                                         true,
+                                                         apply_keyed_fc03,
+                                                         sizeof(apply_keyed_fc03),
+                                                         &apply_keyed_fc03_len)) {
                     printf("SCENE_CACHE: unsupported scene payload\n");
                     continue;
                 }
-                cache_payload = keyed_fc03;
-                cache_payload_len = keyed_fc03_len;
+                cache_payload = cache_keyed_fc03;
+                cache_payload_len = cache_keyed_fc03_len;
+                apply_payload = apply_keyed_fc03;
+                apply_payload_len = apply_keyed_fc03_len;
             }
             bool changed = cache_scene_fc03_payload(HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE,
                                                     cache_payload,
@@ -4363,8 +4503,8 @@ static void serial_cmd_task(void *pvParameters)
                    changed ? 1U : 0U);
             if (apply) {
                 handle_fc03_multicolor_command(HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE,
-                                              cache_payload + SCENES_KEY_PAYLOAD_LEN,
-                                              (uint16_t)(cache_payload_len - SCENES_KEY_PAYLOAD_LEN));
+                                              apply_payload + SCENES_KEY_PAYLOAD_LEN,
+                                              (uint16_t)(apply_payload_len - SCENES_KEY_PAYLOAD_LEN));
             }
         } else if (strncmp(line, "group ", 6) == 0) {
             char *end = NULL;

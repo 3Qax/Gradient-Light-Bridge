@@ -83,8 +83,9 @@ fade = 0x0004
 effect_speed = final byte
 ```
 
-After pressing Save, the bridge also writes the final selected speed into the
-trailing byte of the compact manufacturer-specific Scenes command `0x00`:
+After pressing Save or pressing Play, the bridge also writes the selected speed
+into the trailing byte of the compact manufacturer-specific Scenes command
+`0x00`:
 
 ```text
 d5e92a0c1350000000dbfd59866c6387cc6c49bc765c0a82d0
@@ -92,10 +93,19 @@ d5e92a0c1350000000dbfd59866c6387cc6c49bc765c0a82d0
 
 Here `d5 e9` is group `0xe9d5`, `2a` is scene id `0x2a`, the compact body
 starts with `0c`, the following `13 50 ...` block is the gradient color block,
-and the final byte `d0` matches the last speed-only FC03 update. Firmware should
-translate this compact form into a cached FC03 payload with flags `0x01d0`
-(`fade + gradient colors + effect speed + gradient params`) so scene recall
-starts dynamic rendering immediately.
+and the final byte `d0` matches the last speed-only FC03 update.
+
+The command path carries the app's intent:
+
+- Scenes Recall `cmd=0x05`: select/stop scene statically; apply cached scene
+  without `effect_speed`.
+- Manufacturer-specific Scenes `cmd=0x00`: play/update dynamic scene now; apply
+  a live FC03 payload with flags `0x01d0` (`fade + gradient colors + effect
+  speed + gradient params`).
+
+Do not persist the dynamic `0x01d0` form as the static recall cache. Cache the
+same compact colors without `FC03_FLAG_EFFECT_SPEED`, otherwise pressing Stop in
+the app recalls a dynamic cached payload and restarts autoplay.
 
 ## Standalone Brightness
 
