@@ -94,6 +94,33 @@ Useful Docker helper details:
   ../in-docker.sh idf.py build
   ```
 
+### Direct fan/strip driving backend
+
+The default build emits serial JSON for the daemon/OpenRGB path. To drive a
+5 V 3-pin addressable fan or strip directly from an M5NanoC6 Grove pin, build
+the local LED backend instead:
+
+```bash
+cd firmware
+sg docker -c 'ARGB_BACKEND=ARGB_BACKEND_LOCAL_LED ARGB_EUI_SUFFIX=auto ARGB_LED_GPIO=1 ARGB_LED_COUNT=12 ARGB_COLOR_ORDER=GRB ./in-docker.sh idf.py build'
+```
+
+Use `ARGB_LED_GPIO=1` for Grove `G1` or `ARGB_LED_GPIO=2` for Grove `G2`.
+Power the LEDs from the motherboard ARGB header `5V`/`GND`, share that ground
+with the NanoC6, and leave the motherboard ARGB data pin disconnected.
+
+After flashing a local LED build, use the serial CLI smoke tests to confirm the
+data pin and color order before pairing or assigning scenes:
+
+```bash
+python3 firmware/send_cmd.py --port /dev/ttyACM0 led off
+python3 firmware/send_cmd.py --port /dev/ttyACM0 led solid ff0000
+python3 firmware/send_cmd.py --port /dev/ttyACM0 led solid 00ff00
+python3 firmware/send_cmd.py --port /dev/ttyACM0 led solid 0000ff
+python3 firmware/send_cmd.py --port /dev/ttyACM0 led gradient
+python3 firmware/send_cmd.py --port /dev/ttyACM0 led chase
+```
+
 ## Flash the firmware
 
 Docker Desktop on macOS cannot pass USB serial ports into containers, so flashing is done with `esptool.py` on the host:

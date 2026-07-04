@@ -3506,6 +3506,143 @@ static size_t hex_to_bytes(const char *hex, uint8_t *out, size_t out_len)
     return count;
 }
 
+#if ARGB_BACKEND == ARGB_BACKEND_LOCAL_LED
+static bool parse_rgb_hex_arg(const char *arg, rgb_t *color)
+{
+    if (!arg || !color) {
+        return false;
+    }
+
+    while (*arg && isspace((unsigned char)*arg)) {
+        arg++;
+    }
+    if (*arg == '#') {
+        arg++;
+    }
+
+    for (int i = 0; i < 6; i++) {
+        if (!isxdigit((unsigned char)arg[i])) {
+            return false;
+        }
+    }
+
+    char pair[3] = {0};
+    pair[0] = arg[0];
+    pair[1] = arg[1];
+    color->r = (uint8_t)strtoul(pair, NULL, 16);
+    pair[0] = arg[2];
+    pair[1] = arg[3];
+    color->g = (uint8_t)strtoul(pair, NULL, 16);
+    pair[0] = arg[4];
+    pair[1] = arg[5];
+    color->b = (uint8_t)strtoul(pair, NULL, 16);
+    return true;
+}
+
+static void print_led_result(const char *action, esp_err_t err)
+{
+    if (err == ESP_OK) {
+        printf("LED: %s ok\n", action);
+    } else {
+        printf("LED: %s failed: %s\n", action, esp_err_to_name(err));
+    }
+}
+
+static void run_led_gradient_test(void)
+{
+    local_led_stop_dynamic(HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE);
+
+    rgb_t pixels[ARGB_LED_COUNT];
+    size_t led_count = local_led_backend_pixel_count();
+    rgb_t red = {255, 0, 0};
+    rgb_t green = {0, 255, 0};
+    rgb_t blue = {0, 0, 255};
+
+    for (size_t i = 0; i < led_count; i++) {
+        if (led_count <= 1) {
+            pixels[i] = red;
+            continue;
+        }
+        float t = (float)i / ((float)led_count - 1.0f);
+        pixels[i] = t < 0.5f
+            ? interpolate_rgb(red, green, t * 2.0f)
+            : interpolate_rgb(green, blue, (t - 0.5f) * 2.0f);
+    }
+
+    print_led_result("gradient", local_led_backend_show_pixels(pixels, led_count));
+}
+
+static void run_led_chase_test(void)
+{
+    local_led_stop_dynamic(HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE);
+
+    rgb_t pixels[ARGB_LED_COUNT];
+    size_t led_count = local_led_backend_pixel_count();
+    const rgb_t colors[] = {
+        {255, 0, 0},
+        {0, 255, 0},
+        {0, 0, 255},
+        {255, 255, 255},
+    };
+
+    for (size_t color_i = 0; color_i < sizeof(colors) / sizeof(colors[0]); color_i++) {
+        for (size_t pos = 0; pos < led_count; pos++) {
+            memset(pixels, 0, sizeof(pixels));
+            pixels[pos] = colors[color_i];
+            esp_err_t err = local_led_backend_show_pixels(pixels, led_count);
+            if (err != ESP_OK) {
+                print_led_result("chase", err);
+                return;
+            }
+            vTaskDelay(pdMS_TO_TICKS(45));
+        }
+    }
+    print_led_result("chase", ESP_OK);
+}
+
+static bool handle_led_cli_command(const char *line)
+{
+    if (strcmp(line, "led") != 0 && strncmp(line, "led ", 4) != 0) {
+        return false;
+    }
+
+    const char *cmd = line + 3;
+    while (*cmd && isspace((unsigned char)*cmd)) {
+        cmd++;
+    }
+
+    if (strcmp(cmd, "off") == 0) {
+        rgb_t off = {0, 0, 0};
+        local_led_stop_dynamic(HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE);
+        print_led_result("off", local_led_backend_show_solid(off));
+    } else if (strncmp(cmd, "solid ", 6) == 0) {
+        rgb_t color;
+        if (!parse_rgb_hex_arg(cmd + 6, &color)) {
+            printf("USAGE: led solid <rrggbb>\n");
+            return true;
+        }
+        local_led_stop_dynamic(HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE);
+        print_led_result("solid", local_led_backend_show_solid(color));
+    } else if (strcmp(cmd, "gradient") == 0) {
+        run_led_gradient_test();
+    } else if (strcmp(cmd, "chase") == 0) {
+        run_led_chase_test();
+    } else {
+        printf("USAGE: led off | led solid <rrggbb> | led gradient | led chase\n");
+    }
+    return true;
+}
+#else
+static bool handle_led_cli_command(const char *line)
+{
+    if (strcmp(line, "led") != 0 && strncmp(line, "led ", 4) != 0) {
+        return false;
+    }
+    printf("LED commands require ARGB_BACKEND=ARGB_BACKEND_LOCAL_LED\n");
+    return true;
+}
+#endif
+
 /* Minimal serial CLI for self-testing the gradient parser without re-pairing
      * the device through the app every time.  Typing:
  *   g 51010104001350000000c2ad57c2ad57c2ad57c2ad57c2ad572800
@@ -3554,8 +3691,11 @@ static void serial_cmd_task(void *pvParameters)
         } else if (strcmp(line, "discover") == 0 || strcmp(line, "reset") == 0) {
             printf("DATA: {\"event\":\"factory_reset\"}\n");
             esp_zb_factory_reset();
+        } else if (handle_led_cli_command(line)) {
+            continue;
         } else if (strcmp(line, "help") == 0) {
-            printf("Commands: g <hex>, gradient <hex>, group <id> [endpoint], state, discover/reset, help\n");
+            printf("Commands: g <hex>, gradient <hex>, group <id> [endpoint], state, "
+                   "discover/reset, led off, led solid <rrggbb>, led gradient, led chase, help\n");
         }
     }
 }

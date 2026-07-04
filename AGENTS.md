@@ -35,6 +35,11 @@
     - `ARGB_LED_COUNT`: physical LED count; default is `12`.
     - `ARGB_COLOR_ORDER`: `RGB`, `GRB`, `BRG`, `RBG`, `GBR`, or `BGR`; default
       is `GRB`, which is common for WS2812/SK6812-compatible strips.
+  - Local LED smoke tests after flashing:
+    - `python3 firmware/send_cmd.py --port /dev/ttyACM0 led off`
+    - `python3 firmware/send_cmd.py --port /dev/ttyACM0 led solid ff0000`
+    - `python3 firmware/send_cmd.py --port /dev/ttyACM0 led gradient`
+    - `python3 firmware/send_cmd.py --port /dev/ttyACM0 led chase`
 - Gradient probe:
   - `cd firmware/gradient_probe`
   - `../in-docker.sh idf.py build`
