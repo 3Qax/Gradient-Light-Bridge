@@ -110,3 +110,10 @@ starts with `0c`, followed by a normal FC03 gradient color block
 disabled, so the useful behavior is to translate the compact gradient body into
 the normal FC03 renderer/cache format and apply it, not to send an explicit
 response.
+
+Later labelled app-action logs while editing dynamic-scene speed show that the
+trailing compact byte matches the last speed-only FC03 `0x0090` update. For
+example, speed update `90000400d0` is followed by compact scene payload
+`d5e92a0c1350000000dbfd59866c6387cc6c49bc765c0a82d0` when saving the scene.
+That compact payload should therefore be cached as FC03 flags `0x01d0`
+(`fade + gradient colors + effect speed + gradient params`).

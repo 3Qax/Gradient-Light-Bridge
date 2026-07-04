@@ -62,6 +62,41 @@ order of the start payload. Daemon rule:
 - FC03 brightness-only update such as `0x0012`: preserve current static/dynamic state and update brightness.
 - FC03 on/off update such as `0x0011`: toggle output without discarding the cached static/dynamic scene.
 
+## Dynamic Speed Editing
+
+When dragging the dynamic-scene speed control in the app, the bridge sends
+speed-only FC03 command `0x00` payloads:
+
+```text
+9000040080
+90000400c0
+90000400e0
+900004007c
+90000400d0
+```
+
+Decoded:
+
+```text
+0x0090 = fade + effect speed
+fade = 0x0004
+effect_speed = final byte
+```
+
+After pressing Save, the bridge also writes the final selected speed into the
+trailing byte of the compact manufacturer-specific Scenes command `0x00`:
+
+```text
+d5e92a0c1350000000dbfd59866c6387cc6c49bc765c0a82d0
+```
+
+Here `d5 e9` is group `0xe9d5`, `2a` is scene id `0x2a`, the compact body
+starts with `0c`, the following `13 50 ...` block is the gradient color block,
+and the final byte `d0` matches the last speed-only FC03 update. Firmware should
+translate this compact form into a cached FC03 payload with flags `0x01d0`
+(`fade + gradient colors + effect speed + gradient params`) so scene recall
+starts dynamic rendering immediately.
+
 ## Standalone Brightness
 
 Payload shape:

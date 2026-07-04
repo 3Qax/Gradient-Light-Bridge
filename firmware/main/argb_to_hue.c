@@ -1697,6 +1697,33 @@ static void local_led_stop_dynamic(uint8_t endpoint)
     s_local_gradient_runtime[idx].active = false;
 }
 
+static void local_led_update_dynamic_speed(uint8_t endpoint, uint8_t effect_speed)
+{
+    uint8_t idx = 0;
+    if (!get_light_state_for_endpoint(endpoint, &idx, NULL)) {
+        return;
+    }
+
+    local_led_gradient_runtime_t *state = &s_local_gradient_runtime[idx];
+    if (state->n_colors == 0) {
+        return;
+    }
+
+    TickType_t now = xTaskGetTickCount();
+    if (state->active && state->on) {
+        state->offset = local_dynamic_offset(state, now);
+    }
+    state->effect_speed = effect_speed;
+    state->started_tick = now;
+    state->active = state->on;
+
+    local_led_gradient_runtime_t snapshot = *state;
+    local_led_render_gradient_frame(&snapshot, snapshot.offset, true);
+    if (state->active) {
+        local_led_ensure_dynamic_task();
+    }
+}
+
 static void local_led_show_gradient_update(uint8_t endpoint,
                                            const gradient_color_t *colors,
                                            uint8_t n_colors,
@@ -1908,6 +1935,28 @@ static void emit_gradient_json(uint8_t endpoint,
                                    effect_speed);
     (void)fc03_flags;
     (void)bri;
+    (void)has_fade;
+    (void)fade;
+#endif
+}
+
+static void emit_effect_speed_update(uint8_t endpoint,
+                                     uint16_t fc03_flags,
+                                     bool has_fade,
+                                     uint16_t fade,
+                                     uint8_t effect_speed)
+{
+#if ARGB_BACKEND == ARGB_BACKEND_SERIAL_JSON
+    printf("DATA: {\"endpoint\":%u,\"source\":\"fc03\",\"fc03_flags\":%u",
+           (unsigned)endpoint,
+           (unsigned)fc03_flags);
+    if (has_fade) {
+        printf(",\"fade\":%u", (unsigned)fade);
+    }
+    printf(",\"effect_speed\":%u}\n", (unsigned)effect_speed);
+#else
+    local_led_update_dynamic_speed(endpoint, effect_speed);
+    (void)fc03_flags;
     (void)has_fade;
     (void)fade;
 #endif
@@ -2165,6 +2214,12 @@ static void handle_fc03_multicolor_command(uint8_t endpoint, const uint8_t *data
                            fade,
                            has_effect_speed,
                            effect_speed);
+    } else if (has_effect_speed) {
+        emit_effect_speed_update(endpoint,
+                                 flags,
+                                 has_fade,
+                                 fade,
+                                 effect_speed);
     } else if (has_on || has_bri || has_mirek || has_xy) {
         emit_state_json_internal(endpoint, "fc03", has_fade, fade, true, flags);
     }
@@ -2427,7 +2482,15 @@ static bool scene_compact_payload_to_keyed_fc03(const uint8_t *payload,
         return false;
     }
 
-    uint16_t fc03_len = 2 + 2 + color_block_len + 2;
+    uint16_t trailing_len = body_len - (1 + color_block_len);
+    bool has_effect_speed = trailing_len >= 1;
+    if (trailing_len > 1) {
+        ESP_LOGW(TAG,
+                 "SCENES_MFG_COMPACT has %u trailing byte(s); using first as effect speed",
+                 (unsigned)trailing_len);
+    }
+
+    uint16_t fc03_len = 2 + 2 + color_block_len + (has_effect_speed ? 1 : 0) + 2;
     uint16_t keyed_len = SCENES_KEY_PAYLOAD_LEN + fc03_len;
     if (keyed_len > out_size) {
         return false;
@@ -2438,13 +2501,20 @@ static bool scene_compact_payload_to_keyed_fc03(const uint8_t *payload,
     uint16_t flags = FC03_FLAG_FADE_SPEED |
                      FC03_FLAG_GRADIENT_COLORS |
                      FC03_FLAG_GRADIENT_PARAMS;
+    if (has_effect_speed) {
+        flags |= FC03_FLAG_EFFECT_SPEED;
+    }
     fc03[0] = (uint8_t)(flags & 0xff);
     fc03[1] = (uint8_t)(flags >> 8);
     fc03[2] = 0x04; /* Match the fade used by app scene updates. */
     fc03[3] = 0x00;
     memcpy(&fc03[4], &body[1], color_block_len);
-    fc03[4 + color_block_len] = 0x28; /* Real scene FC03 stores use scale 5. */
-    fc03[5 + color_block_len] = 0x00;
+    uint16_t off = 4 + color_block_len;
+    if (has_effect_speed) {
+        fc03[off++] = body[1 + color_block_len];
+    }
+    fc03[off++] = 0x28; /* Real scene FC03 stores use scale 5. */
+    fc03[off++] = 0x00;
 
     *out_len = keyed_len;
     return true;

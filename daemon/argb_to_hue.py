@@ -1466,21 +1466,28 @@ def handle_data_event(
         data.get("source") == "fc03"
         and stored_gradient is not None
         and not fc03_changed_color
-        and ("bri" in data or "on" in data)
+        and ("bri" in data or "on" in data or "effect_speed" in data)
     ):
+        now = time.monotonic()
         if "bri" in data:
             stored_gradient.bri = coerce_brightness_254(data.get("bri"), stored_gradient.bri)
         if "on" in data and fc03_changed_on:
             stored_gradient.on = bool(data.get("on"))
+        if "effect_speed" in data:
+            if stored_gradient.dynamic:
+                stored_gradient.offset = dynamic_offset(stored_gradient, now, dynamic_min_cycle, dynamic_max_cycle)
+            stored_gradient.dynamic = True
+            stored_gradient.effect_speed = coerce_int(data.get("effect_speed"), stored_gradient.effect_speed or 0)
+            stored_gradient.started_at = now
         logger.debug(
-            "RX %s endpoint=%s gradient state update on=%s bri=%s dynamic=%s",
+            "RX %s endpoint=%s gradient state update on=%s bri=%s dynamic=%s speed=%s",
             source.name,
             endpoint,
             stored_gradient.on,
             stored_gradient.bri,
             stored_gradient.dynamic,
+            stored_gradient.effect_speed,
         )
-        now = time.monotonic()
         apply_gradient_state_group(
             target_group,
             stored_gradient,
