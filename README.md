@@ -226,7 +226,26 @@ Edit `config.yaml` to match your OpenRGB device names. The default config assume
 - MSI motherboard/fans → pattern `Mystic Light`
 - GOODRAM RAM → pattern `GOODRAM`
 
-Start OpenRGB and enable the **SDK Server** (Settings → SDK Server → Start Server). Then run:
+Start exactly one OpenRGB SDK server, then point this daemon at that server.
+The SDK server can be either:
+
+- the OpenRGB GUI app with **SDK Server** enabled (Settings → SDK Server →
+  Start Server), which is convenient for manual use but must stay open; or
+- a headless OpenRGB service such as `OpenRGB --noautoconnect --server
+  --server-port 6742`, which is better for automatic startup after login.
+
+Do not run two OpenRGB instances that both detect/control the same RGB
+hardware. In OpenRGB mode, `argb-to-hue` does not talk to the motherboard
+controller directly; it connects to the OpenRGB SDK at `openrgb.host` /
+`openrgb.port` in `config.yaml`. If a headless OpenRGB server already owns the
+hardware and you want to open the GUI, launch the GUI as an SDK client, for
+example:
+
+```bash
+OpenRGB --client 127.0.0.1:6742 --nodetect
+```
+
+Then run:
 
 ```bash
 python argb_to_hue.py -c config.yaml
@@ -284,6 +303,15 @@ every behavior in a Signify light. Known remaining gaps:
   to satisfy the bridge, but does not implement a real firmware update flow.
 - **Identify/alert behavior**: discovery/read support exists, but "blink this
   light so I can identify it" behavior is not implemented as a visible feature.
+- **Hue parent-device fanout sync**: when one ESP exposes multiple light
+  endpoints, the Hue app shows them under one parent device. Captures of parent
+  device on/off and parent-wide color/brightness changes show the bridge
+  unicasting commands to endpoints `11..15` sequentially, so those changes can
+  visibly fan out across the PC zones. Whole-room on/off uses the room/group
+  path and has been observed to stay in sync. The same non-synchronized color
+  fanout is visible when manually dragging multiple authentic Hue lights on the
+  Hue color wheel, so this appears to be normal Hue app/bridge behavior rather
+  than a firmware-specific issue.
 - **Full Zigbee scene/group command matrix**: firmware implements the commands
   the Hue bridge uses in the captured app flows. Other standard edge commands
   may still be missing until the app/bridge needs them.
