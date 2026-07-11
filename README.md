@@ -234,6 +234,12 @@ python argb_to_hue.py -c config.yaml
 
 Add `-v` for debug output.
 
+The daemon consumes the same immediate `DATA:` events produced by the firmware's
+scene cache, so scene recall does not wait for the bridge's later FC03 replay.
+It also applies Hue fade timing to solid colors, scene recalls, on/off changes,
+brightness changes, and gradient updates before writing frames through the
+OpenRGB SDK.
+
 ## Run automatically on Linux
 
 ```bash

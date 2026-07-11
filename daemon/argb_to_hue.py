@@ -285,7 +285,13 @@ class OpenRGBTarget:
 Target = OpenRGBTarget | None
 TargetGroup = list[OpenRGBTarget]
 TargetColorSet = tuple[OpenRGBTarget, list[RGBColor]]
-QueuedColorSet = tuple[OpenRGBTarget, list[RGBColor], bool]
+QueuedColorSet = tuple[OpenRGBTarget, list[RGBColor], bool, bool]
+
+
+@dataclass
+class DeviceColorBatch:
+    device: Device
+    colors: list[RGBColor]
 
 GRADIENT_STYLE_LINEAR = 0x00
 GRADIENT_STYLE_SCATTERED = 0x02
@@ -297,6 +303,7 @@ FC03_FLAG_COLOR_MIREK = 0x0004
 FC03_FLAG_COLOR_XY = 0x0008
 
 ZONE_COLOR_CACHE: dict[int, list[RGBColor]] = {}
+DEVICE_COLOR_CACHE: dict[int, list[RGBColor]] = {}
 TARGET_COLOR_CACHE: dict[int, list[RGBColor]] = {}
 TARGET_COLOR_CACHE_BY_KEY: dict[str, list[RGBColor]] = {}
 PENDING_COLOR_SETS: list[QueuedColorSet] = []
@@ -304,6 +311,9 @@ COLOR_CONFIG_MTIME_NS: int | None = None
 COLOR_STATE_CACHE_PATH: Path | None = None
 COLOR_STATE_CACHE_DIRTY = False
 COLOR_STATE_CACHE_LAST_SAVE_AT = 0.0
+
+FADE_UNIT_SECONDS = 0.1
+FADE_MAX_SECONDS = 10.0
 
 
 @dataclass
@@ -321,6 +331,16 @@ class GradientState:
 
 
 @dataclass
+class TargetTransition:
+    target: OpenRGBTarget
+    start_colors: list[RGBColor]
+    end_colors: list[RGBColor]
+    started_at: float
+    duration_seconds: float
+    set_direct_mode: bool
+
+
+@dataclass
 class SerialSource:
     name: str
     port_name: str
@@ -329,6 +349,9 @@ class SerialSource:
     ser: serial.Serial
     targets: dict[int, TargetGroup]
     gradient_states: dict[int, GradientState]
+
+
+TARGET_TRANSITIONS: dict[int, TargetTransition] = {}
 
 
 def ensure_direct_mode(device: Device) -> None:
@@ -399,6 +422,18 @@ def colors_from_json(value: Any) -> list[RGBColor] | None:
     return colors
 
 
+def normalized_color_list(colors: list[RGBColor] | None, length: int) -> list[RGBColor]:
+    if length <= 0:
+        return []
+    if not colors:
+        return [RGBColor(0, 0, 0) for _ in range(length)]
+
+    copied = [copy_rgb_color(c) for c in colors[:length]]
+    while len(copied) < length:
+        copied.append(copy_rgb_color(copied[-1]))
+    return copied
+
+
 def clamp_byte(value: float) -> int:
     return max(0, min(255, int(round(value))))
 
@@ -464,6 +499,46 @@ def current_zone_colors(zone: Zone) -> list[RGBColor]:
     return [RGBColor(0, 0, 0) for _ in zone.leds]
 
 
+def device_zone_offsets(device: Device) -> dict[int, int] | None:
+    offset = 0
+    offsets: dict[int, int] = {}
+    for zone in device.zones:
+        offsets[id(zone)] = offset
+        offset += len(zone.leds)
+
+    if offset != len(device.leds):
+        return None
+    return offsets
+
+
+def zone_device_offset(device: Device, zone: Zone) -> int | None:
+    offsets = device_zone_offsets(device)
+    if offsets is None:
+        return None
+    return offsets.get(id(zone))
+
+
+def current_device_colors(device: Device) -> list[RGBColor]:
+    cached = DEVICE_COLOR_CACHE.get(id(device))
+    if cached is not None and len(cached) == len(device.leds):
+        return [copy_rgb_color(c) for c in cached]
+
+    colors = getattr(device, "colors", None)
+    if isinstance(colors, list) and len(colors) == len(device.leds):
+        return [copy_rgb_color(c) for c in colors]
+
+    offsets = device_zone_offsets(device)
+    if offsets is not None:
+        device_colors = [RGBColor(0, 0, 0) for _ in device.leds]
+        for zone in device.zones:
+            start = offsets[id(zone)]
+            zone_colors = current_zone_colors(zone)
+            device_colors[start:start + len(zone_colors)] = zone_colors
+        return device_colors
+
+    return [RGBColor(0, 0, 0) for _ in device.leds]
+
+
 def find_segment(zone: Zone, value: Any) -> Segment | None:
     segments = getattr(zone, "segments", None) or []
     if value is None:
@@ -491,6 +566,23 @@ def cache_zone_colors(zone: Zone, colors: list[RGBColor]) -> None:
         pass
 
 
+def cache_device_colors(device: Device, colors: list[RGBColor]) -> None:
+    copied = [copy_rgb_color(c) for c in colors]
+    DEVICE_COLOR_CACHE[id(device)] = copied
+    try:
+        device.colors = copied
+    except Exception:
+        pass
+
+    offsets = device_zone_offsets(device)
+    if offsets is None:
+        return
+    for zone in device.zones:
+        start = offsets[id(zone)]
+        end = start + len(zone.leds)
+        cache_zone_colors(zone, copied[start:end])
+
+
 def set_zone_colors_fast(zone: Zone, colors: list[RGBColor]) -> None:
     start = time.monotonic()
     zone.set_colors(colors, fast=True)
@@ -503,6 +595,7 @@ def set_zone_colors_fast(zone: Zone, colors: list[RGBColor]) -> None:
 def set_device_colors_fast(device: Device, colors: list[RGBColor]) -> None:
     start = time.monotonic()
     device.set_colors(colors, fast=True)
+    cache_device_colors(device, colors)
     elapsed_ms = (time.monotonic() - start) * 1000.0
     if elapsed_ms > 25.0:
         logger.debug("OpenRGB write device %s took %.1f ms", device.name, elapsed_ms)
@@ -525,10 +618,102 @@ def set_cached_target_colors(target: OpenRGBTarget, colors: list[RGBColor]) -> N
     COLOR_STATE_CACHE_DIRTY = True
 
 
-def apply_color_sets(updates: list[TargetColorSet], set_direct_mode: bool) -> None:
+def transition_color_at(transition: TargetTransition, now: float) -> tuple[list[RGBColor], bool]:
+    if transition.duration_seconds <= 0.0:
+        return [copy_rgb_color(c) for c in transition.end_colors], True
+
+    t = (now - transition.started_at) / transition.duration_seconds
+    if t >= 1.0:
+        return [copy_rgb_color(c) for c in transition.end_colors], True
+    if t <= 0.0:
+        return [copy_rgb_color(c) for c in transition.start_colors], False
+
+    colors = [
+        interpolate_color(start, end, t)
+        for start, end in zip(transition.start_colors, transition.end_colors, strict=False)
+    ]
+    return colors, False
+
+
+def current_uncorrected_target_colors(target: OpenRGBTarget, now: float | None = None) -> list[RGBColor]:
+    now = now if now is not None else time.monotonic()
+    transition = TARGET_TRANSITIONS.get(id(target))
+    if transition is not None:
+        colors, done = transition_color_at(transition, now)
+        if done:
+            TARGET_TRANSITIONS.pop(id(target), None)
+        return normalized_color_list(colors, target.led_count)
+
+    cached = TARGET_COLOR_CACHE.get(id(target))
+    if cached is not None:
+        return normalized_color_list(cached, target.led_count)
+
+    current = current_target_colors(target)
+    if current is not None:
+        return normalized_color_list(uncorrect_colors(current, target.correction), target.led_count)
+
+    return normalized_color_list(None, target.led_count)
+
+
+def queue_output_color_sets(updates: list[TargetColorSet], set_direct_mode: bool, cache_colors: bool) -> None:
     for target, colors in updates:
-        set_cached_target_colors(target, colors)
-        PENDING_COLOR_SETS.append((target, colors, set_direct_mode))
+        colors = normalized_color_list(colors, target.led_count)
+        if cache_colors:
+            set_cached_target_colors(target, colors)
+        PENDING_COLOR_SETS.append((target, colors, set_direct_mode, cache_colors))
+
+
+def start_color_transition(target: OpenRGBTarget, colors: list[RGBColor], set_direct_mode: bool, duration_seconds: float) -> None:
+    end_colors = normalized_color_list(colors, target.led_count)
+    if not end_colors:
+        return
+
+    now = time.monotonic()
+    start_colors = current_uncorrected_target_colors(target, now)
+    set_cached_target_colors(target, end_colors)
+    TARGET_TRANSITIONS[id(target)] = TargetTransition(
+        target=target,
+        start_colors=start_colors,
+        end_colors=end_colors,
+        started_at=now,
+        duration_seconds=duration_seconds,
+        set_direct_mode=set_direct_mode,
+    )
+
+
+def apply_color_sets(updates: list[TargetColorSet], set_direct_mode: bool, transition_seconds: float = 0.0) -> None:
+    if transition_seconds > 0.0:
+        for target, colors in updates:
+            start_color_transition(target, colors, set_direct_mode, transition_seconds)
+        return
+
+    for target, _colors in updates:
+        TARGET_TRANSITIONS.pop(id(target), None)
+    queue_output_color_sets(updates, set_direct_mode, cache_colors=True)
+
+
+def maybe_render_transition_frames() -> None:
+    if not TARGET_TRANSITIONS:
+        return
+
+    now = time.monotonic()
+    updates: list[tuple[OpenRGBTarget, list[RGBColor], bool]] = []
+    finished: list[int] = []
+    for target_id, transition in list(TARGET_TRANSITIONS.items()):
+        colors, done = transition_color_at(transition, now)
+        if done:
+            finished.append(target_id)
+        updates.append((transition.target, colors, transition.set_direct_mode))
+
+    for target_id in finished:
+        TARGET_TRANSITIONS.pop(target_id, None)
+
+    for target, colors, set_direct_mode in updates:
+        if target is not None:
+            queue_output_color_sets([(target, colors)], set_direct_mode, cache_colors=False)
+            transition = TARGET_TRANSITIONS.get(id(target))
+            if transition is not None:
+                transition.set_direct_mode = False
 
 
 def flush_color_sets() -> None:
@@ -539,7 +724,7 @@ def flush_color_sets() -> None:
     PENDING_COLOR_SETS.clear()
 
     seen_devices: set[int] = set()
-    for target, _colors, set_direct_mode in updates:
+    for target, _colors, set_direct_mode, _cache_colors in updates:
         if not set_direct_mode:
             continue
         device_id = id(target.device)
@@ -548,30 +733,54 @@ def flush_color_sets() -> None:
         seen_devices.add(device_id)
         ensure_direct_mode(target.device)
 
-    zone_updates: dict[int, tuple[Zone, list[RGBColor]]] = {}
+    device_batches: dict[int, DeviceColorBatch] = {}
+    fallback_zone_updates: dict[int, tuple[Zone, list[RGBColor]]] = {}
     start_time = time.monotonic()
     device_write_count = 0
     zone_write_count = 0
 
-    for target, colors, _set_direct_mode in updates:
+    def batch_for_device(device: Device) -> DeviceColorBatch:
+        device_id = id(device)
+        batch = device_batches.get(device_id)
+        if batch is None:
+            batch = DeviceColorBatch(device=device, colors=current_device_colors(device))
+            device_batches[device_id] = batch
+        return batch
+
+    for target, colors, _set_direct_mode, _cache_colors in updates:
         colors = correct_colors(colors, target.correction)
         zone_slice = target_slice(target)
         if zone_slice is None:
-            set_device_colors_fast(target.device, colors)
-            device_write_count += 1
+            batch = batch_for_device(target.device)
+            length = min(len(colors), len(batch.colors))
+            if length > 0:
+                batch.colors[:length] = colors[:length]
             continue
 
         zone, start, led_count = zone_slice
-        if id(zone) not in zone_updates:
-            zone_updates[id(zone)] = (zone, current_zone_colors(zone))
+        device_start = zone_device_offset(target.device, zone)
+        if device_start is not None:
+            batch = batch_for_device(target.device)
+            absolute_start = device_start + start
+            length = min(led_count, len(colors), len(batch.colors) - absolute_start)
+            if length > 0:
+                batch.colors[absolute_start:absolute_start + length] = colors[:length]
+            continue
 
-        _zone, zone_colors = zone_updates[id(zone)]
+        if id(zone) not in fallback_zone_updates:
+            fallback_zone_updates[id(zone)] = (zone, current_zone_colors(zone))
+
+        _zone, zone_colors = fallback_zone_updates[id(zone)]
         length = min(led_count, len(colors), len(zone_colors) - start)
         if length <= 0:
             continue
         zone_colors[start:start + length] = colors[:length]
 
-    for zone, zone_colors in zone_updates.values():
+    for batch in device_batches.values():
+        set_device_colors_fast(batch.device, batch.colors)
+        device_write_count += 1
+
+    for zone, zone_colors in fallback_zone_updates.values():
         set_zone_colors_fast(zone, zone_colors)
         zone_write_count += 1
 
@@ -586,22 +795,23 @@ def flush_color_sets() -> None:
         )
 
 
-def apply_colors(target: Target, colors: list[RGBColor], set_direct_mode: bool) -> None:
+def apply_colors(target: Target, colors: list[RGBColor], set_direct_mode: bool, transition_seconds: float = 0.0) -> None:
     if target is None:
         return
-    apply_color_sets([(target, colors)], set_direct_mode)
+    apply_color_sets([(target, colors)], set_direct_mode, transition_seconds)
 
 
-def apply_color(target: Target, color: RGBColor, set_direct_mode: bool) -> None:
+def apply_color(target: Target, color: RGBColor, set_direct_mode: bool, transition_seconds: float = 0.0) -> None:
     if target is None:
         return
-    apply_colors(target, [color] * target.led_count, set_direct_mode)
+    apply_colors(target, [color] * target.led_count, set_direct_mode, transition_seconds)
 
 
-def apply_color_group(targets: TargetGroup, color: RGBColor, set_direct_mode: bool) -> None:
+def apply_color_group(targets: TargetGroup, color: RGBColor, set_direct_mode: bool, transition_seconds: float = 0.0) -> None:
     apply_color_sets(
         [(target, [color] * target.led_count) for target in targets if target is not None],
         set_direct_mode,
+        transition_seconds,
     )
 
 
@@ -711,6 +921,13 @@ def coerce_float(value: Any, default: float) -> float:
         return float(value)
     except (TypeError, ValueError):
         return default
+
+
+def fade_duration_seconds(value: Any) -> float:
+    fade = max(0, coerce_int(value, 0))
+    if fade == 0:
+        return 0.0
+    return min(FADE_MAX_SECONDS, fade * FADE_UNIT_SECONDS)
 
 
 def render_linear_gradient(
@@ -877,12 +1094,13 @@ def apply_gradient(
     set_direct_mode: bool,
     bri: int = 254,
     wrap: bool = False,
+    transition_seconds: float = 0.0,
 ) -> None:
     led_colors = render_gradient_for_target(target, colors, style, scale, offset, on, bri, wrap)
     if target is None or led_colors is None:
         return
 
-    apply_colors(target, led_colors, set_direct_mode)
+    apply_colors(target, led_colors, set_direct_mode, transition_seconds)
 
 
 def apply_gradient_state(
@@ -892,6 +1110,7 @@ def apply_gradient_state(
     now: float | None = None,
     min_cycle_seconds: float = 1.5,
     max_cycle_seconds: float = 90.0,
+    transition_seconds: float = 0.0,
 ) -> None:
     offset = state.offset
     wrap = False
@@ -908,6 +1127,7 @@ def apply_gradient_state(
         set_direct_mode,
         state.bri,
         wrap,
+        transition_seconds,
     )
 
 
@@ -918,6 +1138,7 @@ def apply_gradient_state_group(
     now: float | None = None,
     min_cycle_seconds: float = 1.5,
     max_cycle_seconds: float = 90.0,
+    transition_seconds: float = 0.0,
 ) -> None:
     offset = state.offset
     wrap = False
@@ -939,7 +1160,7 @@ def apply_gradient_state_group(
         )
         if target is not None and led_colors is not None:
             updates.append((target, led_colors))
-    apply_color_sets(updates, set_direct_mode)
+    apply_color_sets(updates, set_direct_mode, transition_seconds)
 
 
 def maybe_render_dynamic_frames(
@@ -952,6 +1173,8 @@ def maybe_render_dynamic_frames(
     now = time.monotonic()
     for endpoint, state in gradient_states.items():
         if not state.dynamic or not state.on:
+            continue
+        if now < state.started_at:
             continue
         if now - state.last_frame_at < frame_interval_seconds:
             continue
@@ -1021,6 +1244,8 @@ def resolve_target(
                 logger.warning("Segment %s not found in zone %s; falling back to segment_start/leds", segment_name, zone.name)
             start = max(0, coerce_int(segment_start, 0))
             length = coerce_int(led_count, len(zone.leds) - start) if led_count else len(zone.leds) - start
+            if led_count and start + length > len(zone.leds):
+                resize_zone(zone, start + length)
             if start >= len(zone.leds):
                 logger.warning("Segment start %d out of range for %s (leds=%d)", start, zone.name, len(zone.leds))
                 return None
@@ -1339,6 +1564,12 @@ def serial_cfg_for_input(global_serial_cfg: Mapping[str, Any], input_cfg: Mappin
     return serial_cfg
 
 
+def input_required(input_cfg: Mapping[str, Any], multiple_inputs: bool) -> bool:
+    if "required" in input_cfg:
+        return bool(input_cfg.get("required"))
+    return not multiple_inputs
+
+
 def create_serial_sources(
     client: OpenRGBClient,
     config: dict[str, Any],
@@ -1368,10 +1599,20 @@ def create_serial_sources(
         baud = coerce_int(serial_cfg.get("baud", 115200), 115200)
         prefix = str(serial_cfg.get("prefix", "DATA: "))
         input_timeout = max(0.02, coerce_float(serial_cfg.get("timeout"), serial_timeout))
+        logger.info("Opening %s serial port %s at %d baud", name, port_name, baud)
+        try:
+            ser = open_serial_port(port_name, baud, input_timeout)
+        except (OSError, serial.SerialException) as exc:
+            if input_required(input_cfg, multiple_inputs):
+                raise
+            logger.warning("Input %s unavailable on %s; skipping: %s", name, port_name, exc)
+            continue
 
         targets = resolve_targets(client, endpoints_cfg, name)
-        logger.info("Opening %s serial port %s at %d baud", name, port_name, baud)
-        ser = open_serial_port(port_name, baud, input_timeout)
+        if not targets or not any(targets.values()):
+            logger.warning("Input %s has no resolved OpenRGB targets; closing serial port", name)
+            ser.close()
+            continue
         sources.append(
             SerialSource(
                 name=name,
@@ -1410,6 +1651,7 @@ def handle_data_event(
         colors = data.get("colors", [])
         if not isinstance(colors, list):
             colors = []
+        transition_seconds = fade_duration_seconds(data.get("fade"))
         previous = source.gradient_states.get(endpoint)
         default_bri = previous.bri if previous else 254
         bri = coerce_brightness_254(data.get("bri"), default_bri)
@@ -1431,7 +1673,7 @@ def handle_data_event(
             on=bool(on),
             dynamic=dynamic,
             effect_speed=coerce_int(effect_speed, 0) if dynamic else None,
-            started_at=now,
+            started_at=now + transition_seconds if dynamic else now,
             last_frame_at=now,
         )
         logger.debug(
@@ -1453,6 +1695,7 @@ def handle_data_event(
             now=now,
             min_cycle_seconds=dynamic_min_cycle,
             max_cycle_seconds=dynamic_max_cycle,
+            transition_seconds=transition_seconds,
         )
         return
 
@@ -1469,6 +1712,8 @@ def handle_data_event(
         and ("bri" in data or "on" in data or "effect_speed" in data)
     ):
         now = time.monotonic()
+        transition_seconds = fade_duration_seconds(data.get("fade"))
+        speed_only_update = "effect_speed" in data and "bri" not in data and "on" not in data
         if "bri" in data:
             stored_gradient.bri = coerce_brightness_254(data.get("bri"), stored_gradient.bri)
         if "on" in data and fc03_changed_on:
@@ -1479,6 +1724,8 @@ def handle_data_event(
             stored_gradient.dynamic = True
             stored_gradient.effect_speed = coerce_int(data.get("effect_speed"), stored_gradient.effect_speed or 0)
             stored_gradient.started_at = now
+        if speed_only_update:
+            transition_seconds = 0.0
         logger.debug(
             "RX %s endpoint=%s gradient state update on=%s bri=%s dynamic=%s speed=%s",
             source.name,
@@ -1495,6 +1742,7 @@ def handle_data_event(
             now=now,
             min_cycle_seconds=dynamic_min_cycle,
             max_cycle_seconds=dynamic_max_cycle,
+            transition_seconds=transition_seconds,
         )
         stored_gradient.last_frame_at = now
         return
@@ -1512,7 +1760,7 @@ def handle_data_event(
     else:
         color = RGBColor(r, g, b)
 
-    apply_color_group(target_group, color, set_direct_mode)
+    apply_color_group(target_group, color, set_direct_mode, fade_duration_seconds(data.get("fade")))
 
 
 def run(config_path: Path, config: dict[str, Any]) -> None:
@@ -1542,6 +1790,7 @@ def run(config_path: Path, config: dict[str, Any]) -> None:
         while True:
             reload_color_corrections_if_needed(config_path, sources)
 
+            maybe_render_transition_frames()
             for source in sources:
                 maybe_render_dynamic_frames(
                     source.targets,
@@ -1585,6 +1834,7 @@ def run(config_path: Path, config: dict[str, Any]) -> None:
                     if ser.in_waiting <= 0:
                         break
 
+            maybe_render_transition_frames()
             flush_color_sets()
             maybe_save_target_color_cache()
     finally:

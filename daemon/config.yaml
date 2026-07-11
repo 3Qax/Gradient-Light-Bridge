@@ -15,27 +15,20 @@ serial:
   # Prefix used by the firmware on every data line.
   prefix: "DATA: "
 
-# One input per physical NanoC6. Each firmware exposes endpoint 11, so the
-# input name/serial port decides which OpenRGB segment that endpoint controls.
+# One physical NanoC6 can expose multiple logical light endpoints. The current
+# OpenRGB path uses one serial ESP with five endpoints, matching the bridge-
+# tested limit for this firmware.
 #
 # Current OpenRGB profile:
 #   0: JAF      -> global motherboard zone, leave untouched
 #   1: JARGB 1 -> Bottom [0:6]
-#   2: JARGB 2 -> VRM [0:12], Top_* mirrored across Right/Center/Left
+#   2: JARGB 2 -> VRM [0:12], Top_Right [12:24],
+#                 Top_Center [24:36], Top_Left [36:48]
 #   3: JARGB 3 -> Side [0:6]
 inputs:
-  vrm:
-    port: /dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_54:32:04:1F:C3:F0-if00
-    endpoints:
-      11:
-        name: "VRM"
-        device: "MSI MYSTIC LIGHT"
-        zone: 2
-        segment: "VRM"
-        segment_start: 0
-        leds: 12
-  side:
+  pc_fans:
     port: /dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_40:4C:CA:5A:F9:3C-if00
+    required: true
     endpoints:
       11:
         name: "Side"
@@ -44,32 +37,26 @@ inputs:
         segment: "Side"
         segment_start: 0
         leds: 6
-  bottom:
-    port: /dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_40:4C:CA:5A:E1:2C-if00
-    endpoints:
-      11:
+      12:
         name: "Bottom"
         device: "MSI MYSTIC LIGHT"
         zone: 1
         segment: "Bottom"
         segment_start: 0
         leds: 6
-  top:
-    enabled: true
-    port: /dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_40:4C:CA:5B:0C:50-if00
-    endpoints:
-      11:
+      13:
+        name: "VRM"
+        device: "MSI MYSTIC LIGHT"
+        zone: 2
+        segment: "VRM"
+        segment_start: 0
+        leds: 12
+      14:
         - name: "Top_Right"
           device: "MSI MYSTIC LIGHT"
           zone: 2
           segment: "Right"
           segment_start: 12
-          leds: 12
-        - name: "Top_Center"
-          device: "MSI MYSTIC LIGHT"
-          zone: 2
-          segment: "Center"
-          segment_start: 24
           leds: 12
         - name: "Top_Left"
           device: "MSI MYSTIC LIGHT"
@@ -77,6 +64,13 @@ inputs:
           segment: "Left"
           segment_start: 36
           leds: 12
+      15:
+        name: "Top_Center"
+        device: "MSI MYSTIC LIGHT"
+        zone: 2
+        segment: "Center"
+        segment_start: 24
+        leds: 12
 
 # If true, attempt to switch matched devices into Direct/Custom mode before
 # setting colors.
@@ -90,6 +84,7 @@ dynamic:
   # bridge dynamic-scene speed is mapped to one full palette cycle. Extreme speed
   # has been observed as effect_speed=224, so the daemon uses a non-linear
   # curve and this short minimum to keep max-speed scenes visibly active.
+  # The same frame interval is used for OpenRGB fade transition frames.
   frame_interval_seconds: 0.05
   min_cycle_seconds: 1.5
   max_cycle_seconds: 90.0
