@@ -113,6 +113,7 @@ static const char *TAG = "ARGB_BRIDGE";
 #define ZDO_SIMPLE_DESC_RSP_CLUSTER_ID     0x8004
 #define ZDO_SUCCESS_STATUS                 0x00
 #define ZCL_STATUS_INSUFFICIENT_SPACE      0x89
+#define ARRAY_SIZE(a)                      (sizeof(a) / sizeof((a)[0]))
 
 /* Experiment: bypass the local endpoint table for ZDO discovery and answer
  * like a real LCX004, including Green Power endpoint 242, without registering
@@ -282,6 +283,9 @@ static const uint8_t FC03_DEFAULT_STATE[] = {
 };
 static uint8_t s_fc03_state[ARGB_ENDPOINT_COUNT][64];
 
+#define FC03_STATE_MODE_MIREK    0x0007
+#define FC03_STATE_MODE_GRADIENT 0x014B
+
 /* FC01 certification/proprietary attributes observed on a real LCX004:
  *   0x0000 - 8-bit bitmap = 0x0B
  *   0x0001 - 8-bit enum  = 0x00
@@ -351,6 +355,8 @@ static uint8_t s_startup_current_level[ARGB_ENDPOINT_COUNT] = { 0xFF };
 static uint16_t s_startup_color_temperature[ARGB_ENDPOINT_COUNT] = { 0xFFFF };
 static uint16_t s_startup_current_x[ARGB_ENDPOINT_COUNT] = { 0xFFFF };
 static uint16_t s_startup_current_y[ARGB_ENDPOINT_COUNT] = { 0xFFFF };
+static uint16_t s_current_color_temperature[ARGB_ENDPOINT_COUNT] = { 500 };
+static uint8_t s_current_color_mode[ARGB_ENDPOINT_COUNT] = { 0x01 };
 
 typedef struct {
     uint8_t on;
@@ -381,6 +387,7 @@ static void init_endpoint_defaults(void);
 static void load_power_recovery_state(void);
 static void save_power_recovery_state(const char *reason);
 static void apply_power_recovery_startup(uint8_t endpoint);
+static uint8_t remembered_brightness(const light_state_t *st);
 
 static void send_basic_c1_response_raw(const zb_zcl_parsed_hdr_t *hdr,
                                        const uint8_t *payload,
@@ -513,6 +520,253 @@ static bool send_write_attr_success_raw(const zb_zcl_parsed_hdr_t *hdr, const ch
              (unsigned)hdr->seq_number,
              (unsigned)dst_addr,
              (unsigned)endpoint);
+    ZB_ZCL_FINISH_N_SEND_PACKET(out,
+                                cmd_ptr,
+                                dst_addr,
+                                ZB_APS_ADDR_MODE_16_ENDP_PRESENT,
+                                hdr->addr_data.common_data.src_endpoint,
+                                endpoint,
+                                hdr->profile_id,
+                                hdr->cluster_id,
+                                NULL);
+    return true;
+}
+
+static bool read_attr_payload_all_supported(const uint8_t *payload,
+                                            uint16_t payload_len,
+                                            const uint16_t *supported_attrs,
+                                            size_t supported_attr_count)
+{
+    if (!payload || !supported_attrs || (payload_len % 2) != 0) {
+        return false;
+    }
+
+    for (uint16_t offset = 0; offset + 1 < payload_len; offset += 2) {
+        uint16_t attr_id = (uint16_t)payload[offset] | ((uint16_t)payload[offset + 1] << 8);
+        bool supported = false;
+        for (size_t i = 0; i < supported_attr_count; i++) {
+            if (supported_attrs[i] == attr_id) {
+                supported = true;
+                break;
+            }
+        }
+        if (!supported) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+static bool handle_onoff_current_read_attrs_raw(const zb_zcl_parsed_hdr_t *hdr,
+                                                const uint8_t *payload,
+                                                uint16_t payload_len)
+{
+    static const uint16_t supported_attrs[] = { ESP_ZB_ZCL_ATTR_ON_OFF_ON_OFF_ID };
+
+    if (!hdr || !payload ||
+        hdr->addr_data.common_data.source.addr_type != ZB_ZCL_ADDR_TYPE_SHORT ||
+        !read_attr_payload_all_supported(payload, payload_len, supported_attrs, ARRAY_SIZE(supported_attrs))) {
+        return false;
+    }
+
+    uint8_t endpoint = hdr->addr_data.common_data.dst_endpoint;
+    if (endpoint < HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE ||
+        endpoint >= HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE + ARGB_ENDPOINT_COUNT) {
+        return false;
+    }
+    uint8_t idx = endpoint - HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE;
+
+    zb_bufid_t out = zb_buf_get_out();
+    if (!out) {
+        ESP_LOGE(TAG, "ONOFF_READ_ATTR_RESP_RAW: no ZBOSS output buffer");
+        return true;
+    }
+
+    uint8_t *cmd_ptr = ZB_ZCL_START_PACKET(out);
+    ZB_ZCL_CONSTRUCT_GENERAL_COMMAND_RESP_FRAME_CONTROL_A(cmd_ptr,
+                                                          ZB_ZCL_FRAME_DIRECTION_TO_CLI,
+                                                          ZB_ZCL_NOT_MANUFACTURER_SPECIFIC);
+    ZB_ZCL_CONSTRUCT_COMMAND_HEADER(cmd_ptr, hdr->seq_number, ZB_ZCL_CMD_READ_ATTRIB_RESP);
+
+    for (uint16_t offset = 0; offset + 1 < payload_len; offset += 2) {
+        uint16_t attr_id = (uint16_t)payload[offset] | ((uint16_t)payload[offset + 1] << 8);
+        ZB_ZCL_PACKET_PUT_DATA16_VAL(cmd_ptr, attr_id);
+        ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ZB_ZCL_STATUS_SUCCESS);
+        ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ESP_ZB_ZCL_ATTR_TYPE_BOOL);
+        ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, g_light_state[idx].on ? 1 : 0);
+    }
+
+    uint16_t dst_addr = hdr->addr_data.common_data.source.u.short_addr;
+    ESP_LOGI(TAG, "ONOFF_READ_ATTR_RESP_RAW: tsn=0x%02x to=0x%04x ep=%u on=%u",
+             (unsigned)hdr->seq_number,
+             (unsigned)dst_addr,
+             (unsigned)endpoint,
+             g_light_state[idx].on ? 1U : 0U);
+    ZB_ZCL_FINISH_N_SEND_PACKET(out,
+                                cmd_ptr,
+                                dst_addr,
+                                ZB_APS_ADDR_MODE_16_ENDP_PRESENT,
+                                hdr->addr_data.common_data.src_endpoint,
+                                endpoint,
+                                hdr->profile_id,
+                                hdr->cluster_id,
+                                NULL);
+    return true;
+}
+
+static bool handle_level_current_read_attrs_raw(const zb_zcl_parsed_hdr_t *hdr,
+                                                const uint8_t *payload,
+                                                uint16_t payload_len)
+{
+    static const uint16_t supported_attrs[] = { ESP_ZB_ZCL_ATTR_LEVEL_CONTROL_CURRENT_LEVEL_ID };
+
+    if (!hdr || !payload ||
+        hdr->addr_data.common_data.source.addr_type != ZB_ZCL_ADDR_TYPE_SHORT ||
+        !read_attr_payload_all_supported(payload, payload_len, supported_attrs, ARRAY_SIZE(supported_attrs))) {
+        return false;
+    }
+
+    uint8_t endpoint = hdr->addr_data.common_data.dst_endpoint;
+    if (endpoint < HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE ||
+        endpoint >= HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE + ARGB_ENDPOINT_COUNT) {
+        return false;
+    }
+    uint8_t idx = endpoint - HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE;
+
+    zb_bufid_t out = zb_buf_get_out();
+    if (!out) {
+        ESP_LOGE(TAG, "LEVEL_CURRENT_READ_ATTR_RESP_RAW: no ZBOSS output buffer");
+        return true;
+    }
+
+    uint8_t *cmd_ptr = ZB_ZCL_START_PACKET(out);
+    ZB_ZCL_CONSTRUCT_GENERAL_COMMAND_RESP_FRAME_CONTROL_A(cmd_ptr,
+                                                          ZB_ZCL_FRAME_DIRECTION_TO_CLI,
+                                                          ZB_ZCL_NOT_MANUFACTURER_SPECIFIC);
+    ZB_ZCL_CONSTRUCT_COMMAND_HEADER(cmd_ptr, hdr->seq_number, ZB_ZCL_CMD_READ_ATTRIB_RESP);
+
+    for (uint16_t offset = 0; offset + 1 < payload_len; offset += 2) {
+        uint16_t attr_id = (uint16_t)payload[offset] | ((uint16_t)payload[offset + 1] << 8);
+        ZB_ZCL_PACKET_PUT_DATA16_VAL(cmd_ptr, attr_id);
+        ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ZB_ZCL_STATUS_SUCCESS);
+        ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ESP_ZB_ZCL_ATTR_TYPE_U8);
+        ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, remembered_brightness(&g_light_state[idx]));
+    }
+
+    uint16_t dst_addr = hdr->addr_data.common_data.source.u.short_addr;
+    ESP_LOGI(TAG, "LEVEL_CURRENT_READ_ATTR_RESP_RAW: tsn=0x%02x to=0x%04x ep=%u bri=%u",
+             (unsigned)hdr->seq_number,
+             (unsigned)dst_addr,
+             (unsigned)endpoint,
+             (unsigned)remembered_brightness(&g_light_state[idx]));
+    ZB_ZCL_FINISH_N_SEND_PACKET(out,
+                                cmd_ptr,
+                                dst_addr,
+                                ZB_APS_ADDR_MODE_16_ENDP_PRESENT,
+                                hdr->addr_data.common_data.src_endpoint,
+                                endpoint,
+                                hdr->profile_id,
+                                hdr->cluster_id,
+                                NULL);
+    return true;
+}
+
+static bool handle_color_current_read_attrs_raw(const zb_zcl_parsed_hdr_t *hdr,
+                                                const uint8_t *payload,
+                                                uint16_t payload_len)
+{
+    static const uint16_t supported_attrs[] = {
+        ESP_ZB_ZCL_ATTR_COLOR_CONTROL_CURRENT_SATURATION_ID,
+        ESP_ZB_ZCL_ATTR_COLOR_CONTROL_CURRENT_X_ID,
+        ESP_ZB_ZCL_ATTR_COLOR_CONTROL_CURRENT_Y_ID,
+        ESP_ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_TEMPERATURE_ID,
+        ESP_ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_MODE_ID,
+        ESP_ZB_ZCL_ATTR_COLOR_CONTROL_ENHANCED_CURRENT_HUE_ID,
+        ESP_ZB_ZCL_ATTR_COLOR_CONTROL_ENHANCED_COLOR_MODE_ID,
+        ESP_ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_LOOP_ACTIVE_ID,
+    };
+
+    if (!hdr || !payload ||
+        hdr->addr_data.common_data.source.addr_type != ZB_ZCL_ADDR_TYPE_SHORT ||
+        !read_attr_payload_all_supported(payload, payload_len, supported_attrs, ARRAY_SIZE(supported_attrs))) {
+        return false;
+    }
+
+    uint8_t endpoint = hdr->addr_data.common_data.dst_endpoint;
+    if (endpoint < HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE ||
+        endpoint >= HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE + ARGB_ENDPOINT_COUNT) {
+        return false;
+    }
+    uint8_t idx = endpoint - HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE;
+    light_state_t *st = &g_light_state[idx];
+
+    zb_bufid_t out = zb_buf_get_out();
+    if (!out) {
+        ESP_LOGE(TAG, "COLOR_CURRENT_READ_ATTR_RESP_RAW: no ZBOSS output buffer");
+        return true;
+    }
+
+    uint8_t *cmd_ptr = ZB_ZCL_START_PACKET(out);
+    ZB_ZCL_CONSTRUCT_GENERAL_COMMAND_RESP_FRAME_CONTROL_A(cmd_ptr,
+                                                          ZB_ZCL_FRAME_DIRECTION_TO_CLI,
+                                                          ZB_ZCL_NOT_MANUFACTURER_SPECIFIC);
+    ZB_ZCL_CONSTRUCT_COMMAND_HEADER(cmd_ptr, hdr->seq_number, ZB_ZCL_CMD_READ_ATTRIB_RESP);
+
+    for (uint16_t offset = 0; offset + 1 < payload_len; offset += 2) {
+        uint16_t attr_id = (uint16_t)payload[offset] | ((uint16_t)payload[offset + 1] << 8);
+        ZB_ZCL_PACKET_PUT_DATA16_VAL(cmd_ptr, attr_id);
+        ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ZB_ZCL_STATUS_SUCCESS);
+        switch (attr_id) {
+        case ESP_ZB_ZCL_ATTR_COLOR_CONTROL_CURRENT_SATURATION_ID:
+            ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ESP_ZB_ZCL_ATTR_TYPE_U8);
+            ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, 0xFE);
+            break;
+        case ESP_ZB_ZCL_ATTR_COLOR_CONTROL_CURRENT_X_ID:
+            ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ESP_ZB_ZCL_ATTR_TYPE_U16);
+            ZB_ZCL_PACKET_PUT_DATA16_VAL(cmd_ptr, st->x);
+            break;
+        case ESP_ZB_ZCL_ATTR_COLOR_CONTROL_CURRENT_Y_ID:
+            ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ESP_ZB_ZCL_ATTR_TYPE_U16);
+            ZB_ZCL_PACKET_PUT_DATA16_VAL(cmd_ptr, st->y);
+            break;
+        case ESP_ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_TEMPERATURE_ID:
+            ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ESP_ZB_ZCL_ATTR_TYPE_U16);
+            ZB_ZCL_PACKET_PUT_DATA16_VAL(cmd_ptr, s_current_color_temperature[idx]);
+            break;
+        case ESP_ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_MODE_ID:
+            ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ESP_ZB_ZCL_ATTR_TYPE_8BIT_ENUM);
+            ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, s_current_color_mode[idx]);
+            break;
+        case ESP_ZB_ZCL_ATTR_COLOR_CONTROL_ENHANCED_CURRENT_HUE_ID:
+            ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ESP_ZB_ZCL_ATTR_TYPE_U16);
+            ZB_ZCL_PACKET_PUT_DATA16_VAL(cmd_ptr, 0x0D10);
+            break;
+        case ESP_ZB_ZCL_ATTR_COLOR_CONTROL_ENHANCED_COLOR_MODE_ID:
+            ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ESP_ZB_ZCL_ATTR_TYPE_8BIT_ENUM);
+            ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, s_current_color_mode[idx]);
+            break;
+        case ESP_ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_LOOP_ACTIVE_ID:
+            ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ESP_ZB_ZCL_ATTR_TYPE_U8);
+            ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, 0x00);
+            break;
+        default:
+            ZB_ZCL_PACKET_PUT_DATA8(cmd_ptr, ZB_ZCL_STATUS_UNSUP_ATTRIB);
+            break;
+        }
+    }
+
+    uint16_t dst_addr = hdr->addr_data.common_data.source.u.short_addr;
+    ESP_LOGI(TAG,
+             "COLOR_CURRENT_READ_ATTR_RESP_RAW: tsn=0x%02x to=0x%04x ep=%u attrs=%u x=0x%04x y=0x%04x mirek=0x%04x mode=0x%02x",
+             (unsigned)hdr->seq_number,
+             (unsigned)dst_addr,
+             (unsigned)endpoint,
+             (unsigned)(payload_len / 2),
+             (unsigned)st->x,
+             (unsigned)st->y,
+             (unsigned)s_current_color_temperature[idx],
+             (unsigned)s_current_color_mode[idx]);
     ZB_ZCL_FINISH_N_SEND_PACKET(out,
                                 cmd_ptr,
                                 dst_addr,
@@ -1516,6 +1770,27 @@ static void sync_fc03_state_prefix(uint8_t idx)
     uint8_t *state = s_fc03_state[idx];
     uint8_t effective_bri = remembered_brightness(st);
 
+    if (s_current_color_mode[idx] == 0x02) {
+        uint16_t mirek = s_current_color_temperature[idx];
+        if (mirek == 0 || mirek == 0xFFFF) {
+            mirek = 500;
+        }
+
+        state[0] = 0x06;
+        state[1] = (uint8_t)(FC03_STATE_MODE_MIREK & 0xff);
+        state[2] = (uint8_t)(FC03_STATE_MODE_MIREK >> 8);
+        state[3] = st->on ? 0x01 : 0x00;
+        state[4] = effective_bri;
+        state[5] = (uint8_t)(mirek & 0xff);
+        state[6] = (uint8_t)(mirek >> 8);
+        return;
+    }
+
+    if (state[0] < 0x0E) {
+        memset(state, 0, sizeof(s_fc03_state[idx]));
+        memcpy(state, FC03_DEFAULT_STATE, sizeof(FC03_DEFAULT_STATE));
+    }
+
     state[3] = st->on ? 0x01 : 0x00;
     state[4] = effective_bri;
     state[5] = (uint8_t)(st->x & 0xff);
@@ -1544,6 +1819,8 @@ static void init_endpoint_defaults(void)
         s_fc03_attr34[idx] = 0x00;
         s_fc03_attr38[idx] = 0x000A;
         s_fc04_attr0[idx] = 0x1007;
+        s_current_color_temperature[idx] = 500;
+        s_current_color_mode[idx] = 0x01;
         s_basic_attr1[idx] = 0x00000000;
         s_basic_attr21[idx] = 0x001517EC;
         s_basic_attr41[idx] = 0xC4C1C739;
@@ -2363,6 +2640,11 @@ static void sync_fc03_to_standard_attrs(uint8_t endpoint,
     if (!st) {
         return;
     }
+    if (endpoint < HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE ||
+        endpoint >= HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE + ARGB_ENDPOINT_COUNT) {
+        return;
+    }
+    uint8_t idx = endpoint - HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE;
 
     if (has_on) {
         bool on = st->on;
@@ -2389,13 +2671,22 @@ static void sync_fc03_to_standard_attrs(uint8_t endpoint,
                           ESP_ZB_ZCL_CLUSTER_ID_COLOR_CONTROL,
                           ESP_ZB_ZCL_ATTR_COLOR_CONTROL_CURRENT_Y_ID,
                           &y);
+        s_current_color_mode[idx] = has_mirek ? 0x02 : 0x01;
+        set_standard_attr(endpoint,
+                          ESP_ZB_ZCL_CLUSTER_ID_COLOR_CONTROL,
+                          ESP_ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_MODE_ID,
+                          &s_current_color_mode[idx]);
+        set_standard_attr(endpoint,
+                          ESP_ZB_ZCL_CLUSTER_ID_COLOR_CONTROL,
+                          ESP_ZB_ZCL_ATTR_COLOR_CONTROL_ENHANCED_COLOR_MODE_ID,
+                          &s_current_color_mode[idx]);
     }
     if (has_mirek) {
-        uint16_t color_temperature = mirek;
+        s_current_color_temperature[idx] = mirek;
         set_standard_attr(endpoint,
                           ESP_ZB_ZCL_CLUSTER_ID_COLOR_CONTROL,
                           ESP_ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_TEMPERATURE_ID,
-                          &color_temperature);
+                          &s_current_color_temperature[idx]);
     }
 }
 
@@ -4035,12 +4326,19 @@ static void refresh_state_from_cluster(uint8_t endpoint,
     bool skip_level = skip_message &&
                       skip_message->info.cluster == ESP_ZB_ZCL_CLUSTER_ID_LEVEL_CONTROL &&
                       skip_message->attribute.id == ESP_ZB_ZCL_ATTR_LEVEL_CONTROL_CURRENT_LEVEL_ID;
+    bool skip_color_temp = skip_message &&
+                           skip_message->info.cluster == ESP_ZB_ZCL_CLUSTER_ID_COLOR_CONTROL &&
+                           skip_message->attribute.id == ESP_ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_TEMPERATURE_ID;
     bool skip_x = skip_message &&
                   skip_message->info.cluster == ESP_ZB_ZCL_CLUSTER_ID_COLOR_CONTROL &&
                   skip_message->attribute.id == ESP_ZB_ZCL_ATTR_COLOR_CONTROL_CURRENT_X_ID;
     bool skip_y = skip_message &&
                   skip_message->info.cluster == ESP_ZB_ZCL_CLUSTER_ID_COLOR_CONTROL &&
                   skip_message->attribute.id == ESP_ZB_ZCL_ATTR_COLOR_CONTROL_CURRENT_Y_ID;
+    bool skip_mode = skip_message &&
+                     skip_message->info.cluster == ESP_ZB_ZCL_CLUSTER_ID_COLOR_CONTROL &&
+                     (skip_message->attribute.id == ESP_ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_MODE_ID ||
+                      skip_message->attribute.id == ESP_ZB_ZCL_ATTR_COLOR_CONTROL_ENHANCED_COLOR_MODE_ID);
 
     if (!skip_onoff) {
         const esp_zb_zcl_attr_t *on_off_attr = esp_zb_zcl_get_attribute(
@@ -4063,7 +4361,7 @@ static void refresh_state_from_cluster(uint8_t endpoint,
         }
     }
 
-    if (!skip_x) {
+    if (!skip_x && !skip_color_temp) {
         const esp_zb_zcl_attr_t *x_attr = esp_zb_zcl_get_attribute(
             endpoint, ESP_ZB_ZCL_CLUSTER_ID_COLOR_CONTROL, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE,
             ESP_ZB_ZCL_ATTR_COLOR_CONTROL_CURRENT_X_ID);
@@ -4072,12 +4370,30 @@ static void refresh_state_from_cluster(uint8_t endpoint,
         }
     }
 
-    if (!skip_y) {
+    if (!skip_y && !skip_color_temp) {
         const esp_zb_zcl_attr_t *y_attr = esp_zb_zcl_get_attribute(
             endpoint, ESP_ZB_ZCL_CLUSTER_ID_COLOR_CONTROL, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE,
             ESP_ZB_ZCL_ATTR_COLOR_CONTROL_CURRENT_Y_ID);
         if (y_attr && y_attr->data_p) {
             st->y = *(uint16_t *)y_attr->data_p;
+        }
+    }
+
+    if (!skip_color_temp) {
+        const esp_zb_zcl_attr_t *mirek_attr = esp_zb_zcl_get_attribute(
+            endpoint, ESP_ZB_ZCL_CLUSTER_ID_COLOR_CONTROL, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE,
+            ESP_ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_TEMPERATURE_ID);
+        if (mirek_attr && mirek_attr->data_p) {
+            s_current_color_temperature[idx] = *(uint16_t *)mirek_attr->data_p;
+        }
+    }
+
+    if (!skip_mode) {
+        const esp_zb_zcl_attr_t *mode_attr = esp_zb_zcl_get_attribute(
+            endpoint, ESP_ZB_ZCL_CLUSTER_ID_COLOR_CONTROL, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE,
+            ESP_ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_MODE_ID);
+        if (mode_attr && mode_attr->data_p) {
+            s_current_color_mode[idx] = *(uint8_t *)mode_attr->data_p;
         }
     }
 }
@@ -4105,8 +4421,20 @@ static void update_state_from_message(light_state_t *st, const esp_zb_zcl_set_at
     case ESP_ZB_ZCL_CLUSTER_ID_COLOR_CONTROL:
         if (message->attribute.id == ESP_ZB_ZCL_ATTR_COLOR_CONTROL_CURRENT_X_ID) {
             st->x = *(uint16_t *)message->attribute.data.value;
+            s_current_color_mode[message->info.dst_endpoint - HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE] = 0x01;
         } else if (message->attribute.id == ESP_ZB_ZCL_ATTR_COLOR_CONTROL_CURRENT_Y_ID) {
             st->y = *(uint16_t *)message->attribute.data.value;
+            s_current_color_mode[message->info.dst_endpoint - HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE] = 0x01;
+        } else if (message->attribute.id == ESP_ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_TEMPERATURE_ID) {
+            uint8_t idx = message->info.dst_endpoint - HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE;
+            uint16_t mirek = *(uint16_t *)message->attribute.data.value;
+            s_current_color_temperature[idx] = mirek;
+            s_current_color_mode[idx] = 0x02;
+            (void)mirek_to_xy(mirek, &st->x, &st->y);
+        } else if (message->attribute.id == ESP_ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_MODE_ID ||
+                   message->attribute.id == ESP_ZB_ZCL_ATTR_COLOR_CONTROL_ENHANCED_COLOR_MODE_ID) {
+            s_current_color_mode[message->info.dst_endpoint - HA_COLOR_DIMMABLE_LIGHT_ENDPOINT_BASE] =
+                *(uint8_t *)message->attribute.data.value;
         }
         break;
     default:
@@ -4142,6 +4470,7 @@ static esp_err_t zb_attribute_handler(const esp_zb_zcl_set_attr_value_message_t 
     case ESP_ZB_ZCL_CLUSTER_ID_ON_OFF:
     case ESP_ZB_ZCL_CLUSTER_ID_LEVEL_CONTROL:
     case ESP_ZB_ZCL_CLUSTER_ID_COLOR_CONTROL:
+        sync_fc03_state_prefix(idx);
         emit_state_json_internal(endpoint, NULL, true, STANDARD_ZCL_FADE_TENTHS, false, 0);
         save_power_recovery_state("zcl_attr");
         break;
@@ -4502,6 +4831,33 @@ static bool zb_raw_command_handler(uint8_t bufid)
             hdr->manuf_specific == SIGNIFY_MANUFACTURER_CODE &&
             hdr->cmd_direction == ESP_ZB_ZCL_CMD_DIRECTION_TO_SRV &&
             handle_level_read_attrs_raw(hdr, payload, payload_len)) {
+            zb_buf_free(bufid);
+            return true;
+        }
+        if (hdr->cluster_id == ESP_ZB_ZCL_CLUSTER_ID_ON_OFF &&
+            hdr->cmd_id == ZB_ZCL_CMD_READ_ATTRIB &&
+            hdr->is_common_command &&
+            !hdr->is_manuf_specific &&
+            hdr->cmd_direction == ESP_ZB_ZCL_CMD_DIRECTION_TO_SRV &&
+            handle_onoff_current_read_attrs_raw(hdr, payload, payload_len)) {
+            zb_buf_free(bufid);
+            return true;
+        }
+        if (hdr->cluster_id == ESP_ZB_ZCL_CLUSTER_ID_LEVEL_CONTROL &&
+            hdr->cmd_id == ZB_ZCL_CMD_READ_ATTRIB &&
+            hdr->is_common_command &&
+            !hdr->is_manuf_specific &&
+            hdr->cmd_direction == ESP_ZB_ZCL_CMD_DIRECTION_TO_SRV &&
+            handle_level_current_read_attrs_raw(hdr, payload, payload_len)) {
+            zb_buf_free(bufid);
+            return true;
+        }
+        if (hdr->cluster_id == ESP_ZB_ZCL_CLUSTER_ID_COLOR_CONTROL &&
+            hdr->cmd_id == ZB_ZCL_CMD_READ_ATTRIB &&
+            hdr->is_common_command &&
+            !hdr->is_manuf_specific &&
+            hdr->cmd_direction == ESP_ZB_ZCL_CMD_DIRECTION_TO_SRV &&
+            handle_color_current_read_attrs_raw(hdr, payload, payload_len)) {
             zb_buf_free(bufid);
             return true;
         }
@@ -4956,7 +5312,6 @@ static void add_color_dimmable_light_endpoint(esp_zb_ep_list_t *ep_list, uint8_t
     static uint16_t enhanced_current_hue = 0x0D10;
     static uint8_t color_loop_active = 0;
     static uint8_t current_saturation = 0xFE;
-    static uint16_t color_temperature = 500;
     static uint16_t color_temp_min = 153;
     static uint16_t color_temp_max = 500;
     /* LCX004 / gamut C color points, encoded as Zigbee normalized U16 XY. */
@@ -4983,7 +5338,7 @@ static void add_color_dimmable_light_endpoint(esp_zb_ep_list_t *ep_list, uint8_t
                                           ESP_ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_TEMPERATURE_ID,
                                           ESP_ZB_ZCL_ATTR_TYPE_U16,
                                           ESP_ZB_ZCL_ATTR_ACCESS_READ_ONLY,
-                                          &color_temperature);
+                                          &s_current_color_temperature[idx]);
     esp_zb_custom_cluster_add_custom_attr(color_attr_list,
                                           ESP_ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_LOOP_ACTIVE_ID,
                                           ESP_ZB_ZCL_ATTR_TYPE_U8,
