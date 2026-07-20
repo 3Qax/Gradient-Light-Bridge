@@ -236,9 +236,7 @@ Suggested tuning flow:
 
 ## Build the firmware
 
-Firmware builds run through `firmware/in-docker.sh`, which uses the official
-ESP-IDF Docker image. You need Docker, but you do not need to install ESP-IDF on
-the host.
+I recommend you build using [the official ESP-IDF Docker image](docker.io/espressif/idf:v5.3.2). You need Docker, but you do not need to install ESP-IDF on your machine, which in my expierence is way less problematic. Firmware builds run through `firmware/in-docker.sh`.
 
 All firmware build commands start from `firmware/`:
 
@@ -316,20 +314,6 @@ Useful build notes:
   ./in-docker.sh idf.py fullclean
   ```
 
-- The default image is `docker.io/espressif/idf:v5.3.2`. Override it with
-  `IDFVER`:
-
-  ```bash
-  IDFVER=v5.3.2 ./in-docker.sh idf.py build
-  ```
-
-- To build the gradient probe subproject:
-
-  ```bash
-  cd firmware/gradient_probe
-  ../in-docker.sh idf.py set-target esp32c6
-  ../in-docker.sh idf.py build
-  ```
 
 ## Flash the firmware
 
