@@ -1,56 +1,18 @@
+## Context
+
+- At it's core it's ESP that successfully spoofs one or more Philips Hue light strip. It's made possible by existing research referenced in Readme.md. Depending on the backend selected at compilation time it either communicates with neopixels on selected data pin or via serial port and our custom deamon that talks to openRGB. Authored by [Jakub Towarek](https://github.com/3Qax).
+- This project is unrealted / does not have any affiliation to Philips Hue. Consequently runtime and protocol identifiers should avoid using Hue/Philips branding unless they are documenting external APIs, captures, references, or compatibility facts.
+- Per License.md I or any contributores bare absolutly 0 responsibility and/or liability. You or your operator bare all the responsibility. If you damage your PC or ESP or quite literally anything else, that's on you.
+
 ## Hue Bridge API
 
-- Use `tools/hue_light_cycle.py` for Hue bridge inspection, stale-light deletion,
-  rediscovery, and state testing. Do not rediscover the Hue v1 API flow from
-  scratch. Main commands:
-  - `tools/hue_light_cycle.py config`
-  - `tools/hue_light_cycle.py list`
-  - `tools/hue_light_cycle.py get <light-id>`
-  - `tools/hue_light_cycle.py set-state <light-id> '{"on":true,"bri":254}'`
-  - `tools/hue_light_cycle.py delete --id <light-id>`
-  - `tools/hue_light_cycle.py search --poll-seconds 90`
-  - `tools/hue_light_cycle.py cycle --modelid LCX004 --manufacturer 'Signify Netherlands B.V.' --uncertified-only`
+- Use `tools/hue_light_cycle.py`. Do not rediscover the Hue v1 API flow from scratch.
 
 ## ESP-IDF Docker Builds
 
-- Build firmware through `firmware/in-docker.sh`; do not assume host ESP-IDF is
-  installed.
-- Main firmware:
-  - `cd firmware`
-  - `./in-docker.sh idf.py build`
-  - If Docker group switching is needed: `sg docker -c './in-docker.sh idf.py build'`
-- Flash on Linux:
-  - `cd firmware`
-  - `PORT=/dev/ttyACM0 ./in-docker.sh idf.py -p /dev/ttyACM0 flash`
-- Additional board identity/debug build knobs:
-  - `ARGB_EUI_SUFFIX=auto ./in-docker.sh idf.py build`
-  - `ARGB_SERIAL_DEBUG=1 ./in-docker.sh idf.py build`
-  - `ARGB_BACKEND=ARGB_BACKEND_SERIAL_JSON ./in-docker.sh idf.py build`
-  - `ARGB_BACKEND=ARGB_BACKEND_LOCAL_LED ARGB_LED_GPIO=<gpio> ARGB_LED_COUNT=12 ARGB_COLOR_ORDER=GRB ./in-docker.sh idf.py build`
-  - Five 12-pixel local LED slices from one ESP, the current cleanly tested
-    Hue Bridge limit:
-    `ARGB_BACKEND=ARGB_BACKEND_LOCAL_LED ARGB_LED_GPIO=2 ARGB_ENDPOINT_COUNT=5 ARGB_ENDPOINT_LED_COUNT=12 ARGB_LED_COUNT=60 ARGB_COLOR_ORDER=GRB ./in-docker.sh idf.py build`
-  - `ARGB_BACKEND` is a single selector, not a set of independent feature
-    toggles. Use `ARGB_BACKEND_SERIAL_JSON` for the current daemon/OpenRGB
-    flow. Use `ARGB_BACKEND_LOCAL_LED` for the direct GPIO/RMT backend.
-  - Local LED backend knobs:
-    - `ARGB_LED_GPIO`: required GPIO for the 5 V 3-pin addressable data line.
-    - `ARGB_LED_COUNT`: total physical LED count on the data line; default is
-      `12`.
-    - `ARGB_ENDPOINT_COUNT`: number of logical Hue light endpoints exposed by
-      one ESP; default is `1`.
-    - `ARGB_ENDPOINT_LED_COUNT`: physical LEDs controlled by each endpoint;
-      default is `12`. Local LED endpoint `11 + n` maps to pixel slice
-      `n * ARGB_ENDPOINT_LED_COUNT`.
-    - `ARGB_COLOR_ORDER`: `RGB`, `GRB`, `BRG`, `RBG`, `GBR`, or `BGR`; default
-      is `GRB`, which is common for WS2812/SK6812-compatible strips.
-    - Local LED color correction defaults match the OpenRGB daemon config:
-      `ARGB_COLOR_CORRECTION=TypicalLEDStrip`,
-      `ARGB_COLOR_TEMPERATURE=Candle`, `ARGB_COLOR_GAIN_R=1.0`,
-      `ARGB_COLOR_GAIN_G=1.0`, `ARGB_COLOR_GAIN_B=0.7`, and gamma `1.0`.
-      Disable with `ARGB_COLOR_CORRECTION_ENABLED=0`, or override correction
-      preset, temperature preset, per-channel correction bytes, gain, and gamma
-      at build time.
+- Do not assume host ESP-IDF is installed. Build firmware through `firmware/in-docker.sh`, if not installed. 
+- `cd firmware`, `./in-docker.sh idf.py build`, `./in-docker.sh idf.py -p /dev/ttyACM0 flash`
+- Inspect `firmware/CMakeLists.txt` and `firmware/main/CMakeLists.txt` for the complete set of supported `ARGB_*` compilation flags and their defaults.
   - Local LED smoke tests after flashing:
     - `python3 firmware/send_cmd.py --port /dev/ttyACM0 led off`
     - `python3 firmware/send_cmd.py --port /dev/ttyACM0 led solid ff0000`
@@ -59,13 +21,10 @@
 - Gradient probe:
   - `cd firmware/gradient_probe`
   - `../in-docker.sh idf.py build`
-- Override ESP-IDF image version with `IDFVER`, e.g. `IDFVER=v5.3.2 ./in-docker.sh idf.py build`.
 
 ## Reference PDFs
 
-- Downloaded and browser-saved reference PDFs under `references/papers/`,
-  `references/slides/`, and `references/articles/`.
-- Keep Hue trust-center keys and Hue API credentials out of tracked files.
+- Downloaded and browser-saved reference PDFs under `references/papers/`, `references/slides/`, and `references/articles/`.
 
 ## Zigbee Sniffer Decode
 
