@@ -1,23 +1,16 @@
-# argb-to-hue
+# Gradient Light Bridge
 
-Expose PC ARGB fans/strips as Hue-compatible gradient lights.
-
-- **ESP32-C6** joins your existing Hue Zigbee network as one or more gradient lights.
-- It can forward on/off, brightness, color, scene, and gradient changes to a PC daemon.
-- It can also drive 5 V 3-pin addressable fans/strips directly from a GPIO/RMT backend.
-
-Developed on macOS, deployed on Linux.
+ESP32-C6 firmware that emulates Hue-compatible Zigbee gradient lights and drives OpenRGB or addressable LEDs. Control your RGB accessories as Hue-compatible gradient lights. Up to 5 light endpoints per ESP.
 
 ## Hardware
 
 - [M5Stack Nano C6](https://docs.m5stack.com/en/core/M5NanoC6) or another ESP32-C6 dev board.
-- PC running OpenRGB with your ARGB devices detected (e.g. MSI B850M GAMING PLUS WIFI6E).
-- Existing Philips Hue bridge + iOS Hue app.
+- Philips Hue Bridge 2.0, running 1.77.1977138000. Other might work but are untested, please report your finding.
 
 ## Architecture
 
 ```
-iOS Hue App → Hue Bridge → Zigbee 3.0 → ESP32-C6
+       Hue App → Hue Bridge → Zigbee 3.0 → ESP32-C6
                                               │
                                               │ USB-CDC (JSON lines)
                                               ▼
@@ -286,7 +279,7 @@ launchctl start com.argb-to-hue.daemon
 - **Colors do not change in OpenRGB**: check that OpenRGB detects your devices and that they support a Direct/Custom mode. Set `set_direct_mode: true` in `config.yaml`.
 - **Wrong zone mapping**: use OpenRGB’s GUI to inspect device/zone names and indices, then update `config.yaml`.
 
-## Known Gaps
+## Known Limitations
 
 The current firmware supports the useful Hue-gradient-light workflow: pairing,
 certified gradient classification, scenes, dynamic scenes, play/stop, fades,
@@ -298,7 +291,7 @@ every behavior in a Signify light. Known remaining gaps:
   not implement the entertainment streaming path.
 - **Named/timed Hue effects**: dynamic scenes are supported, but dedicated
   effects like candle/fireplace are not mapped. Firmware parses and logs effect
-  fields, but does not implement a library of named effects.
+  fields, but does not implement a library of named effects. PRs are welcome.
 - **OTA updates**: firmware exposes enough OTA-like identity/static attributes
   to satisfy the bridge, but does not implement a real firmware update flow.
 - **Identify/alert behavior**: discovery/read support exists, but "blink this
@@ -399,19 +392,6 @@ Investigating the Current State of Security in Connected Lighting Systems](https
     wizard. Useful for comparing command payload generation against Bifrost and
     probe captures.
 
-## Practical Takeaways For This Repo
-
-- Joining Hue is a classical commissioning problem for this firmware, not a
-  touchlink problem.
-- `0xFC03` is the main public target for gradient payload correctness.
-- `0xFC01` remains important because Hue bridges have been observed sending
-  manufacturer-specific command `0x03` there after device announcements.
-- The Hue API `capabilities.certified` flag is probably bridge-side product
-  classification logic, not something explained by the public ZLL papers.
-- If exact certification behavior becomes necessary, the most relevant RE path
-  is bridge firmware / `ipbridge` discovery and product-mapping logic.
-
-
 ## License
 
-MIT. 0 warranty, 0 liability, 0 resposibility for the damages. Use at your own risk.
+MIT. 0 warranty, 0 liability, 0 resposibility for any damages. Use at your own risk.
