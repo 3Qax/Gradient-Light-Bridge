@@ -11,7 +11,7 @@ ESP32-C6 firmware that emulates Hue-compatible Zigbee gradient lights and drives
 
 ### Output backends
 
-Gradient Light Bridge has two output backends: the [**OpenRGB backend**](https://github.com/3Qax/argb-to-hue/edit/main/README.md#openrgb-backend) (`ARGB_BACKEND=ARGB_BACKEND_SERIAL_JSON`) and the [**addressable LED backend**](https://github.com/3Qax/argb-to-hue/edit/main/README.md#addressable-led-backend) (`ARGB_BACKEND=ARGB_BACKEND_LOCAL_LED`). The backend is selected at firmware build time with `ARGB_BACKEND`.
+Gradient Light Bridge has two output backends: the [**OpenRGB backend**](#openrgb-backend) (`ARGB_BACKEND=ARGB_BACKEND_SERIAL_JSON`) and the [**addressable LED backend**](#addressable-led-backend) (`ARGB_BACKEND=ARGB_BACKEND_LOCAL_LED`). The backend is selected at firmware build time with `ARGB_BACKEND`.
 
 ```
                     Hue app
@@ -40,133 +40,133 @@ Gradient Light Bridge has two output backends: the [**OpenRGB backend**](https:/
   case RGB controllers
 ```
 
- ### OpenRGB backend
+### OpenRGB backend
 
-  `ARGB_BACKEND=ARGB_BACKEND_SERIAL_JSON`
+`ARGB_BACKEND=ARGB_BACKEND_SERIAL_JSON`
 
-  In this mode the ESP32-C6 only behaves as the Zigbee device. It emits one JSON
-  line for each light update over USB serial. The PC daemon reads those events and
-  renders them to OpenRGB zones through the OpenRGB SDK.
+In this mode the ESP32-C6 only behaves as the Zigbee device. It emits one JSON
+line for each light update over USB serial. The PC daemon reads those events and
+renders them to OpenRGB zones through the OpenRGB SDK.
 
-  ```text
-  Hue app -> Hue Bridge -> Zigbee -> ESP32-C6 -> USB serial JSON -> daemon -> OpenRGB
-  ```
+```text
+Hue app -> Hue Bridge -> Zigbee -> ESP32-C6 -> USB serial JSON -> daemon -> OpenRGB
+```
 
-  Use this backend when the LEDs are already connected to a motherboard, RAM,
-  case controller, or any other device supported by OpenRGB.
+Use this backend when the LEDs are already connected to a motherboard, RAM,
+case controller, or any other device supported by OpenRGB.
 
-  Major firmware options:
+Major firmware options:
 
-  - `ARGB_BACKEND=ARGB_BACKEND_SERIAL_JSON`: select the serial JSON backend.
-  - `ARGB_EUI_SUFFIX=auto`: derive the Zigbee EUI suffix from the ESP factory MAC.
-  - `ARGB_ENDPOINT_COUNT=<n>`: expose `n` logical gradient lights from one ESP.
-  - `ARGB_SERIAL_DEBUG=1`: print additional Zigbee/ZCL debug logs.
+- `ARGB_BACKEND=ARGB_BACKEND_SERIAL_JSON`: select the serial JSON backend.
+- `ARGB_EUI_SUFFIX=auto`: derive the Zigbee EUI suffix from the ESP factory MAC.
+- `ARGB_ENDPOINT_COUNT=<n>`: expose `n` logical gradient lights from one ESP.
+- `ARGB_SERIAL_DEBUG=1`: print additional Zigbee/ZCL debug logs.
 
-  The mapping from a logical Zigbee endpoint to OpenRGB pixels is configured in
-  `daemon/config.yaml`, not in firmware. Each endpoint can drive one or more
-  OpenRGB slices.
+The mapping from a logical Zigbee endpoint to OpenRGB pixels is configured in
+`daemon/config.yaml`, not in firmware. Each endpoint can drive one or more
+OpenRGB slices.
 
-  Example daemon mapping:
+Example daemon mapping:
 
-  ```yaml
-  inputs:
-    pc_fans:
-      port: /dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_xxx-if00
-      endpoints:
-        11:
-          name: "Side"
-          device: "MSI MYSTIC LIGHT"
-          zone: 3
-          segment_start: 0
-          leds: 6
-        12:
-          name: "Bottom"
-          device: "MSI MYSTIC LIGHT"
-          zone: 1
-          segment_start: 0
-          leds: 6
-        13:
-          name: "VRM"
+```yaml
+inputs:
+  pc_fans:
+    port: /dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_xxx-if00
+    endpoints:
+      11:
+        name: "Side"
+        device: "MSI MYSTIC LIGHT"
+        zone: 3
+        segment_start: 0
+        leds: 6
+      12:
+        name: "Bottom"
+        device: "MSI MYSTIC LIGHT"
+        zone: 1
+        segment_start: 0
+        leds: 6
+      13:
+        name: "VRM"
+        device: "MSI MYSTIC LIGHT"
+        zone: 2
+        segment_start: 0
+        leds: 12
+      14:
+        - name: "Top Right"
           device: "MSI MYSTIC LIGHT"
           zone: 2
-          segment_start: 0
+          segment_start: 12
           leds: 12
-        14:
-          - name: "Top Right"
-            device: "MSI MYSTIC LIGHT"
-            zone: 2
-            segment_start: 12
-            leds: 12
-          - name: "Top Left"
-            device: "MSI MYSTIC LIGHT"
-            zone: 2
-            segment_start: 36
-            leds: 12
-  ```
+        - name: "Top Left"
+          device: "MSI MYSTIC LIGHT"
+          zone: 2
+          segment_start: 36
+          leds: 12
+```
 
-  In this example Hue sees endpoint `14` as one gradient light, but the daemon
-  renders the same light state to two OpenRGB pixel slices.
+In this example Hue sees endpoint `14` as one gradient light, but the daemon
+renders the same light state to two OpenRGB pixel slices.
 
-  ### Addressable LED backend
+### Addressable LED backend
 
-  `ARGB_BACKEND=ARGB_BACKEND_LOCAL_LED`
+`ARGB_BACKEND=ARGB_BACKEND_LOCAL_LED`
 
-  In this mode the ESP32-C6 behaves as the Zigbee device and directly drives a
-  5 V 3-pin addressable LED data line using the ESP RMT peripheral.
+In this mode the ESP32-C6 behaves as the Zigbee device and directly drives a
+5 V 3-pin addressable LED data line using the ESP RMT peripheral.
 
-  ```text
-  Hue app -> Hue Bridge -> Zigbee -> ESP32-C6 -> GPIO data pin -> addressable LEDs
-  ```
+```text
+Hue app -> Hue Bridge -> Zigbee -> ESP32-C6 -> GPIO data pin -> addressable LEDs
+```
 
-  Use this backend when the ESP is wired directly to WS2812/SK6812-style fans or
-  strips.
+Use this backend when the ESP is wired directly to WS2812/SK6812-style fans or
+strips.
 
-  Major firmware options:
+Major firmware options:
 
-  - `ARGB_BACKEND=ARGB_BACKEND_LOCAL_LED`: select the direct LED backend.
-  - `ARGB_EUI_SUFFIX=auto`: derive the Zigbee EUI suffix from the ESP factory MAC.
-  - `ARGB_LED_GPIO=<gpio>`: ESP GPIO connected to the LED data input.
-  - `ARGB_LED_COUNT=<n>`: total number of physical LEDs on the data line.
-  - `ARGB_ENDPOINT_COUNT=<n>`: number of logical gradient lights exposed to Hue.
-  - `ARGB_ENDPOINT_LED_COUNT=<n>`: number of physical LEDs assigned to each endpoint.
-  - `ARGB_COLOR_ORDER=GRB`: channel order for the LED protocol.
-  - `ARGB_COLOR_CORRECTION_ENABLED=0|1`: enable FastLED-style correction.
-  - `ARGB_COLOR_CORRECTION=<preset>`: correction preset, for example `TypicalLEDStrip`.
-  - `ARGB_COLOR_TEMPERATURE=<preset>`: temperature preset, for example `Candle`.
-  - `ARGB_COLOR_GAIN_R/G/B=<float>`: per-channel gain.
-  - `ARGB_COLOR_GAMMA_R/G/B=<float>`: per-channel gamma.
+- `ARGB_BACKEND=ARGB_BACKEND_LOCAL_LED`: select the direct LED backend.
+- `ARGB_EUI_SUFFIX=auto`: derive the Zigbee EUI suffix from the ESP factory MAC.
+- `ARGB_LED_GPIO=<gpio>`: ESP GPIO connected to the LED data input.
+- `ARGB_LED_COUNT=<n>`: total number of physical LEDs on the data line.
+- `ARGB_ENDPOINT_COUNT=<n>`: number of logical gradient lights exposed to Hue.
+- `ARGB_ENDPOINT_LED_COUNT=<n>`: number of physical LEDs assigned to each endpoint.
+- `ARGB_COLOR_ORDER=GRB`: channel order for the LED protocol.
+- `ARGB_COLOR_CORRECTION_ENABLED=0|1`: enable FastLED-style correction.
+- `ARGB_COLOR_CORRECTION=<preset>`: correction preset, for example `TypicalLEDStrip`.
+- `ARGB_COLOR_TEMPERATURE=<preset>`: temperature preset, for example `Candle`.
+- `ARGB_COLOR_GAIN_R/G/B=<float>`: per-channel gain.
+- `ARGB_COLOR_GAMMA_R/G/B=<float>`: per-channel gamma.
 
-  Endpoint-to-pixel mapping is contiguous. Hue sees each endpoint as a separate
-  gradient light; the firmware maps that endpoint to a slice of the LED chain.
+Endpoint-to-pixel mapping is contiguous. Hue sees each endpoint as a separate
+gradient light; the firmware maps that endpoint to a slice of the LED chain.
 
-  ```text
-  endpoint 11 -> pixels 0..11
-  endpoint 12 -> pixels 12..23
-  endpoint 13 -> pixels 24..35
-  endpoint 14 -> pixels 36..47
-  endpoint 15 -> pixels 48..59
-  ```
+```text
+endpoint 11 -> pixels 0..11
+endpoint 12 -> pixels 12..23
+endpoint 13 -> pixels 24..35
+endpoint 14 -> pixels 36..47
+endpoint 15 -> pixels 48..59
+```
 
-  For five 12-pixel fans on one 60-pixel LED chain:
+For five 12-pixel fans on one 60-pixel LED chain:
 
-  ```bash
-  cd firmware
-  ARGB_BACKEND=ARGB_BACKEND_LOCAL_LED \
-  ARGB_EUI_SUFFIX=auto \
-  ARGB_LED_GPIO=2 \
-  ARGB_ENDPOINT_COUNT=5 \
-  ARGB_ENDPOINT_LED_COUNT=12 \
-  ARGB_LED_COUNT=60 \
-  ARGB_COLOR_ORDER=GRB \
-  ./in-docker.sh idf.py build
-  ```
+```bash
+cd firmware
+ARGB_BACKEND=ARGB_BACKEND_LOCAL_LED \
+ARGB_EUI_SUFFIX=auto \
+ARGB_LED_GPIO=2 \
+ARGB_ENDPOINT_COUNT=5 \
+ARGB_ENDPOINT_LED_COUNT=12 \
+ARGB_LED_COUNT=60 \
+ARGB_COLOR_ORDER=GRB \
+./in-docker.sh idf.py build
+```
 
-  With that build, the Hue bridge should discover five gradient lights from one
-  ESP32-C6 Zigbee node. Each Hue light controls one 12-pixel slice of the chain.
+With that build, the Hue bridge should discover five gradient lights from one
+ESP32-C6 Zigbee node. Each Hue light controls one 12-pixel slice of the chain.
 
-  Use `ARGB_LED_GPIO=1` for Grove `G1` or `ARGB_LED_GPIO=2` for Grove `G2` on an
-  M5Stack Nano C6. Power the LEDs from an appropriate 5 V supply, share ground
-  with the ESP32-C6, and connect only the ESP data pin to the LED data input.
+Use `ARGB_LED_GPIO=1` for Grove `G1` or `ARGB_LED_GPIO=2` for Grove `G2` on an
+M5Stack Nano C6. Power the LEDs from an appropriate 5 V supply, share ground
+with the ESP32-C6, and connect only the ESP data pin to the LED data input.
 
 ## Hue Trust Center Link Key! Important!
 
