@@ -1845,7 +1845,16 @@ static void emit_state_json_internal(uint8_t endpoint,
                                      bool has_fade,
                                      uint16_t fade,
                                      bool has_fc03_flags,
-                                     uint16_t fc03_flags)
+                                     uint16_t fc03_flags);
+static void emit_state_json_internal_ex(uint8_t endpoint,
+                                        const char *source,
+                                        bool has_fade,
+                                        uint16_t fade,
+                                        bool has_fc03_flags,
+                                        uint16_t fc03_flags,
+                                        bool has_zcl_attr,
+                                        uint16_t zcl_cluster,
+                                        uint16_t zcl_attr)
 {
     light_state_t *st = NULL;
     if (!get_light_state_for_endpoint(endpoint, NULL, &st)) {
@@ -1868,6 +1877,11 @@ static void emit_state_json_internal(uint8_t endpoint,
     if (has_fade) {
         printf(",\"fade\":%u", (unsigned)fade);
     }
+    if (has_zcl_attr) {
+        printf(",\"zcl_cluster\":%u,\"zcl_attr\":%u",
+               (unsigned)zcl_cluster,
+               (unsigned)zcl_attr);
+    }
     printf(",\"on\":%s,\"bri\":%u,\"x\":%.4f,\"y\":%.4f,\"r\":%u,\"g\":%u,\"b\":%u}\n",
            st->on ? "true" : "false",
            (unsigned)st->bri,
@@ -1885,7 +1899,28 @@ static void emit_state_json_internal(uint8_t endpoint,
     (void)source;
     (void)has_fc03_flags;
     (void)fc03_flags;
+    (void)has_zcl_attr;
+    (void)zcl_cluster;
+    (void)zcl_attr;
 #endif
+}
+
+static void emit_state_json_internal(uint8_t endpoint,
+                                     const char *source,
+                                     bool has_fade,
+                                     uint16_t fade,
+                                     bool has_fc03_flags,
+                                     uint16_t fc03_flags)
+{
+    emit_state_json_internal_ex(endpoint,
+                                source,
+                                has_fade,
+                                fade,
+                                has_fc03_flags,
+                                fc03_flags,
+                                false,
+                                0,
+                                0);
 }
 
 void emit_state_json(uint8_t endpoint)
@@ -4471,7 +4506,15 @@ static esp_err_t zb_attribute_handler(const esp_zb_zcl_set_attr_value_message_t 
     case ESP_ZB_ZCL_CLUSTER_ID_LEVEL_CONTROL:
     case ESP_ZB_ZCL_CLUSTER_ID_COLOR_CONTROL:
         sync_fc03_state_prefix(idx);
-        emit_state_json_internal(endpoint, NULL, true, STANDARD_ZCL_FADE_TENTHS, false, 0);
+        emit_state_json_internal_ex(endpoint,
+                                    "zcl",
+                                    true,
+                                    STANDARD_ZCL_FADE_TENTHS,
+                                    false,
+                                    0,
+                                    true,
+                                    message->info.cluster,
+                                    message->attribute.id);
         save_power_recovery_state("zcl_attr");
         break;
     default:

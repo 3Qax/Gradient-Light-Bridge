@@ -302,6 +302,9 @@ FC03_FLAG_ON_OFF = 0x0001
 FC03_FLAG_COLOR_MIREK = 0x0004
 FC03_FLAG_COLOR_XY = 0x0008
 
+ZCL_CLUSTER_ON_OFF = 0x0006
+ZCL_CLUSTER_LEVEL_CONTROL = 0x0008
+
 ZONE_COLOR_CACHE: dict[int, list[RGBColor]] = {}
 DEVICE_COLOR_CACHE: dict[int, list[RGBColor]] = {}
 TARGET_COLOR_CACHE: dict[int, list[RGBColor]] = {}
@@ -1639,9 +1642,13 @@ def handle_data_event(
 ) -> None:
     endpoint = data.get("endpoint")
     on = data.get("on", True)
+    source_name = data.get("source")
     fc03_flags = data.get("fc03_flags")
     if fc03_flags is not None:
         fc03_flags = coerce_int(fc03_flags, 0)
+    zcl_cluster = data.get("zcl_cluster")
+    if zcl_cluster is not None:
+        zcl_cluster = coerce_int(zcl_cluster, -1)
     target_group = source.targets.get(endpoint)
     if not target_group:
         logger.debug("No mapping for %s endpoint %s", source.name, endpoint)
@@ -1704,11 +1711,15 @@ def handle_data_event(
         fc03_flags is not None
         and (fc03_flags & (FC03_FLAG_COLOR_MIREK | FC03_FLAG_COLOR_XY))
     )
+    fc03_preserves_gradient = source_name == "fc03" and not fc03_changed_color
+    zcl_preserves_gradient = source_name == "zcl" and zcl_cluster in (
+        ZCL_CLUSTER_ON_OFF,
+        ZCL_CLUSTER_LEVEL_CONTROL,
+    )
     fc03_changed_on = fc03_flags is None or bool(fc03_flags & FC03_FLAG_ON_OFF)
     if (
-        data.get("source") == "fc03"
-        and stored_gradient is not None
-        and not fc03_changed_color
+        stored_gradient is not None
+        and (fc03_preserves_gradient or zcl_preserves_gradient)
         and ("bri" in data or "on" in data or "effect_speed" in data)
     ):
         now = time.monotonic()
@@ -1716,7 +1727,7 @@ def handle_data_event(
         speed_only_update = "effect_speed" in data and "bri" not in data and "on" not in data
         if "bri" in data:
             stored_gradient.bri = coerce_brightness_254(data.get("bri"), stored_gradient.bri)
-        if "on" in data and fc03_changed_on:
+        if "on" in data and (source_name != "fc03" or fc03_changed_on):
             stored_gradient.on = bool(data.get("on"))
         if "effect_speed" in data:
             if stored_gradient.dynamic:
