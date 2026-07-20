@@ -234,39 +234,96 @@ Suggested tuning flow:
    through the new settings.
 
 
-## Build the firmware (Docker, no host ESP-IDF install)
+## Build the firmware
 
-The build uses `firmware/in-docker.sh`, which runs the official ESP-IDF Docker
-image. You do not need to install ESP-IDF on the host.
+Firmware builds run through `firmware/in-docker.sh`, which uses the official
+ESP-IDF Docker image. You need Docker, but you do not need to install ESP-IDF on
+the host.
+
+All firmware build commands start from `firmware/`:
 
 ```bash
 cd firmware
 chmod +x in-docker.sh
 ./in-docker.sh idf.py set-target esp32c6
+```
+
+Pick one build recipe.
+
+### OpenRGB backend build
+
+Use this when the ESP sends USB serial JSON to the PC daemon and the daemon
+writes pixels through OpenRGB:
+
+```bash
+ARGB_BACKEND=ARGB_BACKEND_SERIAL_JSON \
+ARGB_EUI_SUFFIX=auto \
 ./in-docker.sh idf.py build
 ```
 
-The firmware binary is written to `firmware/build/argb_to_hue.bin`.
+This is also the default backend. `ARGB_EUI_SUFFIX=auto` is recommended when
+flashing more than one ESP, because each board derives a different Zigbee EUI
+from its factory MAC address.
 
-Useful Docker helper details:
+### Addressable LED backend build
 
-- Run `./in-docker.sh ...` from `firmware/`; it mounts the current directory as
-  `/project` inside the container.
+Use this when the ESP drives a 5 V 3-pin addressable LED data line directly.
+For one 12-pixel fan or strip on M5Stack Nano C6 Grove `G2`:
+
+```bash
+ARGB_BACKEND=ARGB_BACKEND_LOCAL_LED \
+ARGB_EUI_SUFFIX=auto \
+ARGB_LED_GPIO=2 \
+ARGB_LED_COUNT=12 \
+ARGB_COLOR_ORDER=GRB \
+./in-docker.sh idf.py build
+```
+
+For one ESP exposing five independently controlled 12-pixel Hue lights on one
+60-pixel LED chain:
+
+```bash
+ARGB_BACKEND=ARGB_BACKEND_LOCAL_LED \
+ARGB_EUI_SUFFIX=auto \
+ARGB_LED_GPIO=2 \
+ARGB_ENDPOINT_COUNT=5 \
+ARGB_ENDPOINT_LED_COUNT=12 \
+ARGB_LED_COUNT=60 \
+ARGB_COLOR_ORDER=GRB \
+./in-docker.sh idf.py build
+```
+
+Use `ARGB_LED_GPIO=1` for Grove `G1` or `ARGB_LED_GPIO=2` for Grove `G2`.
+Power the LEDs from an appropriate 5 V supply, share ground with the ESP32-C6,
+and connect only the ESP data pin to the LED data input.
+
+The firmware binary is written to `firmware/build/argb_to_hue.bin`. The flash
+layout is written to `firmware/build/flash_args`.
+
+Useful build notes:
+
+- If Docker requires group switching on your Linux machine, wrap the whole
+  command:
+
+  ```bash
+  sg docker -c 'ARGB_BACKEND=ARGB_BACKEND_SERIAL_JSON ARGB_EUI_SUFFIX=auto ./in-docker.sh idf.py build'
+  ```
+
+- If you switch backend or target and the build looks stale, clean once and
+  rebuild:
+
+  ```bash
+  ./in-docker.sh idf.py fullclean
+  ```
+
 - The default image is `docker.io/espressif/idf:v5.3.2`. Override it with
-  `IDFVER`, for example:
+  `IDFVER`:
 
   ```bash
   IDFVER=v5.3.2 ./in-docker.sh idf.py build
   ```
 
-- If your user is not in the `docker` group, run through `sg docker`:
-
-  ```bash
-  sg docker -c './in-docker.sh idf.py build'
-  ```
-
-- To build the gradient probe subproject, run the helper from that directory and
-  point it at the parent script:
+- To build the gradient probe subproject:
 
   ```bash
   cd firmware/gradient_probe
@@ -274,92 +331,115 @@ Useful Docker helper details:
   ../in-docker.sh idf.py build
   ```
 
-### Direct fan/strip driving backend
-
-The default build emits serial JSON for the daemon/OpenRGB path. To drive a
-5 V 3-pin addressable fan or strip directly from an M5NanoC6 Grove pin, build
-the local LED backend instead:
-
-```bash
-cd firmware
-sg docker -c 'ARGB_BACKEND=ARGB_BACKEND_LOCAL_LED ARGB_EUI_SUFFIX=auto ARGB_LED_GPIO=1 ARGB_LED_COUNT=12 ARGB_COLOR_ORDER=GRB ./in-docker.sh idf.py build'
-```
-
-Use `ARGB_LED_GPIO=1` for Grove `G1` or `ARGB_LED_GPIO=2` for Grove `G2`.
-Power the LEDs from the motherboard ARGB header `5V`/`GND`, share that ground
-with the NanoC6, and leave the motherboard ARGB data pin disconnected.
-
-For one ESP exposing five independently controlled Hue lightstrips on one
-60-pixel ARGB chain:
-
-```bash
-cd firmware
-sg docker -c 'ARGB_BACKEND=ARGB_BACKEND_LOCAL_LED ARGB_EUI_SUFFIX=auto ARGB_LED_GPIO=2 ARGB_ENDPOINT_COUNT=5 ARGB_ENDPOINT_LED_COUNT=12 ARGB_LED_COUNT=60 ARGB_COLOR_ORDER=GRB ./in-docker.sh idf.py build'
-```
-
-This is one Zigbee device with multiple light endpoints, not five separate
-IEEE/EUI-64 radios. The bridge should discover one Hue light per endpoint.
-
-Local LED builds apply the same FastLED-style correction defaults as the
-OpenRGB daemon config: `ARGB_COLOR_CORRECTION=TypicalLEDStrip`,
-`ARGB_COLOR_TEMPERATURE=Candle`, `ARGB_COLOR_GAIN_R=1.0`,
-`ARGB_COLOR_GAIN_G=1.0`, `ARGB_COLOR_GAIN_B=0.7`, and per-channel gamma of
-`1.0`. Disable it with `ARGB_COLOR_CORRECTION_ENABLED=0`, or override preset,
-temperature, per-channel correction bytes, gain, and gamma at build time.
-
-After flashing a local LED build, use the serial CLI smoke tests to confirm the
-data pin and color order before pairing or assigning scenes:
-
-```bash
-python3 firmware/send_cmd.py --port /dev/ttyACM0 led off
-python3 firmware/send_cmd.py --port /dev/ttyACM0 led solid ff0000
-python3 firmware/send_cmd.py --port /dev/ttyACM0 led solid 00ff00
-python3 firmware/send_cmd.py --port /dev/ttyACM0 led solid 0000ff
-python3 firmware/send_cmd.py --port /dev/ttyACM0 led gradient
-python3 firmware/send_cmd.py --port /dev/ttyACM0 led chase
-```
-
 ## Flash the firmware
 
-Docker Desktop on macOS cannot pass USB serial ports into containers, so flashing is done with `esptool.py` on the host:
+The commands in this section are written to run from the repository root. If
+you are still inside `firmware/` after building, run `cd ..` first.
+
+### Find the ESP serial port
+
+Plug the ESP into USB, then find the serial device.
+
+On Linux:
+
+```bash
+ls -l /dev/serial/by-id/ 2>/dev/null
+ls /dev/ttyACM* /dev/ttyUSB* 2>/dev/null
+```
+
+If you are not sure which entry is the ESP, run the commands once with the ESP
+unplugged and once after plugging it in. The new device is the port to use.
+Set it for the rest of the commands:
+
+```bash
+export PORT=/dev/ttyACM0
+```
+
+On macOS:
+
+```bash
+ls /dev/cu.usbmodem* /dev/cu.usbserial* 2>/dev/null
+export PORT=/dev/cu.usbmodemXXXX
+```
+
+Use the real port shown on your machine.
+
+### Flash on Linux
+
+On Linux, the Docker helper can pass the USB device through to ESP-IDF:
+
+```bash
+(cd firmware && ./in-docker.sh idf.py -p "$PORT" flash)
+```
+
+### Flash on macOS
+
+Docker Desktop on macOS cannot pass USB serial ports into containers, so build
+with Docker but flash with host `esptool.py`:
 
 ```bash
 pipx install esptool
 # or: python3 -m pip install esptool
 
-# Find the port (macOS example)
-ls /dev/tty.usbmodem*
-
-esptool.py -p /dev/tty.usbmodem* --chip esp32c6 -b 460800 \
-  --before default_reset --after hard_reset \
-  write_flash "@firmware/build/flash_args"
+(cd firmware/build && \
+  esptool.py -p "$PORT" --chip esp32c6 -b 460800 \
+    --before default_reset --after hard_reset \
+    write_flash "@flash_args")
 ```
 
-On Linux you can flash directly with the Docker helper if you prefer:
+The command runs `esptool.py` from `firmware/build` so the paths inside
+`flash_args` resolve correctly.
+
+### Watch logs
+
+After flashing, watch the serial log until the device starts Zigbee network
+steering or joins the bridge:
 
 ```bash
-cd firmware
-PORT=/dev/ttyACM0 ./in-docker.sh idf.py -p /dev/ttyACM0 flash
+# Linux:
+(cd firmware && ./in-docker.sh idf.py -p "$PORT" monitor)
+
+# macOS:
+python3 -m serial.tools.miniterm "$PORT" 115200
 ```
+
+You should see lines such as `Start network steering` and, after pairing,
+`Joined network successfully`.
+
+### Verify local LED wiring
+
+For addressable LED builds, use the serial smoke tests before pairing or
+assigning scenes:
+
+```bash
+python3 firmware/send_cmd.py --port "$PORT" led off
+python3 firmware/send_cmd.py --port "$PORT" led solid ff0000
+python3 firmware/send_cmd.py --port "$PORT" led solid 00ff00
+python3 firmware/send_cmd.py --port "$PORT" led solid 0000ff
+python3 firmware/send_cmd.py --port "$PORT" led gradient
+python3 firmware/send_cmd.py --port "$PORT" led chase
+```
+
+If red and green are swapped, rebuild with a different `ARGB_COLOR_ORDER`.
+
+### Reset pairing state
 
 To erase Zigbee pairing state without wiping the full chip, erase the
-`zb_storage` partition from Linux:
+`zb_storage` partition.
+
+On Linux:
 
 ```bash
-cd firmware
-PORT=/dev/ttyACM0 ./in-docker.sh python3 -m esptool --chip esp32c6 \
-  -p /dev/ttyACM0 -b 460800 erase_region 0xf1000 0x4000
+(cd firmware && \
+  ./in-docker.sh python3 -m esptool --chip esp32c6 \
+    -p "$PORT" -b 460800 erase_region 0xf1000 0x4000)
 ```
 
-To watch the device logs:
+On macOS:
 
 ```bash
-esptool.py --chip esp32c6 -p /dev/tty.usbmodem* monitor
-# or, on Linux:
-PORT=/dev/ttyACM0 ./in-docker.sh idf.py -p /dev/ttyACM0 monitor
+esptool.py --chip esp32c6 -p "$PORT" -b 460800 erase_region 0xf1000 0x4000
 ```
-
-Leave monitoring running until you see the device join the network (next step).
 
 ## Pair with the Hue bridge
 
@@ -372,13 +452,16 @@ For fast firmware-identity iteration, use
 [`docs/hue-api-device-cycle.md`](docs/hue-api-device-cycle.md) to remove the
 bridge's stale light record and trigger rediscovery through the local Hue API.
 
-If pairing fails, erase the ESP32 and try again:
+If pairing fails, first try [resetting pairing state](#reset-pairing-state). If
+that still fails, erase the whole flash and flash the firmware again:
 
 ```bash
-esptool.py -p /dev/tty.usbmodem* --chip esp32c6 erase_flash
-esptool.py -p /dev/tty.usbmodem* --chip esp32c6 -b 460800 \
-  --before default_reset --after hard_reset \
-  write_flash "@firmware/build/flash_args"
+esptool.py -p "$PORT" --chip esp32c6 erase_flash
+
+(cd firmware/build && \
+  esptool.py -p "$PORT" --chip esp32c6 -b 460800 \
+    --before default_reset --after hard_reset \
+    write_flash "@flash_args")
 ```
 
 ## Install the PC daemon
