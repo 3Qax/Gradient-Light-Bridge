@@ -404,11 +404,72 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Edit `config.yaml` to match your OpenRGB device names. The default config assumes:
+Edit `config.yaml` to map the firmware endpoints to OpenRGB targets. Start in
+OpenRGB and note the device name, zone index, and optionally segment name for
+the LEDs you want Gradient Light Bridge to control.
 
-- Fractal case → pattern `Fractal`
-- MSI motherboard/fans → pattern `Mystic Light`
-- GOODRAM RAM → pattern `GOODRAM`
+The important fields are:
+
+- `openrgb.host` and `openrgb.port`: where the OpenRGB SDK server is listening.
+  Use `127.0.0.1:6742` when OpenRGB and this daemon run on the same machine.
+- `inputs`: one entry per ESP connected over serial. The key is your own name
+  for that ESP, for example `case_fans` or `desk_strip`; it is used in logs and
+  lets one daemon handle multiple ESPs.
+- `inputs.<name>.port`: serial port for the ESP running
+  `ARGB_BACKEND=ARGB_BACKEND_SERIAL_JSON`.
+- `inputs.<name>.endpoints`: endpoint-to-output mapping. Firmware endpoint
+  `11` is the first Hue light, `12` is the second Hue light, and so on.
+- `device`: substring matched against the OpenRGB device name.
+- `zone`: OpenRGB zone index. Omit it only if you want to write the whole
+  device.
+- `segment`: OpenRGB segment name, if your OpenRGB profile exposes named
+  segments.
+- `segment_start` and `leds`: explicit pixel range inside the zone. Use these
+  when there is no named segment, or when you want only part of a zone.
+- `name`: human-friendly label used in daemon logs.
+
+A single Hue light can drive more than one OpenRGB range by making that endpoint
+value a list. This is useful when multiple physical fans should mirror the same
+Hue light.
+
+Example:
+
+```yaml
+openrgb:
+  host: 127.0.0.1
+  port: 6742
+
+inputs:
+  case_fans:
+    port: /dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_xxx-if00
+    endpoints:
+      11:
+        name: "Front fans"
+        device: "OpenRGB device name"
+        zone: 0
+        segment_start: 0
+        leds: 12
+      12:
+        - name: "Top left"
+          device: "OpenRGB device name"
+          zone: 1
+          segment: "Left"
+        - name: "Top right"
+          device: "OpenRGB device name"
+          zone: 1
+          segment: "Right"
+
+  desk_strip:
+    port: /dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_yyy-if00
+    endpoints:
+      11:
+        name: "Desk strip"
+        device: "Another OpenRGB device name"
+        zone: 0
+        leds: 30
+
+set_direct_mode: true
+```
 
 Start exactly one OpenRGB SDK server, then point this daemon at that server.
 The SDK server can be either:
