@@ -236,8 +236,7 @@ Suggested tuning flow:
 
 ## Build the firmware
 
-I recommend building with the official ESP-IDF Docker image
-(`docker.io/espressif/idf:v5.3.2`) through `firmware/in-docker.sh`. You need
+I recommend building with the official ESP-IDF Docker image (`docker.io/espressif/idf:v5.3.2`) through `firmware/in-docker.sh`. You need
 Docker, but you do not need to install ESP-IDF on your machine, which in my
 experience is much less problematic.
 
@@ -250,24 +249,20 @@ chmod +x in-docker.sh
 ./in-docker.sh idf.py set-target esp32c6
 ```
 
-Configure the build with environment variables, then run one build command. If
-you do not set `ARGB_BACKEND`, the firmware builds the OpenRGB/serial JSON
-backend.
+Configure the build with environment variables, then build. If you do not set `ARGB_BACKEND`, the firmware builds the OpenRGB backend.
 
 ```bash
+// Use the backend and color configuration values from the sections above. For
+// example, a direct LED build would set `ARGB_BACKEND=ARGB_BACKEND_LOCAL_LED`
+// plus LED options such as `ARGB_LED_GPIO`, `ARGB_LED_COUNT`,
+// `ARGB_ENDPOINT_COUNT`, `ARGB_ENDPOINT_LED_COUNT`, and `ARGB_COLOR_ORDER`.
 export ARGB_EUI_SUFFIX=auto
 export ARGB_BACKEND=ARGB_BACKEND_SERIAL_JSON
+export ARGB_ENDPOINT_COUNT=2
 ./in-docker.sh idf.py build
 ```
 
-Use the backend and color configuration values from the sections above. For
-example, a direct LED build would set `ARGB_BACKEND=ARGB_BACKEND_LOCAL_LED`
-plus LED options such as `ARGB_LED_GPIO`, `ARGB_LED_COUNT`,
-`ARGB_ENDPOINT_COUNT`, `ARGB_ENDPOINT_LED_COUNT`, and `ARGB_COLOR_ORDER` before
-running the same `./in-docker.sh idf.py build` command.
-
-The firmware binary is written to `firmware/build/argb_to_hue.bin`. The flash
-layout is written to `firmware/build/flash_args`.
+The binary is written to `firmware/build/argb_to_hue.bin` and flash layout is written to `firmware/build/flash_args`.
 
 Useful notes:
 
@@ -287,48 +282,47 @@ Useful notes:
 
 ## Flash the firmware
 
-The flash commands below run from the repository root. If you just finished
-building from `firmware/`, return to the repository root first:
-
-```bash
-cd ..
-```
+Now that we have binary we need to flash it onto the ESP. 
+Commands below run from the repository root, if you just finished building from `firmware/`, return to the repository root first - `cd ..`.
 
 ### Find the ESP serial port
 
-Plug the ESP into USB, then find the serial device.
+In order to flash we need to know which serial port the ESP is connected to. Plug the ESP into USB, then find the serial device.
 
-On Linux:
+
 
 ```bash
+# On Linux:
 ls -l /dev/serial/by-id/ 2>/dev/null
 ls /dev/ttyACM* /dev/ttyUSB* 2>/dev/null
+
+# On macOS:
+ls /dev/cu.usbmodem* /dev/cu.usbserial* 2>/dev/null
 ```
+
+
+
+Use the real port shown on your machine.
 
 If you are not sure which entry is the ESP, run the commands once with the ESP
 unplugged and once after plugging it in. The new device is the port to use.
 Set it for the rest of the commands:
 
 ```bash
+# Linux:
 export PORT=/dev/ttyACM0
-```
 
-On macOS:
-
-```bash
-ls /dev/cu.usbmodem* /dev/cu.usbserial* 2>/dev/null
+# MacOS:
 export PORT=/dev/cu.usbmodemXXXX
 ```
-
-Use the real port shown on your machine.
 
 ### Flash
 
 Flash from the host with `esptool.py`. This works on both Linux and macOS:
 
 ```bash
-pipx install esptool
-# or: python3 -m pip install esptool
+python3 -m pip install esptool
+# or: pipx install esptool
 
 cd firmware/build
 esptool.py -p "$PORT" --chip esp32c6 -b 460800 \
@@ -337,20 +331,40 @@ esptool.py -p "$PORT" --chip esp32c6 -b 460800 \
 cd ../..
 ```
 
-The command runs `esptool.py` from `firmware/build` so the paths inside
-`flash_args` resolve correctly.
+The command runs `esptool.py` from `firmware/build` so the paths inside `flash_args` resolve correctly.
 
 ### Watch logs
 
-After flashing, watch the serial log until the device starts Zigbee network
-steering or joins the bridge:
+After flashing, I recommend you watch the serial log until the device starts Zigbee network
+steering or joins the bridge.
 
 ```bash
 python3 -m serial.tools.miniterm "$PORT" 115200
 ```
 
-You should see lines such as `Start network steering` and, after pairing,
+Start the serial monitor and keep the ESP connected until you see lines such as `Start network steering` and, after pairing,
 `Joined network successfully`.
+
+## Pair with the Hue bridge
+
+1. Open the Philips Hue app → **Settings** → **Light setup** → **Add light**.
+2. The app should discover one light per advertised endpoint (`ARGB_ENDPOINT_COUNT`).
+3. Add them to the room/automation of your choice.
+
+If pairing fails, first try clearing [pairing state](#pairing-state-and-reflashing). If
+that still fails:
+
+```bash
+# erase the whole flash
+esptool.py -p "$PORT" --chip esp32c6 erase_flash
+
+# and flash the firmware again
+cd firmware/build
+esptool.py -p "$PORT" --chip esp32c6 -b 460800 \
+  --before default_reset --after hard_reset \
+  write_flash "@flash_args"
+cd ../..
+```
 
 ### Pairing state and reflashing
 
@@ -372,55 +386,16 @@ settings such as the EUI suffix or endpoint count.
 esptool.py --chip esp32c6 -p "$PORT" -b 460800 erase_region 0xf1000 0x4000
 ```
 
-If that is not enough, erase the whole flash and flash the firmware again:
-
-```bash
-esptool.py -p "$PORT" --chip esp32c6 erase_flash
-```
-
-### Verify local LED wiring
-
-For addressable LED builds, use the serial smoke tests before pairing or
-assigning scenes:
-
-```bash
-python3 firmware/send_cmd.py --port "$PORT" led off
-python3 firmware/send_cmd.py --port "$PORT" led solid ff0000
-python3 firmware/send_cmd.py --port "$PORT" led solid 00ff00
-python3 firmware/send_cmd.py --port "$PORT" led solid 0000ff
-python3 firmware/send_cmd.py --port "$PORT" led gradient
-python3 firmware/send_cmd.py --port "$PORT" led chase
-```
-
-If red and green are swapped, rebuild with a different `ARGB_COLOR_ORDER`.
-
-## Pair with the Hue bridge
-
-1. Open the Philips Hue app → **Settings** → **Light setup** → **Add light**.
-2. Power-cycle or reset the ESP32 if needed. It will start Zigbee network steering automatically.
-3. The app should discover one light per advertised endpoint.
-4. Add them to the room/automation of your choice.
-
-For fast firmware-identity iteration, use
-[`docs/hue-api-device-cycle.md`](docs/hue-api-device-cycle.md) to remove the
-bridge's stale light record and trigger rediscovery through the local Hue API.
-
-If pairing fails, first try clearing [pairing state](#pairing-state-and-reflashing). If
-that still fails, erase the whole flash and flash the firmware again:
-
-```bash
-esptool.py -p "$PORT" --chip esp32c6 erase_flash
-
-cd firmware/build
-esptool.py -p "$PORT" --chip esp32c6 -b 460800 \
-  --before default_reset --after hard_reset \
-  write_flash "@flash_args"
-cd ../..
-```
-
 ## Install the PC daemon
 
-Create a venv and install dependencies (macOS or Linux):
+This section is only relevant if you want to use OpenRGB backend. If you went with `ARGB_BACKEND=ARGB_BACKEND_LOCAL_LED` this section is irrelevant.
+
+Now that you have an ESP that talks Hue and outputs serial commands, we are missing two parts: 1. internal state machine that for example renders animations or transitions and 2. something that will apply this state to the devices themselves. Because the unfortunate reality is that almost every device only talks to manufacturer proprietary software / specification / language on the OS level, we need to abstract away. To do this I use OpenRGB. Please follow the instructions at one on the links below to get it configured and resume to this document when you have configured zones and segments, and can steer all you devices from OpenRGB. My forever gratiude to [Adam Honse](https://www.patreon.com/cw/CalcProgrammer1)'s, author of OpenRGB. 
+
+https://openrgb.org/
+https://gitlab.com/CalcProgrammer1/OpenRGB
+
+This [daemon](https://en.wikipedia.org/wiki/Daemon_(computing)) reads commands, interprets them and renders internal state of your lights and forwards resulting state to openrgb server. Since I wrote it in Python you will need to create a [venv](https://docs.python.org/3/library/venv.html) and install dependencies (macOS or Linux):
 
 ```bash
 cd daemon
@@ -468,9 +443,11 @@ It also applies Hue fade timing to solid colors, scene recalls, on/off changes,
 brightness changes, and gradient updates before writing frames through the
 OpenRGB SDK.
 
-## Run automatically on Linux
+## Start daemon automatically
 
+Linux:
 ```bash
+
 sudo mkdir -p /opt/argb-to-hue
 sudo cp -r daemon /opt/argb-to-hue/
 sudo cp daemon/argb-to-hue.service /etc/systemd/system/argb-to-hue.service
@@ -478,8 +455,7 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now argb-to-hue.service
 ```
 
-## Run automatically on macOS
-
+MacOS:
 Edit `daemon/argb-to-hue.plist` and fill in the real paths, then:
 
 ```bash
@@ -494,6 +470,22 @@ launchctl start com.argb-to-hue.daemon
 - **Daemon cannot open serial port**: ensure no other program (e.g. `idf.py monitor`) is using the port.
 - **Colors do not change in OpenRGB**: check that OpenRGB detects your devices and that they support a Direct/Custom mode. Set `set_direct_mode: true` in `config.yaml`.
 - **Wrong zone mapping**: use OpenRGB’s GUI to inspect device/zone names and indices, then update `config.yaml`.
+
+### Verify local LED wiring
+
+For addressable LED builds, use the serial smoke tests before pairing or
+assigning scenes:
+
+```bash
+python3 firmware/send_cmd.py --port "$PORT" led off
+python3 firmware/send_cmd.py --port "$PORT" led solid ff0000
+python3 firmware/send_cmd.py --port "$PORT" led solid 00ff00
+python3 firmware/send_cmd.py --port "$PORT" led solid 0000ff
+python3 firmware/send_cmd.py --port "$PORT" led gradient
+python3 firmware/send_cmd.py --port "$PORT" led chase
+```
+
+If red and green are swapped, rebuild with a different `ARGB_COLOR_ORDER`.
 
 ## Known Limitations
 
