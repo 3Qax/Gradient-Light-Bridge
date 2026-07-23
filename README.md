@@ -2,6 +2,8 @@
 
 ESP32-C6 firmware that emulates Hue-compatible Zigbee gradient lights and drives OpenRGB or addressable LEDs. Control your RGB accessories as Hue-compatible gradient lights. Up to 5 light endpoints per ESP.
 
+[![Youtube Video](https://github.com/user-attachments/assets/e8d90265-b60f-47eb-bfa0-9ac36bf647f7)](https://youtu.be/fr-RntL9Mu8?si=YywJU7S6XEgSeV5y)
+
 ## Hardware
 
 - [M5Stack Nano C6](https://docs.m5stack.com/en/core/M5NanoC6) or another ESP32-C6 dev board.
